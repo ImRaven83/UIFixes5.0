@@ -96,6 +96,7 @@ internal partial class Settings
     public static ConfigEntry<bool> EnableMultiClick { get; set; } // Advanced
     public static ConfigEntry<KeyboardShortcut> SelectionBoxKey { get; set; }
     public static ConfigEntry<MultiSelectStrategy> MultiSelectStrat { get; set; }
+    public static ConfigEntry<bool> MultiQuickMoveMerge { get; set; }
     public static ConfigEntry<bool> ShowMultiSelectDebug { get; set; } // Advanced
 
     // ItemSwapping
@@ -862,6 +863,15 @@ internal partial class Settings
             MultiSelectStrategy.OriginalSpacing,
             new ConfigDescription(
                 "Controls where multiselected items are placed, relative to the item being dragged",
+                null,
+                new ConfigurationManagerAttributes { })));
+
+        configEntries.Add(MultiQuickMoveMerge = config.Bind(
+            Section.MultiSelect,
+            "Merge stacks on quick move",
+            true,
+            new ConfigDescription(
+                "Controls whether ctrl-clicking will merge stackable items if possible",
                 null,
                 new ConfigurationManagerAttributes { })));
 

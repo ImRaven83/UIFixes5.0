@@ -274,7 +274,7 @@ public static class MultiSelectPatches
         private static void QuickMove(GridItemView gridItemView, ItemUiContext itemUiContext, ItemController itemController, bool moveToSortingTable = false)
         {
             bool succeeded = true;
-            DisableMerge = true;
+            DisableMerge = !Settings.MultiQuickMoveMerge.Value;
             IgnoreItemParent = true;
             Stack<OperationResult> operations = new();
             foreach (var selectedItemContext in MultiSelect.SortedItemContexts())
