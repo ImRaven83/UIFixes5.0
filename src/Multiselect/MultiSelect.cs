@@ -642,7 +642,7 @@ public static class MultiSelectExtensions
         }
 
         // The player's dogtag is not selectable
-        // BSG implements this in the most convoluted way possidble, by setting an empty View on the item context, and then
+        // BSG implements this in the most convoluted way possible, by setting an empty View on the item context, and then
         // relying on the fact that this empty view no-ops most interactions. 
         return itemView.ItemContext != null && itemView.ItemContext.ViewType != EItemViewType.Empty;
     }

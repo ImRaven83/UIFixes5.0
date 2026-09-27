@@ -37,19 +37,21 @@ public static class MultiGrid
         var gridsByLocation = GridsByLocation[originGrid.ParentItem.TemplateId];
 
         // Clamp to known "meta" grid
+        // Grids with gaps will "miss", so fall back to known good
         int x = Math.Max(0, Math.Min(gridsByLocation.Keys.Max(), multigridLocation.x));
-        int y = Math.Max(0, Math.Min(gridsByLocation[x].Keys.Max(), multigridLocation.y));
-
-        // Sanity check
-        if (!gridsByLocation.ContainsKey(x) || !gridsByLocation[x].ContainsKey(y))
+        if (!gridsByLocation.ContainsKey(x))
         {
-            // Perhaps some weird layout with gaps in the middle? Fall back to a known good
             x = gridsByLocation.Keys.First();
+        }
+
+        int y = Math.Max(0, Math.Min(gridsByLocation[x].Keys.Max(), multigridLocation.y));
+        if (!gridsByLocation[x].ContainsKey(y))
+        {
             y = gridsByLocation[x].Keys.First();
         }
 
         string gridId = gridsByLocation[x][y];
-        Grid grid = (originGrid.ParentItem as CompoundItem).Grids.Single(g => g.ID == gridId);
+        Grid grid = originGrid.ParentItem.Grids.Single(g => g.ID == gridId);
         Vector2Int offsets = GridOffsets[originGrid.ParentItem.TemplateId][gridId];
 
         LocationInGrid location = new(x - offsets.x, y - offsets.y, multigridLocation.r);
