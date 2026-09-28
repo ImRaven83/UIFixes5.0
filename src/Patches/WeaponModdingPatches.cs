@@ -5,12 +5,12 @@ using System.Reflection;
 using Comfort.Common;
 using Diz.LanguageExtensions;
 using EFT;
+using EFT.Hideout;
 using EFT.InventoryLogic;
 using EFT.UI;
 using EFT.UI.DragAndDrop;
 using HarmonyLib;
 using SPT.Reflection.Patching;
-using SPT.Reflection.Utils;
 using UnityEngine;
 
 namespace UIFixes;
@@ -46,6 +46,9 @@ public static class WeaponModdingPatches
         new CheckIfAlreadyBuiltPatch().Enable();
 
         new DisassembleAllPatch().Enable();
+
+        new FindItemBodyPatch().Enable();
+        new AssembleTooltipPatch().Enable();
     }
 
     public class ResizeData
@@ -884,6 +887,72 @@ public static class WeaponModdingPatches
 
             __result = operations;
             return false;
+        }
+    }
+
+    // The EditBuildScreen literally never finds a weapon body, because it filters the player's items down to just items of type Mod
+    // Weapons are not Mods
+    public class FindItemBodyPatch : ModulePatch
+    {
+        protected override MethodBase GetTargetMethod()
+        {
+            return AccessTools.Method(typeof(EditBuildScreen), nameof(EditBuildScreen.IsAcceptableItem));
+        }
+
+        [PatchPostfix]
+        public static void PostFix(EditBuildScreen __instance, Item itemToCheck, ref bool __result)
+        {
+            if (itemToCheck is not Weapon)
+            {
+                return;
+            }
+
+            // Need to run same checks as patched function
+            if (itemToCheck.PinLockState == EItemPinLockState.Locked)
+            {
+                return;
+            }
+
+            if (__instance.InventoryController.IsItemEquipped(itemToCheck))
+            {
+                return;
+            }
+
+            if (itemToCheck.CurrentAddress != null)
+            {
+                foreach (var (type, hideoutStash) in __instance.InventoryController.Inventory.HideoutAreaStashes)
+                {
+                    if (HideoutAreaStashController.IsContainerOfItemIsLocalStash(itemToCheck.CurrentAddress.Container, hideoutStash))
+                    {
+                        return;
+                    }
+                }
+            }
+
+            __result = itemToCheck.Parent.Container.ParentItem.IsContainer;
+        }
+    }
+
+    // The assemble button is disabled if the weapon is already built. But they forgot a tooltip for the success case, so it shows a nonsensical error.
+    public class AssembleTooltipPatch : ModulePatch
+    {
+        protected override MethodBase GetTargetMethod()
+        {
+            return AccessTools.PropertyGetter(typeof(EditBuildScreen), nameof(EditBuildScreen.AssembleHoverErrorText));
+        }
+
+        [PatchPostfix]
+        public static void Postfix(ref string __result, Item ___Item, ItemContext ____itemContext, Item ____itemBody)
+        {
+            List<Mod> installedMods = WeaponAssembler.GetInstalledMods(____itemBody as Weapon);
+
+            // Due to when this is called, Item may not be set yet, but I can still grab it through the parent class's context
+            var item = ___Item ?? ____itemContext.Item;
+
+            if (WeaponAssembler.CheckIfAlreadyBuilt(installedMods, item as Weapon))
+            {
+                __result = "Weapon has been built"; // This localized string is used as a notification on success, seems good enough for this too
+            }
         }
     }
 
