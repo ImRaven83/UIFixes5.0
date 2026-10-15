@@ -1,7 +1,7 @@
 using System.Reflection;
 using EFT.UI;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 
 namespace UIFixes;
 
@@ -27,20 +27,20 @@ public static class ServicesPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(ServiceListItem serviceItem, ref ServiceListItem ____selectedItem)
+        public static bool Prefix(ServicesListView __instance, ServiceListItem serviceItem)
         {
-            if (____selectedItem != null)
+            if (__instance._selectedItem != null)
             {
-                if (serviceItem == ____selectedItem)
+                if (serviceItem == __instance._selectedItem)
                 {
                     return false;
                 }
 
-                ____selectedItem.UpdateView(false);
+                __instance._selectedItem.UpdateView(false);
             }
 
             serviceItem.UpdateView(true);
-            ____selectedItem = serviceItem;
+            __instance._selectedItem = serviceItem;
 
             return false;
         }

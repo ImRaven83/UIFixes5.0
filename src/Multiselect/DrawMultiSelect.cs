@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Comfort.Common;
@@ -14,6 +14,8 @@ namespace UIFixes;
 
 public class DrawMultiSelect : MonoBehaviour
 {
+    public DrawMultiSelect(System.IntPtr pointer) : base(pointer) { }
+
     private Texture2D _selectTexture;
 
     private Vector3 _selectOrigin;

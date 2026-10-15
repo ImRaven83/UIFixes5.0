@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -10,7 +10,7 @@ using EFT.UI;
 using EFT.UI.DragAndDrop;
 using EFT.Utilities;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -42,42 +42,37 @@ public static class InspectWindowStatsPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(
-            ItemSpecificationPanel __instance,
-            Item ____item,
-            SimpleTooltip ____secondaryTooltip,
-            ref ViewList<ItemAttribute, CompactCharacteristicPanel> ____compactBarAttributeViewers,
-            ViewList<ItemAttribute, CompactCharacteristicDropdownPanel> ____createdCompatibleAttrivieViewers)
+        public static void Postfix(ItemSpecificationPanel __instance)
         {
-            if (!Settings.ShowModStats.Value || ____item is not Mod)
+            if (!Settings.ShowModStats.Value || __instance._item is not Mod)
             {
                 return;
             }
 
-            var deepAttributes = GetDeepAttributes(____item, out bool changed);
+            var deepAttributes = GetDeepAttributes(__instance._item, out bool changed);
             if (!changed)
             {
                 return;
             }
 
             // Clean up existing one
-            if (____compactBarAttributeViewers is IDisposable compactPanels)
+            if (__instance._compactBarAttributeViewers is IDisposable compactPanels)
             {
                 compactPanels.Dispose();
             }
 
-            ____compactBarAttributeViewers = new ViewList<ItemAttribute, CompactCharacteristicPanel>(
+            __instance._compactBarAttributeViewers = new ViewList<ItemAttribute, CompactCharacteristicPanel>(
                 deepAttributes,
                 __instance._compactCharTemplate,
                 __instance._compactPanel,
-                (attribute, viewer) => viewer.Show(attribute, ____secondaryTooltip, __instance.Examined, 100)); ;
+                (System.Action<ItemAttribute, CompactCharacteristicPanel>)((attribute, viewer) => viewer.Show(attribute, __instance._secondaryTooltip, __instance.Examined, 100))); ;
 
-            if (____compactBarAttributeViewers.Any())
+            if (__instance._compactBarAttributeViewers.Any())
             {
-                ____compactBarAttributeViewers.Last().Value.OnTextWidthCalculated += __instance.CompactItemTextCalculated;
-                int siblingIndex = ____compactBarAttributeViewers.Last().Value.Transform.GetSiblingIndex();
+                __instance._compactBarAttributeViewers.Last().Value.OnTextWidthCalculated += __instance.CompactItemTextCalculated;
+                int siblingIndex = __instance._compactBarAttributeViewers.Last().Value.Transform.GetSiblingIndex();
 
-                foreach (var item in ____createdCompatibleAttrivieViewers)
+                foreach (var item in __instance._createdCompatibleAttrivieViewers)
                 {
                     item.Value.Transform.SetSiblingIndex(++siblingIndex);
                 }
@@ -119,9 +114,9 @@ public static class InspectWindowStatsPatches
                 var itemAttributeClass = new ItemAttribute(EItemAttributeId.ArmorPoints)
                 {
                     Name = EItemAttributeId.ArmorPoints.GetName(),
-                    Base = () => maxDurability,
-                    StringValue = () => Math.Round(maxDurability, 1).ToString(CultureInfo.InvariantCulture),
-                    DisplayType = () => EItemAttributeDisplayType.Compact
+                    Base = (System.Func<float>)(() => maxDurability),
+                    StringValue = (System.Func<string>)(() => Math.Round(maxDurability, 1).ToString(CultureInfo.InvariantCulture)),
+                    DisplayType = (System.Func<EItemAttributeDisplayType>)(() => EItemAttributeDisplayType.Compact)
                 };
 
                 compareItem.Attributes.Insert(0, itemAttributeClass);
@@ -129,7 +124,7 @@ public static class InspectWindowStatsPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(ItemSpecificationPanel __instance, Item compareItem, ViewList<ItemAttribute, CompactCharacteristicPanel> ____compactBarAttributeViewers)
+        public static void Postfix(ItemSpecificationPanel __instance, Item compareItem)
         {
             if (!Settings.ShowModStats.Value || compareItem is not Mod)
             {
@@ -142,7 +137,7 @@ public static class InspectWindowStatsPatches
                 return;
             }
 
-            ItemSpecificationPanel.CG_Compare(____compactBarAttributeViewers, deepAttributes); // Updates attributes, name is due to be called from Compare
+            ItemSpecificationPanel.CG_Compare(__instance._compactBarAttributeViewers, deepAttributes); // Updates attributes, name is due to be called from Compare
         }
     }
 
@@ -159,9 +154,9 @@ public static class InspectWindowStatsPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(ItemSpecificationPanel __instance, ContextInteractions<EItemInfoButton> contextInteractions, Item ____item)
+        public static void Postfix(ItemSpecificationPanel __instance, ContextInteractions<EItemInfoButton> contextInteractions)
         {
-            if (____item is not Mod)
+            if (__instance._item is not Mod)
             {
                 return;
             }
@@ -189,7 +184,7 @@ public static class InspectWindowStatsPatches
             {
                 Sprite sprite = ResourcesCache.Pop<Sprite>("Characteristics/Icons/Modding");
                 toggleButton = (ContextMenuButton)UnityEngine.Object.Instantiate(buttonsContainer._buttonTemplate, buttonsContainer._buttonsContainer, false);
-                toggleButton.Show(GetLabel(), null, sprite, OnClick, null);
+                toggleButton.Show(GetLabel(), null, sprite, (System.Action)(OnClick), null);
                 toggleButton.transform.SetSiblingIndex(toggleButton.transform.GetSiblingIndex() - 1);
                 buttonsContainer.BindButton(toggleButton); // add to disposable list
             }
@@ -231,14 +226,8 @@ public static class InspectWindowStatsPatches
 
     public class FormatFullValuesPatch : ModulePatch
     {
-        private static MethodInfo RoundToIntMethod;
-        private static MethodInfo ToStringMethod;
-
         protected override MethodBase GetTargetMethod()
         {
-            RoundToIntMethod = AccessTools.Method(typeof(Mathf), nameof(Mathf.RoundToInt));
-            ToStringMethod = AccessTools.Method(typeof(float), nameof(float.ToString), [typeof(string)]);
-
             return AccessTools.Method(typeof(CharacteristicPanel), nameof(CharacteristicPanel.SetValues));
         }
 
@@ -247,6 +236,7 @@ public static class InspectWindowStatsPatches
         {
             try
             {
+                UnroundDelta(__instance, __instance.ValueText);
                 FormatText(__instance, __instance.ValueText, true);
             }
             catch (Exception ex)
@@ -255,46 +245,34 @@ public static class InspectWindowStatsPatches
             }
         }
 
-        // This transpiler looks for where it rounds a float to an int, and skips that. Instead it calls ToString("0.0#") on it
-        [PatchTranspiler]
-        public static IEnumerable<CodeInstruction> Transpile(IEnumerable<CodeInstruction> instructions)
+        // The game rounds the compare delta to an int (Mathf.RoundToInt). Transpilers can't touch il2cpp bodies,
+        // so find that rounded value in the text afterwards and swap in the unrounded one
+        private static void UnroundDelta(CharacteristicPanel panel, TextMeshProUGUI textMesh)
         {
-            int skip = 0;
-            CodeInstruction lastInstruction = null;
-            CodeInstruction currentInstruction = null;
-            foreach (var instruction in instructions)
+            ItemAttribute attribute = panel.ItemAttribute;
+            ItemAttribute compareAttribute = panel.CompareItemAttribute;
+            if (attribute == null || compareAttribute == null || textMesh == null)
             {
-                if (lastInstruction == null)
-                {
-                    lastInstruction = instruction;
-                    continue;
-                }
-
-                currentInstruction = instruction;
-
-                if (skip > 0)
-                {
-                    --skip;
-                }
-                else if (currentInstruction.Calls(RoundToIntMethod))
-                {
-                    yield return new CodeInstruction(OpCodes.Ldloca_S, 17);
-                    yield return new CodeInstruction(OpCodes.Ldstr, "0.0#");
-                    yield return new CodeInstruction(OpCodes.Call, ToStringMethod);
-                    skip = 4;
-                }
-                else
-                {
-                    yield return lastInstruction;
-                }
-
-                lastInstruction = instruction;
+                return;
             }
 
-            if (currentInstruction != null)
+            float delta = compareAttribute.Base() - attribute.Base();
+            int rounded = Mathf.RoundToInt(delta);
+
+            var matches = Regex.Matches(textMesh.text, @"\(([+-]?\d+)\)");
+            if (matches.Count == 0)
             {
-                yield return currentInstruction;
+                return;
             }
+
+            var match = matches[^1];
+            if (!int.TryParse(match.Groups[1].Value, out int shown) || shown != rounded)
+            {
+                return;
+            }
+
+            string sign = delta > 0 ? "+" : "";
+            textMesh.text = textMesh.text.Remove(match.Groups[1].Index, match.Groups[1].Length).Insert(match.Groups[1].Index, sign + delta.ToString("0.0#"));
         }
     }
 

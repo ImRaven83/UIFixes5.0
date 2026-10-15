@@ -1,7 +1,7 @@
-﻿using System.Reflection;
+using System.Reflection;
 using EFT.UI;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 using UnityEngine;
 
 namespace UIFixes;
@@ -26,7 +26,7 @@ public static class RememberRepairerPatches
         [PatchPostfix]
         public static void Postfix(RepairerParametersPanel __instance)
         {
-            __instance.R().UI.AddDisposable(__instance._tradersDropDown.OnValueChanged.Subscribe(index => PlayerPrefs.SetInt(PlayerPrefKey, index)));
+            __instance.R().UI.AddDisposable(__instance._tradersDropDown.OnValueChanged.Subscribe((System.Action<int>)(index => PlayerPrefs.SetInt(PlayerPrefKey, index))));
 
             if (PlayerPrefs.HasKey(PlayerPrefKey))
             {

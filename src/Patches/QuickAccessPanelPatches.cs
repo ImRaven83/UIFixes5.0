@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Bsg.GameSettings;
 using Comfort.Common;
 using EFT.InputSystem;
@@ -9,7 +9,7 @@ using EFT.UI;
 using EFT.UI.DragAndDrop;
 using EFT.UI.Settings;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -141,7 +141,7 @@ public static class QuickAccessPanelPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(QuickSlotItemView __instance, Image ___MainImage)
+        public static void Postfix(QuickSlotItemView __instance)
         {
             if (__instance.IconScale == null)
             {
@@ -152,10 +152,10 @@ public static class QuickAccessPanelPatches
             IntVec2 cellSize = __instance.Item.CalculateCellSize();
             if (cellSize.X == cellSize.Y)
             {
-                Transform transform = ___MainImage.transform;
+                Transform transform = __instance.MainImage.transform;
                 transform.localRotation = Quaternion.identity;
 
-                Vector3 size = ___MainImage.rectTransform.rect.size;
+                Vector3 size = __instance.MainImage.rectTransform.rect.size;
                 float xScale = __instance.IconScale.Value.x / Mathf.Abs(size.x);
                 float yScale = __instance.IconScale.Value.y / Mathf.Abs(size.y);
                 transform.localScale = Vector3.one * Mathf.Min(xScale, yScale);

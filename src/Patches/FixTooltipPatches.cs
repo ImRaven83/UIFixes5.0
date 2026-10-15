@@ -1,9 +1,9 @@
-﻿using System.Reflection;
+using System.Reflection;
 using EFT.InventoryLogic;
 using EFT.UI;
 using EFT.UI.DragAndDrop;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 using UnityEngine;
 
 namespace UIFixes;
@@ -78,7 +78,7 @@ public static class FixTooltipPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(GridItemView __instance, ItemUiContext ___ItemUiContext)
+        public static bool Prefix(GridItemView __instance)
         {
             var modSlotView = __instance.GetComponentInParent<ModSlotView>();
             if (modSlotView == null)
@@ -88,7 +88,7 @@ public static class FixTooltipPatches
 
             if (modSlotView.TryGetArmorSlot(out ArmorSlot armorSlot, out ArmorPlate armor))
             {
-                ___ItemUiContext.Tooltip.Show(ArmorPlatesFormatter.FormatArmorPlateTooltip(armor, armorSlot, modSlotView.R().TooltipData.Error), null, 0.6f, null);
+                __instance.ItemUiContext.Tooltip.Show(ArmorPlatesFormatter.FormatArmorPlateTooltip(armor, armorSlot, modSlotView.R().TooltipData.Error), null, 0.6f, null);
                 return false;
             }
 

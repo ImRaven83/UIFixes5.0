@@ -5,7 +5,7 @@ using EFT.InventoryLogic;
 using EFT.UI;
 using EFT.Utilities;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 using TMPro;
 using UnityEngine;
 
@@ -34,18 +34,18 @@ public static class StashSearchPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(TMP_InputField ____searchField)
+        public static void Postfix(StashSearchWindow __instance)
         {
-            ____searchField.GetOrAddComponent<SearchKeyListener>();
+            __instance._searchField.GetOrAddComponent<SearchKeyListener>();
 
             if (!string.IsNullOrEmpty(Query))
             {
-                ____searchField.text = Query;
+                __instance._searchField.text = Query;
                 Query = null;
             }
 
-            ____searchField.ActivateInputField();
-            ____searchField.Select();
+            __instance._searchField.ActivateInputField();
+            __instance._searchField.Select();
         }
     }
 
@@ -57,16 +57,16 @@ public static class StashSearchPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(ToggleEFT ____searchTab)
+        public static void Postfix(SimpleStashPanel __instance)
         {
-            if (____searchTab == null || Plugin.InRaid())
+            if (__instance._searchTab == null || Plugin.InRaid())
             {
                 return;
             }
 
-            SearchButton = ____searchTab;
+            SearchButton = __instance._searchTab;
 
-            var listener = ____searchTab.GetOrAddComponent<SearchKeyListener>();
+            var listener = __instance._searchTab.GetOrAddComponent<SearchKeyListener>();
             listener.Init(() =>
             {
                 if (Settings.StashSearchContextMenu.Value)

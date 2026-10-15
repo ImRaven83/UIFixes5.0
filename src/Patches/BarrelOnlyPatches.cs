@@ -1,3 +1,4 @@
+using SPTushonka.Reflection.Il2Cpp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,8 @@ using EFT;
 using EFT.InventoryLogic;
 using EFT.UI;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using Il2CppInterop.Runtime.Injection;
+using SPTushonka.Reflection.Patching;
 
 namespace UIFixes;
 
@@ -34,7 +36,7 @@ public static class BarrelOnlyPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(ItemController __instance, Weapon weapon, Ammo ammo, int ammoCount, ref Task<IResult> __result)
+        public static bool Prefix(ItemController __instance, Weapon weapon, Ammo ammo, int ammoCount, ref Il2CppSystem.Threading.Tasks.Task<IResult> __result)
         {
             if (InPatch || ammoCount < 1)
             {
@@ -53,24 +55,24 @@ public static class BarrelOnlyPatches
             Task task;
             if (ammoCount > 1)
             {
-                var taskSerializer = ItemUiContext.Instance.gameObject.AddComponent<LoadTaskSerializer>();
+                var taskSerializer = TaskSerializerBase.Create<LoadTaskSerializer>(ItemUiContext.Instance.gameObject);
 
                 // Pass in loadCount - 1 symbolically, in reality this will only ever load 1 at a time
                 task = taskSerializer.Initialize(
                     Enumerable.Range(0, ammoCount),
-                    i => __instance.LoadMultiBarrelWeapon(weapon, ammo, ammoCount - i));
+                    i => (__instance.LoadMultiBarrelWeapon(weapon, ammo, ammoCount - i)).AsManaged());
             }
             else
             {
                 // BSG doesn't handle 1 bullet correctly, and will have already moved the stack into the weapon
-                task = ammo.Parent.Container.ParentItem == weapon ? Task.CompletedTask : __instance.LoadMultiBarrelWeapon(weapon, ammo, 1);
+                task = ammo.Parent.Container.ParentItem == weapon ? Task.CompletedTask : __instance.LoadMultiBarrelWeapon(weapon, ammo, 1).AsManaged();
             }
 
             __result = task.ContinueWith(t =>
             {
                 InPatch = false;
                 return SuccessfulResult.New;
-            });
+            }).ToIl2Cpp();
 
             return false;
         }
@@ -171,7 +173,9 @@ public static class BarrelOnlyPatches
             return false;
         }
 
-        public class BarrelLoadAmmoInteractions : ContextInteractions<BarrelLoadAmmoInteractions.EMagInteraction>
+        // Injected into il2cpp (see Plugin.Load). The game's ContextInteractions<T> is generic and can't be subclassed from here,
+        // so this derives from BaseEmptyContextInteractions and only uses dynamic interactions.
+        public class BarrelLoadAmmoInteractions : BaseEmptyContextInteractions
         {
             public override bool HasIcons => false;
 
@@ -179,8 +183,14 @@ public static class BarrelOnlyPatches
             private readonly Weapon _weapon;
             private readonly ItemUiContext _itemUiContext;
 
-            public BarrelLoadAmmoInteractions(Weapon weapon, ItemUiContext itemUiContext) : base(itemUiContext)
+            public BarrelLoadAmmoInteractions(IntPtr pointer) : base(pointer) { }
+
+            public BarrelLoadAmmoInteractions(Weapon weapon, ItemUiContext itemUiContext)
+                : base(ClassInjector.DerivedConstructorPointer<BarrelLoadAmmoInteractions>())
             {
+                ClassInjector.DerivedConstructorBody(this);
+                ClassInjector.InvokeBaseConstructor(this, itemUiContext);
+
                 _weapon = weapon;
                 _itemUiContext = itemUiContext;
 
@@ -190,7 +200,12 @@ public static class BarrelOnlyPatches
                     string nameKey = ammoTemplateId + " Name";
                     string text = string.Format("<b><color=#C6C4B2>{0}</color> <color=#ADB8BC>({1})</color></b>", nameKey.Localized(), count);
 
-                    base.method_2(ammoTemplateId, text, () => LoadAmmo(ammoTemplateId).HandleExceptions(), null);
+                    AddDynamicInteraction(ammoTemplateId, text, (Action)(() => LoadAmmo(ammoTemplateId).HandleExceptions()));
+                }
+
+                if (!_foundAny)
+                {
+                    AddDynamicInteraction("UIFixesNoCompatibleAmmo", "NoCompatibleAmmo", null, null, null, "InventoryError/NoCompatibleAmmo");
                 }
             }
 
@@ -280,25 +295,6 @@ public static class BarrelOnlyPatches
 
                 return false;
             }
-
-            public override void ExecuteInteractionInternal(EMagInteraction interaction)
-            {
-            }
-
-            public override bool IsActive(EMagInteraction button)
-            {
-                return button == BarrelLoadAmmoInteractions.EMagInteraction.NoCompatibleAmmo && !_foundAny;
-            }
-
-            public override IResult IsInteractive(EMagInteraction button)
-            {
-                return new FailedResult("InventoryError/NoCompatibleAmmo", 0);
-            }
-
-            public enum EMagInteraction
-            {
-                NoCompatibleAmmo
-            }
         }
     }
 
@@ -310,7 +306,7 @@ public static class BarrelOnlyPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(ItemContext itemContext, ref Task __result, InventoryController ____inventoryController)
+        public static bool Prefix(ItemUiContext __instance, ItemContext itemContext, ref Il2CppSystem.Threading.Tasks.Task __result)
         {
             if (itemContext.Item is not Weapon weapon || weapon.ReloadMode != Weapon.EReloadMode.OnlyBarrel)
             {
@@ -319,10 +315,10 @@ public static class BarrelOnlyPatches
 
             var equipmentBlocked = itemContext.ViewType == EItemViewType.InventoryDuringMatching;
 
-            var taskSerializer = ItemUiContext.Instance.gameObject.AddComponent<UnloadChambersTaskSerializer>();
+            var taskSerializer = TaskSerializerBase.Create<UnloadChambersTaskSerializer>(ItemUiContext.Instance.gameObject);
             __result = taskSerializer.Initialize(
                 weapon.Chambers,
-                c => UnloadChamber(c, ____inventoryController, equipmentBlocked));
+                c => UnloadChamber(c, __instance._inventoryController, equipmentBlocked)).ToIl2Cpp();
 
             return false;
         }

@@ -1,11 +1,12 @@
-﻿using System;
+using System;
 using System.Linq;
 using BepInEx;
-using BepInEx.Bootstrap;
 using BepInEx.Logging;
+using BepInEx.Unity.IL2CPP;
 using Comfort.Common;
 using EFT;
 using TMPro;
+using SPTushonka.Reflection.Il2Cpp;
 using UnityEngine.EventSystems;
 
 namespace UIFixes;
@@ -14,25 +15,26 @@ namespace UIFixes;
 [BepInDependency("com.fika.core", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("xyz.pit.fireteam", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("com.lacyway.mc", BepInDependency.DependencyFlags.SoftDependency)]
-[BepInDependency("com.bepis.bepinex.configurationmanager", BepInDependency.DependencyFlags.HardDependency)]
-public class Plugin : BaseUnityPlugin
+[BepInDependency(ConfigManagerProxy.GUID, BepInDependency.DependencyFlags.SoftDependency)]
+public class Plugin : BasePlugin
 {
     public static Plugin Instance;
 
-    public new ManualLogSource Logger => base.Logger;
+    public ManualLogSource Logger => Log;
 
-    public void Awake()
+    public override void Load()
     {
         Instance = this;
+
+        // Every MonoBehaviour (and other il2cpp-derived type) in this assembly has to be registered before it can be used
+        Il2CppInjection.RegisterAll(typeof(Plugin).Assembly, Log);
+
+        // Needed for converting managed tasks back to il2cpp tasks; no-op if SPT already installed it
+        MainThread.Install(this);
 
         Settings.Init(Config);
 
         R.Init();
-
-        if (FikaPresent())
-        {
-            Fika.Sync.Init();
-        }
 
         NetworkTransactionWatcher.Enable();
         ConfirmDialogKeysPatches.Enable();
@@ -122,11 +124,8 @@ public class Plugin : BaseUnityPlugin
         new RotateKeybindPatch().Enable();
         new HideInviteUIPatch().Enable();
         ServicesPatches.Enable();
-    }
 
-    public void Start()
-    {
-        CheckForOldInterop();
+        IL2CPPChainloader.Instance.Finished += CheckForOldInterop;
     }
 
     public static bool InRaid()
@@ -144,7 +143,7 @@ public class Plugin : BaseUnityPlugin
 
     private void CheckForOldInterop()
     {
-        var pluginsWithOldDependency = Chainloader.PluginInfos.Values.Where(p => p.Dependencies.Any(d => d.DependencyGUID == "Tyfon.UIFixes"));
+        var pluginsWithOldDependency = IL2CPPChainloader.Instance.Plugins.Values.Where(p => p.Dependencies.Any(d => d.DependencyGUID == "Tyfon.UIFixes"));
         if (pluginsWithOldDependency.Any())
         {
             var names = string.Join(",", [.. pluginsWithOldDependency.Select(p => p.Metadata.Name)]);
@@ -159,7 +158,7 @@ public class Plugin : BaseUnityPlugin
     {
         if (!IsFikaPresent.HasValue)
         {
-            if (Chainloader.PluginInfos.TryGetValue("com.fika.core", out BepInEx.PluginInfo pluginInfo))
+            if (IL2CPPChainloader.Instance.Plugins.TryGetValue("com.fika.core", out BepInEx.PluginInfo pluginInfo))
             {
                 if (pluginInfo.Metadata.Version < MinimumFikaVersion)
                 {
@@ -183,7 +182,7 @@ public class Plugin : BaseUnityPlugin
     {
         if (!IsMergeConsumablesPresent.HasValue)
         {
-            IsMergeConsumablesPresent = Chainloader.PluginInfos.ContainsKey("com.lacyway.mc");
+            IsMergeConsumablesPresent = IL2CPPChainloader.Instance.Plugins.ContainsKey("com.lacyway.mc");
         }
 
         return IsMergeConsumablesPresent.Value;
@@ -195,7 +194,7 @@ public class Plugin : BaseUnityPlugin
     {
         if (!IsPITFireteamPresent.HasValue)
         {
-            IsPITFireteamPresent = Chainloader.PluginInfos.ContainsKey("xyz.pit.fireteam");
+            IsPITFireteamPresent = IL2CPPChainloader.Instance.Plugins.ContainsKey("xyz.pit.fireteam");
         }
 
         return IsPITFireteamPresent.Value;

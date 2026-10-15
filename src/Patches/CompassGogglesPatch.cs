@@ -3,7 +3,7 @@ using AnimationEventSystem;
 using EFT;
 using EFT.ItemInHandSubsystem;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 
 namespace UIFixes;
 
@@ -15,9 +15,9 @@ public class CompassGogglesPatch : ModulePatch
     }
 
     [PatchPrefix]
-    public static bool Prefix(Player __instance, ILeftHandController ____leftHandController)
+    public static bool Prefix(Player __instance)
     {
-        if (____leftHandController.IsUsing)
+        if (__instance._leftHandController.IsUsing)
         {
             __instance.RemoveLeftHandItem();
 
@@ -27,7 +27,7 @@ public class CompassGogglesPatch : ModulePatch
                 itemHandsController.SetCompassState(false);
             }
 
-            if (____leftHandController is LeftHandController leftHandController)
+            if (__instance._leftHandController is LeftHandController leftHandController)
             {
                 Continuation continuation = new(__instance, leftHandController);
                 leftHandController._events.OnActionEndedEvent += continuation.Continue;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,8 +7,8 @@ using EFT.InputSystem;
 using EFT.InventoryLogic;
 using EFT.UI;
 using HarmonyLib;
-using SPT.Reflection.Patching;
-using SPT.Reflection.Utils;
+using SPTushonka.Reflection.Patching;
+using SPTushonka.Reflection.Utils;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -44,9 +44,9 @@ public static class WindowPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(List<ItemUiContext.WindowData> ____windows)
+        public static void Postfix(ItemUiContext __instance)
         {
-            if (____windows.LastOrDefault() is ItemUiContext.WindowData windowData)
+            if (__instance._windows.LastOrDefault() is ItemUiContext.WindowData windowData)
             {
                 WindowManager.Instance.OnOpen(windowData);
             }
@@ -76,7 +76,7 @@ public static class WindowPatches
 
         // The actual work of showing the inventory is in a coroutine that runs ShowWithTab, so wrap it and run after
         [PatchPostfix]
-        public static void Postfix(ref IEnumerator __result, ItemContext ____itemContext)
+        public static void Postfix(InventoryScreen __instance, ref IEnumerator __result)
         {
             // Only restore windows out of raid
             if (Plugin.InRaid())
@@ -85,7 +85,7 @@ public static class WindowPatches
                 return;
             }
 
-            __result = PostfixEnumerator(__result, ____itemContext);
+            __result = PostfixEnumerator(__result, __instance._itemContext);
         }
 
         private static IEnumerator PostfixEnumerator(IEnumerator enumerator, ItemContext itemContext)

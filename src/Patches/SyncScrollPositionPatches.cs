@@ -1,8 +1,8 @@
-﻿using System.Reflection;
+using System.Reflection;
 using EFT.UI;
 using EFT.UI.Ragfair;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,13 +30,13 @@ public static class SyncScrollPositionPatches
             return;
         }
 
-        scrollRect.onValueChanged.RemoveListener(UpdateScrollPosition);
+        scrollRect.onValueChanged.RemoveListener((System.Action<UnityEngine.Vector2>)(UpdateScrollPosition));
 
-        scrollRect.WaitForEndOfFrame(() =>
+        scrollRect.WaitForEndOfFrame((System.Action)(() =>
         {
             scrollRect.verticalNormalizedPosition = StashScrollPosition;
-            scrollRect.onValueChanged.AddListener(UpdateScrollPosition);
-        });
+            scrollRect.onValueChanged.AddListener((System.Action<UnityEngine.Vector2>)(UpdateScrollPosition));
+        }));
     }
 
     public class SyncStashScrollPatch : ModulePatch

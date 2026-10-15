@@ -4,7 +4,7 @@ using EFT;
 using EFT.Quests;
 using EFT.UI;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 using UnityEngine;
 
 namespace UIFixes;
@@ -28,10 +28,10 @@ public static class QuestKeysPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(DefaultUIButton ____button)
+        public static void Postfix(QuestView __instance)
         {
-            var listener = ____button.GetOrAddComponent<ButtonListener>();
-            listener.Button = ____button;
+            var listener = __instance._button.GetOrAddComponent<ButtonListener>();
+            listener.Button = __instance._button;
         }
     }
 
@@ -55,7 +55,7 @@ public static class QuestKeysPatches
             if (ItemUiContext.Instance != null)
             {
                 RecentQuestStatuses[quest.Template.Id] = quest.QuestStatus;
-                ItemUiContext.Instance.WaitSeconds(1, () => RecentQuestStatuses.Remove(quest.Template.Id));
+                ItemUiContext.Instance.WaitSeconds(1, (System.Action)(() => RecentQuestStatuses.Remove(quest.Template.Id)));
             }
 
             return true;
@@ -64,6 +64,8 @@ public static class QuestKeysPatches
 
     private class ButtonListener : MonoBehaviour
     {
+        public ButtonListener(System.IntPtr pointer) : base(pointer) { }
+
         public DefaultUIButton Button { get; set; }
 
         public void Update()

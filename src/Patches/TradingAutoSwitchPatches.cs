@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Reflection;
 using Comfort.Common;
@@ -6,7 +6,7 @@ using EFT.Trading;
 using EFT.UI;
 using EFT.UI.DragAndDrop;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using static EFT.UI.TraderScreensGroup;
@@ -62,25 +62,19 @@ public static class TradingAutoSwitchPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(
-            TradingItemView __instance,
-            PointerEventData.InputButton button,
-            bool doubleClick,
-            ETradingItemViewType ____itemViewType,
-            Assortment ____traderAssortment,
-            bool ____canSelect)
+        public static bool Prefix(TradingItemView __instance, PointerEventData.InputButton button, bool doubleClick)
         {
             if (!Settings.AutoSwitchTrading.Value || SellTab == null || BuyTab == null)
             {
                 return true;
             }
 
-            if (____traderAssortment == null)
+            if (__instance._traderAssortment == null)
             {
                 return true;
             }
 
-            if (button != PointerEventData.InputButton.Left || ____itemViewType == ETradingItemViewType.TradingTable)
+            if (button != PointerEventData.InputButton.Left || __instance._itemViewType == ETradingItemViewType.TradingTable)
             {
                 return true;
             }
@@ -93,10 +87,10 @@ public static class TradingAutoSwitchPatches
 
             try
             {
-                if (!____canSelect && ctrlPressed)
+                if (!__instance._canSelect && ctrlPressed)
                 {
                     SellTab.OnPointerClick(null);
-                    if (____traderAssortment.QuickFindTradingAppropriatePlace(__instance.Item, null))
+                    if (__instance._traderAssortment.QuickFindTradingAppropriatePlace(__instance.Item, null))
                     {
                         __instance.ItemContext?.CloseDependentWindows();
                         __instance.HideTooltip();
@@ -106,10 +100,10 @@ public static class TradingAutoSwitchPatches
                     return false;
                 }
 
-                if (____canSelect)
+                if (__instance._canSelect)
                 {
                     BuyTab.OnPointerClick(null);
-                    ____traderAssortment.SelectItem(__instance.Item);
+                    __instance._traderAssortment.SelectItem(__instance.Item);
 
                     return false;
                 }
@@ -133,16 +127,16 @@ public static class TradingAutoSwitchPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(Trader ____trader)
+        public static void Postfix(TraderDealScreen __instance)
         {
-            if (____trader.CurrentAssortment == null)
+            if (__instance._trader.CurrentAssortment == null)
             {
                 return;
             }
 
             // Normally this is invoked on selected item change, etc. 
-            ____trader.CurrentAssortment.PreparedItemsChanged.Invoke();
-            ____trader.CurrentAssortment.PreparedSumChanged.Invoke();
+            __instance._trader.CurrentAssortment.PreparedItemsChanged.Invoke();
+            __instance._trader.CurrentAssortment.PreparedSumChanged.Invoke();
         }
     }
 
@@ -182,12 +176,12 @@ public static class TradingAutoSwitchPatches
         }
 
         [PatchPrefix]
-        public static void Postfix(TraderScreensGroup __instance, ref ETraderMode ____traderMode)
+        public static void Postfix(TraderScreensGroup __instance)
         {
             if (LastTraderMode != ETraderMode.Trade)
             {
-                ____traderMode = LastTraderMode;
-                __instance.SetMode(____traderMode);
+                __instance._traderMode = LastTraderMode;
+                __instance.SetMode(__instance._traderMode);
             }
         }
     }
@@ -200,10 +194,10 @@ public static class TradingAutoSwitchPatches
         }
 
         [PatchPrefix]
-        public static void Prefix(TraderScreensGroup __instance, ETraderMode ____traderMode)
+        public static void Prefix(TraderScreensGroup __instance)
         {
             LastTraderId = __instance.Trader.Id;
-            LastTraderMode = ____traderMode;
+            LastTraderMode = __instance._traderMode;
         }
     }
 }

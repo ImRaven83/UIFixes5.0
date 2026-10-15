@@ -1,15 +1,24 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Comfort.Common;
 using EFT.InventoryLogic;
 using EFT.UI;
 using EFT.UI.Ragfair;
+using Il2CppInterop.Runtime.Injection;
 
 namespace UIFixes;
 
-public class EmptySlotMenu(Slot slot, ItemContext itemContext, ItemUiContext itemUiContext, Action closeAction) : BaseItemContextInteractions(itemContext, itemUiContext, closeAction)
+// Injected into il2cpp (see Plugin.Load) so the game's context menu code sees these overrides
+public class EmptySlotMenu : BaseItemContextInteractions
 {
-    private static readonly List<EItemInfoButton> Actions = [EItemInfoButton.LinkedSearch];
+    private static readonly Il2CppSystem.Collections.Generic.List<EItemInfoButton> Actions = MakeActions();
+
+    private static Il2CppSystem.Collections.Generic.List<EItemInfoButton> MakeActions()
+    {
+        var actions = new Il2CppSystem.Collections.Generic.List<EItemInfoButton>();
+        actions.Add(EItemInfoButton.LinkedSearch);
+        return actions;
+    }
 
     private static readonly List<EItemUiContextType> AllowedContextTypes = [
         EItemUiContextType.TraderScreen,
@@ -18,9 +27,19 @@ public class EmptySlotMenu(Slot slot, ItemContext itemContext, ItemUiContext ite
         EItemUiContextType.Hideout,
         EItemUiContextType.TransferItemsScreen];
 
-    private readonly Slot _slot = slot;
+    private readonly Slot _slot;
 
-    public override IEnumerable<EItemInfoButton> AvailableInteractions => Actions;
+    public EmptySlotMenu(IntPtr pointer) : base(pointer) { }
+
+    public EmptySlotMenu(Slot slot, ItemContext itemContext, ItemUiContext itemUiContext, Action closeAction)
+        : base(ClassInjector.DerivedConstructorPointer<EmptySlotMenu>())
+    {
+        ClassInjector.DerivedConstructorBody(this);
+        ClassInjector.InvokeBaseConstructor(this, itemContext, itemUiContext, (Il2CppSystem.Action)closeAction);
+        _slot = slot;
+    }
+
+    public override Il2CppSystem.Collections.Generic.IEnumerable<EItemInfoButton> AvailableInteractions => Actions;
 
     public override void ExecuteInteractionInternal(EItemInfoButton interaction)
     {
@@ -68,8 +87,8 @@ public class EmptySlotMenu(Slot slot, ItemContext itemContext, ItemUiContext ite
     }
 
     // Base subscriptions to items redraws, but no item means not necessary (and pukes on mannequins)
-    public override Action SubscribeOnRedraw() => NoOp;
-    public override Action SubscribeOnClose() => NoOp;
+    public override Il2CppSystem.Action SubscribeOnRedraw() => (Action)NoOp;
+    public override Il2CppSystem.Action SubscribeOnClose() => (Action)NoOp;
 
     private static void NoOp() { }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Comfort.Common;
@@ -6,28 +6,45 @@ using Diz.Utils;
 using EFT.InventoryLogic;
 using EFT.UI;
 using EFT.UI.Insurance;
+using Il2CppInterop.Runtime.Injection;
 
 namespace UIFixes;
 
-public class InsuranceInteractions(IEnumerable<Item> items, ItemUiContext uiContext, int playerRubles) : ContextInteractions<InsuranceInteractions.EInsurers>(uiContext)
+// Injected into il2cpp (see Plugin.Load). The game's ContextInteractions<T> is generic and can't be subclassed from here,
+// so this derives from BaseEmptyContextInteractions and only uses dynamic interactions.
+public class InsuranceInteractions : BaseEmptyContextInteractions
 {
-    private readonly InsuranceCompany _insurance = uiContext.Session.InsuranceCompany;
-    private readonly List<Item> _items = [.. items];
+    private readonly InsuranceCompany _insurance;
+    private readonly List<Item> _items;
+    private readonly int playerRubles;
     private List<InsuredItem> _insurableItems;
     private readonly Dictionary<string, int> _prices = [];
 
+    public InsuranceInteractions(IntPtr pointer) : base(pointer) { }
+
     public InsuranceInteractions(Item item, ItemUiContext uiContext, int playerRubles) : this([item], uiContext, playerRubles) { }
+
+    public InsuranceInteractions(IEnumerable<Item> items, ItemUiContext uiContext, int playerRubles)
+        : base(ClassInjector.DerivedConstructorPointer<InsuranceInteractions>())
+    {
+        ClassInjector.DerivedConstructorBody(this);
+        ClassInjector.InvokeBaseConstructor(this, uiContext);
+
+        _insurance = uiContext.Session.InsuranceCompany;
+        _items = [.. items];
+        this.playerRubles = playerRubles;
+    }
 
     public void LoadAsync(Action callback)
     {
-        IEnumerable<InsuredItem> insuranceItems = _items.Select(InsuredItem.FindOrCreate);
-        _insurableItems = insuranceItems.SelectMany(_insurance.GetItemChildren)
-            .Flatten(_insurance.GetItemChildren)
+        IEnumerable<InsuredItem> insuranceItems = _items.Select(InsuredItem.FindOrCreate).ToList();
+        _insurableItems = insuranceItems.SelectMany(i => _insurance.GetItemChildren(i))
+            .FlattenManaged(i => _insurance.GetItemChildren(i))
             .Concat(insuranceItems)
             .Where(i => _insurance.ItemTypeAvailableForInsurance(i) && !_insurance.InsuredItems.Contains(i))
             .ToList();
 
-        _insurance.GetInsurePriceAsync(_insurableItems, _ =>
+        _insurance.GetInsurePriceAsync(_insurableItems.ToI(System.Action<Il2CppReferenceArray<InsuredItem>>)(l2CppList()), (Action<Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<InsuredItem>>)(_ =>
         {
             foreach (var insurer in _insurance.Insurers)
             {
@@ -38,17 +55,22 @@ public class InsuranceInteractions(IEnumerable<Item> items, ItemUiContext uiCont
 
                 string text = string.Format("<b><color=#C6C4B2>{0}</color> <color={1}>({2} ₽)</color></b>", insurer.LocalizedName, priceColor, price);
 
-                base.method_2(MakeInteractionId(insurer.Id), text, () => this.Insure(insurer.Id));
+                AddDynamicInteraction(MakeInteractionId(insurer.Id), text, (Action)(() => Insure(insurer.Id)));
+            }
+
+            if (!_insurance.Insurers.Any())
+            {
+                AddDynamicInteraction(NoneInteractionId, "None", null, null, null, "No insurers?");
             }
 
             callback();
-        });
+        }));
     }
 
     private void Insure(string insurerId)
     {
         _insurance.SelectedInsurerId = insurerId;
-        _insurance.InsureItems(_insurableItems, result => { });
+        _insurance.InsureItems(_insurableItems.ToIl2Cpp(System.Action<Comfort.Common.IResult>)(List()), (Action<IResult>)(result => { }));
     }
 
     public IResult GetButtonInteraction(string interactionId)
@@ -62,29 +84,13 @@ public class InsuranceInteractions(IEnumerable<Item> items, ItemUiContext uiCont
         return SuccessfulResult.New;
     }
 
-    public override void ExecuteInteractionInternal(EInsurers interaction)
-    {
-    }
-
-    public override bool IsActive(EInsurers button)
-    {
-        return button == EInsurers.None && !_insurance.Insurers.Any();
-    }
-
-    public override IResult IsInteractive(EInsurers button)
-    {
-        return new FailedResult("No insurers?", 0);
-    }
-
     public override bool HasIcons
     {
         get { return false; }
     }
 
-    public enum EInsurers
-    {
-        None
-    }
+    private const string NoneInteractionId = "UIFixesInsurerNone";
+
     private static string MakeInteractionId(string traderId)
     {
         return "UIFixesInsurerId:" + traderId;

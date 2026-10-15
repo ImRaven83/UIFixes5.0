@@ -3,7 +3,7 @@ using EFT.InventoryLogic;
 using EFT.UI;
 using EFT.UI.DragAndDrop;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 
 namespace UIFixes;
 
@@ -23,12 +23,12 @@ public static class QuickMovePreviewPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(ItemView __instance, ItemController ___ItemController, ItemUiContext ___ItemUiContext)
+        public static void Postfix(ItemView __instance)
         {
             var previewer = __instance.GetOrAddComponent<QuickMovePreview>();
             if (previewer != null)
             {
-                previewer.Init(__instance.ItemContext, ___ItemController, ___ItemUiContext);
+                previewer.Init(__instance.ItemContext, __instance.ItemController, __instance.ItemUiContext);
             }
         }
     }

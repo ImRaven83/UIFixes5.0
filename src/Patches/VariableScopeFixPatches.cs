@@ -5,7 +5,7 @@ using System.Reflection.Emit;
 using EFT;
 using EFT.CameraControl;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 using UnityEngine;
 
 namespace UIFixes;
@@ -19,7 +19,6 @@ public static class VariableScopeFixPatches
         {
             new FirearmsUpdateModsPatch().Enable();
             new FirearmsValidateScopeSmoothZoomPatch().Enable();
-            new PlayerCameraLateUpdateTranspiler().Enable();
             new OpticRetriceUpdateTransformPatch().Enable();
         }
     }
@@ -58,25 +57,6 @@ public static class VariableScopeFixPatches
         public static bool Prefix(Firearms __instance)
         {
             return __instance.Player == null || __instance.Player.IsYourPlayer;
-        }
-    }
-
-    public class PlayerCameraLateUpdateTranspiler : ModulePatch
-    {
-        protected override MethodBase GetTargetMethod()
-        {
-            return typeof(PlayerCameraController).GetMethod(nameof(PlayerCameraController.LateUpdate));
-        }
-
-        [PatchTranspiler]
-        public static IEnumerable<CodeInstruction> Transpile(IEnumerable<CodeInstruction> instructions)
-        {
-            List<CodeInstruction> newInstructions = [.. instructions];
-            for (int i = 11; i < newInstructions.Count; i++)
-            {
-                newInstructions[i].opcode = OpCodes.Ret;
-            }
-            return newInstructions;
         }
     }
 

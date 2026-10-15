@@ -8,8 +8,8 @@ using EFT.InventoryLogic;
 using EFT.UI;
 using EFT.UI.DragAndDrop;
 using HarmonyLib;
-using SPT.Reflection.Patching;
-using SPT.Reflection.Utils;
+using SPTushonka.Reflection.Patching;
+using SPTushonka.Reflection.Utils;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -40,7 +40,7 @@ public static class TagPatches
         [PatchPostfix]
         public static void Postfix(EditTagWindow __instance)
         {
-            __instance._tagInput.onSubmit.AddListener(value => __instance.Save());
+            __instance._tagInput.onSubmit.AddListener((System.Action<string>)(value => __instance.Save()));
             __instance._tagInput.ActivateInputField();
             __instance._tagInput.Select();
         }

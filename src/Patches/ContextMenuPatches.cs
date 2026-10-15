@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -13,7 +13,8 @@ using EFT.UI.DragAndDrop;
 using EFT.UI.Insurance;
 using EFT.UI.Ragfair;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using Il2CppInterop.Runtime.Injection;
+using SPTushonka.Reflection.Patching;
 using TMPro;
 using UnityEngine;
 
@@ -68,7 +69,7 @@ public static class ContextMenuPatches
         // The way this detects the action is not great, the caption matching the enum string.
         // But it's all I have at this point without doing a lot more work.
         [PatchPostfix]
-        public static void Postfix(string caption, TextMeshProUGUI ____text)
+        public static void Postfix(ContextMenuButton __instance, string caption)
         {
             if (MultiSelect.Count < 1)
             {
@@ -134,7 +135,7 @@ public static class ContextMenuPatches
 
             if (count > 0)
             {
-                ____text.text += " (x" + count + ")";
+                __instance._text.text += " (x" + count + ")";
             }
         }
     }
@@ -503,7 +504,7 @@ public static class ContextMenuPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(SlotView __instance, bool fullSlot, ItemUiContext ___ItemUiContext)
+        public static void Postfix(SlotView __instance, bool fullSlot)
         {
             if (!Settings.EnableSlotSearch.Value || fullSlot)
             {
@@ -511,7 +512,7 @@ public static class ContextMenuPatches
             }
 
             EmptySlotMenuTrigger menuTrigger = __instance.GetOrAddComponent<EmptySlotMenuTrigger>();
-            menuTrigger.Init(__instance.Slot, __instance.ParentItemContext, ___ItemUiContext);
+            menuTrigger.Init(__instance.Slot, __instance.ParentItemContext, __instance.ItemUiContext);
         }
     }
 
@@ -557,14 +558,14 @@ public static class ContextMenuPatches
         {
             return AccessTools.Method(
                 typeof(InteractionButtonsContainer),
-                nameof(InteractionButtonsContainer.SetSubInteractions)).MakeGenericMethod([typeof(InsuranceInteractions.EInsurers)]);
+                nameof(InteractionButtonsContainer.SetSubInteractions)).MakeGenericMethod([typeof(BaseEmptyContextInteractions.EEmptyEnum)]);
         }
 
         // Existing logic tries to place it on the right, moving to the left if necessary. They didn't do it correctly, so it always goes on the left.
         [PatchPostfix]
-        public static void Postfix(SimpleContextMenuButton ____subMenuButton, SimpleContextMenu ____subMenu)
+        public static void Postfix(InteractionButtonsContainer __instance)
         {
-            PositionContextMenuFlyout(____subMenuButton, ____subMenu);
+            PositionContextMenuFlyout(__instance._subMenuButton, __instance._subMenu);
         }
     }
 
@@ -576,12 +577,7 @@ public static class ContextMenuPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(
-            ItemUiContext __instance,
-            ItemContext itemContext,
-            Vector2 position,
-            ItemController ____itemController,
-            Dictionary<EItemInfoButton, string> ____contextMenuCustomNames)
+        public static bool Prefix(ItemUiContext __instance, ItemContext itemContext, Vector2 position)
         {
             if (!Settings.ContextMenuWhileSearching.Value)
             {
@@ -589,7 +585,7 @@ public static class ContextMenuPatches
             }
 
             // Default impl would have skipped this. Do it anyway
-            if (____itemController.SearchController is IPlayerSearchController playerSearchController && playerSearchController.SearchOperations.Any())
+            if (__instance._itemController.SearchController is IPlayerSearchController playerSearchController && playerSearchController.SearchOperations.Any())
             {
                 var wrappedInstance = __instance.R();
                 wrappedInstance.ItemInfoInteractions = __instance.GetItemContextInteractions(itemContext, null);
@@ -600,11 +596,11 @@ public static class ContextMenuPatches
                     RagFair ragFair = __instance.Session.RagFair;
                     if (ragFair != null && ragFair.Available)
                     {
-                        ____contextMenuCustomNames[EItemInfoButton.AddOffer] = string.Format("AddOfferButton{0}/{1}".Localized(null), ragFair.MyOffersCount, ragFair.MaxOffersCount);
+                        __instance._contextMenuCustomNames[EItemInfoButton.AddOffer] = string.Format("AddOfferButton{0}/{1}".Localized(null), ragFair.MyOffersCount, ragFair.MaxOffersCount);
                     }
                 }
 
-                __instance.ContextMenu.Show(position, wrappedInstance.ItemInfoInteractions, ____contextMenuCustomNames, itemContext.Item);
+                __instance.ContextMenu.Show(position, wrappedInstance.ItemInfoInteractions, __instance._contextMenuCustomNames, itemContext.Item);
                 return false;
             }
 
@@ -616,27 +612,43 @@ public static class ContextMenuPatches
     {
         protected override MethodBase GetTargetMethod()
         {
-            var moddingContextOptions = ModdingContextInteractions._interactions as List<EItemInfoButton>;
-            moddingContextOptions.Add(EItemInfoButton.AddToWishlist);
+            var moddingContextOptions = ModdingContextInteractions._interactions.TryCast<Il2CppSystem.Collections.Generic.List<EItemInfoButton>>();
+            moddingContextOptions?.Add(EItemInfoButton.AddToWishlist);
 
             return AccessTools.Method(typeof(ModdingSelectableItemContext), nameof(ModdingSelectableItemContext.GetItemContextInteractions));
         }
 
         [PatchPrefix]
-        public static bool Prefix(ModdingSelectableItemContext __instance, Action closeAction, ref ContextInteractions<EItemInfoButton> __result)
+        public static bool Prefix(ModdingSelectableItemContext __instance, Il2CppSystem.Action closeAction, ref ContextInteractions<EItemInfoButton> __result)
         {
             __result = new ExtraModdingItemInteractions(__instance, ItemUiContext.Instance, closeAction);
             return false;
         }
 
-        public class ExtraModdingItemInteractions(ModdingSelectableItemContext itemContext, ItemUiContext itemUiContext, Action closeAction)
-            : ModdingContextInteractions(itemContext, itemUiContext, closeAction)
+        // Injected into il2cpp (see Plugin.Load) so the game's context menu code sees these overrides
+        public class ExtraModdingItemInteractions : ModdingContextInteractions
         {
-            public override IEnumerable<EItemInfoButton> SubInteractions
+            public ExtraModdingItemInteractions(IntPtr pointer) : base(pointer) { }
+
+            public ExtraModdingItemInteractions(ModdingSelectableItemContext itemContext, ItemUiContext itemUiContext, Il2CppSystem.Action closeAction)
+                : base(ClassInjector.DerivedConstructorPointer<ExtraModdingItemInteractions>())
+            {
+                ClassInjector.DerivedConstructorBody(this);
+                ClassInjector.InvokeBaseConstructor(this, itemContext, itemUiContext, closeAction);
+            }
+
+            public override Il2CppSystem.Collections.Generic.IEnumerable<EItemInfoButton> SubInteractions
             {
                 get
                 {
-                    return base.SubInteractions.Append(EItemInfoButton.AddToWishlist);
+                    var result = new Il2CppSystem.Collections.Generic.List<EItemInfoButton>();
+                    foreach (var interaction in base.SubInteractions)
+                    {
+                        result.Add(interaction);
+                    }
+
+                    result.Add(EItemInfoButton.AddToWishlist);
+                    return result;
                 }
             }
 
@@ -664,9 +676,9 @@ public static class ContextMenuPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(ContextMenuButton __instance, TextMeshProUGUI ____text)
+        public static void Postfix(ContextMenuButton __instance)
         {
-            __instance.R().UI.AddDisposable(Settings.ContextMenuFontSize.Bind(fontSize => ____text.fontSize = fontSize));
+            __instance.R().UI.AddDisposable(Settings.ContextMenuFontSize.Bind(fontSize => __instance._text.fontSize = fontSize));
         }
     }
 

@@ -1,8 +1,8 @@
-﻿using System.Reflection;
+using System.Reflection;
 using EFT.UI;
 using EFT.UI.Ragfair;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -33,7 +33,7 @@ public static class ConfirmDialogKeysPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(object __instance, bool ____availableToAccept)
+        public static void Postfix(object __instance)
         {
             var instance = new R.DialogWindow(__instance);
 
@@ -43,7 +43,7 @@ public static class ConfirmDialogKeysPatches
                 return;
             }
 
-            if (!____availableToAccept)
+            if (!__instance._availableToAccept)
             {
                 return;
             }
@@ -65,13 +65,13 @@ public static class ConfirmDialogKeysPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(ItemUiContext __instance, SplitDialog ____splitDialog)
+        public static void Postfix(ItemUiContext __instance)
         {
             if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Space))
             {
-                if (____splitDialog != null && ____splitDialog.gameObject.activeSelf)
+                if (__instance._splitDialog != null && __instance._splitDialog.gameObject.activeSelf)
                 {
-                    ____splitDialog.Accept();
+                    __instance._splitDialog.Accept();
                     return;
                 }
 
@@ -111,9 +111,9 @@ public static class ConfirmDialogKeysPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(AddOfferWindow __instance, InteractableElement ____addOfferButton)
+        public static void Postfix(AddOfferWindow __instance)
         {
-            if (!____addOfferButton.isActiveAndEnabled || !____addOfferButton.Interactable)
+            if (!__instance._addOfferButton.isActiveAndEnabled || !__instance._addOfferButton.Interactable)
             {
                 return;
             }
@@ -148,7 +148,7 @@ public static class ConfirmDialogKeysPatches
             if (button != null)
             {
                 button.transition = Selectable.Transition.None;
-                button.onClick.AddListener(__instance.Close);
+                button.onClick.AddListener((System.Action)(__instance.Close));
                 __instance.R().UI.AddDisposable(button.onClick.RemoveAllListeners);
             }
         }
@@ -203,7 +203,7 @@ public static class ConfirmDialogKeysPatches
             if (button != null)
             {
                 button.transition = Selectable.Transition.None;
-                button.onClick.AddListener(__instance.Close);
+                button.onClick.AddListener((System.Action)(__instance.Close));
                 __instance.R().UI.AddDisposable(button.onClick.RemoveAllListeners);
             }
         }
@@ -231,7 +231,7 @@ public static class ConfirmDialogKeysPatches
             if (button != null)
             {
                 button.transition = Selectable.Transition.None;
-                button.onClick.AddListener(__instance.CloseSilent);
+                button.onClick.AddListener((System.Action)(__instance.CloseSilent));
                 __instance.R().UI.AddDisposable(button.onClick.RemoveAllListeners);
             }
         }

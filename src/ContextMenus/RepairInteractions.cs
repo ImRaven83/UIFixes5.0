@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -8,24 +8,33 @@ using EFT.Communications;
 using EFT.InventoryLogic;
 using EFT.Repairing;
 using EFT.UI;
+using Il2CppInterop.Runtime.Injection;
 
 namespace UIFixes;
 
-public class RepairInteractions : ContextInteractions<RepairInteractions.ERepairers>
+// Injected into il2cpp (see Plugin.Load). The game's ContextInteractions<T> is generic and can't be subclassed from here,
+// so this derives from BaseEmptyContextInteractions and only uses dynamic interactions.
+public class RepairInteractions : BaseEmptyContextInteractions
 {
     private readonly RepairController _repairController;
     private readonly int _playerRubles;
     private readonly IEnumerable<IRepairStrategy> _repairStrategies;
     private readonly IEnumerable<IRepairer> _repairers;
 
+    public RepairInteractions(IntPtr pointer) : base(pointer) { }
+
     public RepairInteractions(Item item, ItemUiContext uiContext, int playerRubles) : this([item], uiContext, playerRubles) { }
 
-    public RepairInteractions(IEnumerable<Item> items, ItemUiContext uiContext, int playerRubles) : base(uiContext)
+    public RepairInteractions(IEnumerable<Item> items, ItemUiContext uiContext, int playerRubles)
+        : base(ClassInjector.DerivedConstructorPointer<RepairInteractions>())
     {
+        ClassInjector.DerivedConstructorBody(this);
+        ClassInjector.InvokeBaseConstructor(this, uiContext);
+
         _repairController = uiContext.Session.RepairController;
 
         // Add empty action because otherwise it's null and it pukes on successful repair
-        _repairController.OnSuccessfulRepairChangedEvent += () => { };
+        _repairController.OnSuccessfulRepairChangedEvent += (Action)(() => { });
 
         _playerRubles = playerRubles;
 
@@ -40,6 +49,11 @@ public class RepairInteractions : ContextInteractions<RepairInteractions.ERepair
 
     private void Load()
     {
+        if (!_repairController.TraderRepairers.Any())
+        {
+            AddDynamicInteraction(NoneInteractionId, "None", null, null, null, "No repairers?");
+        }
+
         foreach (IRepairer repairer in _repairers)
         {
             double totalKitAmount = 0f;
@@ -98,7 +112,7 @@ public class RepairInteractions : ContextInteractions<RepairInteractions.ERepair
                 dedupedText = text + string.Format("<b><color=#C6C4B2> #{0}</color></b>", dupeCount);
             }
 
-            base.method_2(MakeInteractionId(repairer.RepairerId), dedupedText, () => this.Repair(repairer.RepairerId));
+            AddDynamicInteraction(MakeInteractionId(repairer.RepairerId), dedupedText, (Action)(() => Repair(repairer.RepairerId)));
         }
     }
 
@@ -215,29 +229,13 @@ public class RepairInteractions : ContextInteractions<RepairInteractions.ERepair
         return SuccessfulResult.New;
     }
 
-    public override void ExecuteInteractionInternal(ERepairers interaction)
-    {
-    }
-
-    public override bool IsActive(ERepairers button)
-    {
-        return button == ERepairers.None && !_repairController.TraderRepairers.Any();
-    }
-
-    public override IResult IsInteractive(ERepairers button)
-    {
-        return new FailedResult("No repairers?", 0);
-    }
-
     public override bool HasIcons
     {
         get { return false; }
     }
 
-    public enum ERepairers
-    {
-        None
-    }
+    private const string NoneInteractionId = "UIFixesRepairerNone";
+
     private static string MakeInteractionId(string traderId)
     {
         return "UIFixesRepairerId:" + traderId;

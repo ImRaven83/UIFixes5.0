@@ -6,6 +6,8 @@ namespace UIFixes;
 
 public class InputRepeater : MonoBehaviour
 {
+    public InputRepeater(System.IntPtr pointer) : base(pointer) { }
+
     private EGameKey _gameKey;
     private Func<bool> _retry;
     private float _timer = 0f;

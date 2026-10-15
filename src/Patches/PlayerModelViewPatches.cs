@@ -2,7 +2,7 @@ using System.Reflection;
 using EFT.UI;
 using EFT.Utilities;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -29,18 +29,14 @@ public static class PlayerModelViewPatches
         private const float MAX_Y = 1f;
 
         [PatchPrefix]
-        public static bool Prefix(
-            InventoryPlayerModelWithStatsWindow __instance,
-            PlayerModelView ____playerModelView,
-            XCoordRotation ____rotator,
-            DragTrigger ____dragTrigger)
+        public static bool Prefix(InventoryPlayerModelWithStatsWindow __instance)
         {
-            if (!____playerModelView)
+            if (!__instance._playerModelView)
             {
                 return true;
             }
 
-            if (!TryGetCamera(____playerModelView, out var camera))
+            if (!TryGetCamera(__instance._playerModelView, out var camera))
             {
                 return true;
             }
@@ -49,21 +45,21 @@ public static class PlayerModelViewPatches
             camera.nearClipPlane = 0.01f;
             cameraTransform.localPosition = new(-0.0001f, -0.2f, 0.49f);
 
-            ____rotator.Init(____playerModelView.ModelPlayerPoser.transform);
+            __instance._rotator.Init(__instance._playerModelView.ModelPlayerPoser.transform);
 
-            var scrollTrigger = ____dragTrigger.gameObject.GetOrAddComponent<ScrollTrigger>();
+            var scrollTrigger = __instance._dragTrigger.gameObject.GetOrAddComponent<ScrollTrigger>();
 
             void OnDrag(PointerEventData eventData) => RotatePanCamera(eventData, __instance, cameraTransform);
             void OnOnScroll(PointerEventData eventData) => ZoomCamera(eventData, cameraTransform);
 
-            ____dragTrigger.onDrag += OnDrag;
+            __instance._dragTrigger.onDrag += OnDrag;
             scrollTrigger.OnOnScroll += OnOnScroll;
 
             // When clothes change, this screen doesn't get closed but the player view does.
             // Cleaning up the handlers on the model's cleanup prevents them from piling up
-            ____playerModelView.R().UI.AddDisposable(() =>
+            __instance._playerModelView.R().UI.AddDisposable(() =>
             {
-                ____dragTrigger.onDrag -= OnDrag;
+                __instance._dragTrigger.onDrag -= OnDrag;
                 scrollTrigger.OnOnScroll -= OnOnScroll;
             });
 

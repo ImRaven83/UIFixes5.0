@@ -7,7 +7,7 @@ using EFT.Builds;
 using EFT.InventoryLogic;
 using EFT.UI;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 
 namespace UIFixes;
 
@@ -134,7 +134,7 @@ public static class InternalMagPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(ItemUiContext __instance, ItemContext itemContext, InventoryController ____inventoryController)
+        public static void Postfix(ItemUiContext __instance, ItemContext itemContext)
         {
             if (itemContext.Item is not Weapon weapon || !weapon.SupportsInternalReload)
             {
@@ -149,7 +149,7 @@ public static class InternalMagPatches
 
             var equipmentBlocked = itemContext.ViewType == EItemViewType.InventoryDuringMatching;
 
-            __instance.WaitOneFrame(() => BarrelOnlyPatches.UnloadAmmoPatch.UnloadChamber(chamber, ____inventoryController, equipmentBlocked).HandleExceptions());
+            __instance.WaitOneFrame(() => BarrelOnlyPatches.UnloadAmmoPatch.UnloadChamber(chamber, __instance._inventoryController, equipmentBlocked).HandleExceptions());
         }
     }
 }

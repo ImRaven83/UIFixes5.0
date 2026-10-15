@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Comfort.Common;
 using EFT.InventoryLogic;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 
 namespace UIFixes;
 
@@ -30,14 +30,14 @@ public class NetworkTransactionWatcher : IDisposable
     }
 
     private Callback _innerCallback;
-    private readonly TaskCompletionSource _source = new();
+    private readonly System.Threading.Tasks.TaskCompletionSource _source = new();
 
     public Task Task => _source.Task;
 
     protected void Watch(ref Callback callback)
     {
         _innerCallback = callback;
-        callback = Callback;
+        callback = (Action<IResult>)Callback;
     }
 
     public bool Started()
@@ -62,7 +62,7 @@ public class NetworkTransactionWatcher : IDisposable
     private void Callback(IResult result)
     {
         _innerCallback?.Invoke(result);
-        _source.TryComplete();
+        _source.TrySetResult();
     }
 
     public class NetworkTransactionPatch : ModulePatch

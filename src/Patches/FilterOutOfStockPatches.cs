@@ -7,7 +7,7 @@ using EFT.InventoryLogic;
 using EFT.UI;
 using EFT.UI.DragAndDrop;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -49,9 +49,9 @@ public static class FilterOutOfStockPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(TraderDealScreen __instance, DefaultUIButton ____updateAssort, TradingGridView ____traderGridView)
+        public static void Postfix(TraderDealScreen __instance)
         {
-            OutOfStockPanel = new GameObject("OutOfStockPanel", [typeof(RectTransform)]);
+            OutOfStockPanel = new GameObject("OutOfStockPanel", [typeof(RectTransform).Il2CppType()]);
             OutOfStockPanel.transform.SetParent(__instance.transform.Find("Left Person/Possessions Grid"), false);
             OutOfStockPanel.transform.SetAsLastSibling();
             OutOfStockPanel.SetActive(true);
@@ -76,7 +76,7 @@ public static class FilterOutOfStockPatches
             check.RectTransform().sizeDelta = new Vector2(13f, 12f);
             check.gameObject.SetActive(ShowOutOfStockItems);
 
-            LocalizedText text = UnityEngine.Object.Instantiate(____updateAssort.transform.Find("TextWhite").GetComponent<LocalizedText>(), OutOfStockPanel.transform, false);
+            LocalizedText text = UnityEngine.Object.Instantiate(__instance._updateAssort.transform.Find("TextWhite").GetComponent<LocalizedText>(), OutOfStockPanel.transform, false);
             text._stringCase = EStringCase.Upper;
             text.LocalizationKey = "OUT OF STOCK";
 
@@ -89,15 +89,15 @@ public static class FilterOutOfStockPatches
 
             Button button = OutOfStockPanel.AddComponent<Button>();
             button.navigation = new Navigation() { mode = Navigation.Mode.None };
-            button.onClick.AddListener(() =>
+            button.onClick.AddListener((System.Action)(() =>
             {
                 ShowOutOfStockItems = !ShowOutOfStockItems;
                 check.gameObject.SetActive(ShowOutOfStockItems);
 
                 Singleton<GUISounds>.Instance.PlayUISound(EUISoundType.ButtonOver);
-                ____traderGridView.ApplyFilterAndRefresh(); // Refreshes the grid
-                ____traderGridView.InvokeFilterChanged(); // Resets scrolling position, which has the necessary side effect of refreshing what the scrollview is masking
-            });
+                __instance._traderGridView.ApplyFilterAndRefresh(); // Refreshes the grid
+                __instance._traderGridView.InvokeFilterChanged(); // Resets scrolling position, which has the necessary side effect of refreshing what the scrollview is masking
+            }));
         }
     }
 

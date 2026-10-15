@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -10,8 +10,8 @@ using EFT.InventoryLogic;
 using EFT.UI;
 using EFT.UI.DragAndDrop;
 using HarmonyLib;
-using SPT.Reflection.Patching;
-using SPT.Reflection.Utils;
+using SPTushonka.Reflection.Patching;
+using SPTushonka.Reflection.Utils;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -222,21 +222,17 @@ public static class SwapPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(
-            DraggedItemView __instance,
-            IContainerView ____currentContainerUnderCursor,
-            ItemContext ____currentTargetItemContext,
-            ItemUiContext ____uiContext)
+        public static void Postfix(DraggedItemView __instance)
         {
             if (DidForceSwapChange())
             {
-                ____uiContext.CheckCompatibleItems(); // Rerun highlighting
-                if (____currentContainerUnderCursor != null)
+                __instance._uiContext.CheckCompatibleItems(); // Rerun highlighting
+                if (__instance._currentContainerUnderCursor != null)
                 {
                     // Clear tooltip since the following won't
-                    ____uiContext.Tooltip.Close();
-                    ____currentContainerUnderCursor.HighlightItemViewPosition(__instance.ItemContext, ____currentTargetItemContext, false);
-                    UpdateSwapHighlight(__instance, ____currentContainerUnderCursor, ____currentTargetItemContext);
+                    __instance._uiContext.Tooltip.Close();
+                    __instance._currentContainerUnderCursor.HighlightItemViewPosition(__instance.ItemContext, __instance._currentTargetItemContext, false);
+                    UpdateSwapHighlight(__instance, __instance._currentContainerUnderCursor, __instance._currentTargetItemContext);
                 }
             }
         }
@@ -251,18 +247,12 @@ public static class SwapPatches
 
         // Prefix so the throttling logic works
         [PatchPrefix]
-        public static void Prefix(
-            DraggedItemView __instance,
-            IContainerView containerUnderCursor,
-            ItemContext itemUnderCursor,
-            IContainerView ____currentContainerUnderCursor,
-            ItemContext ____currentTargetItemContext,
-            LocationInGrid ____currentLocationInGrid)
+        public static void Prefix(DraggedItemView __instance, IContainerView containerUnderCursor, ItemContext itemUnderCursor)
         {
             // Copy logic to avoid running unless pointer location changes
             GridView gridView = containerUnderCursor as GridView;
             LocationInGrid locationInGrid = gridView != null ? gridView.CalculateItemLocation(__instance.ItemContext) : null;
-            if (containerUnderCursor == ____currentContainerUnderCursor && itemUnderCursor == ____currentTargetItemContext && locationInGrid == ____currentLocationInGrid)
+            if (containerUnderCursor == __instance._currentContainerUnderCursor && itemUnderCursor == __instance._currentTargetItemContext && locationInGrid == __instance._currentLocationInGrid)
             {
                 return;
             }
@@ -461,18 +451,11 @@ public static class SwapPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(
-            GridView __instance,
-            DragItemContext itemContext,
-            ItemContext targetItemContext,
-            ref OperationResult operation,
-            ref bool __result,
-            Dictionary<string, ItemView> ___ItemViews,
-            ItemController ____itemController)
+        public static bool Prefix(GridView __instance, DragItemContext itemContext, ItemContext targetItemContext, ref OperationResult operation, ref bool __result)
         {
             if (IsForceSwapPressed())
             {
-                __result = CanSwap(__instance, itemContext, targetItemContext, ____itemController, ref operation, ___ItemViews, true);
+                __result = CanSwap(__instance, itemContext, targetItemContext, __instance._itemController, ref operation, __instance.ItemViews, true);
                 return false;
             }
 
@@ -480,17 +463,10 @@ public static class SwapPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(
-            GridView __instance,
-            DragItemContext itemContext,
-            ItemContext targetItemContext,
-            ref OperationResult operation,
-            ref bool __result,
-            Dictionary<string, ItemView> ___ItemViews,
-            ItemController ____itemController)
+        public static void Postfix(GridView __instance, DragItemContext itemContext, ItemContext targetItemContext, ref OperationResult operation, ref bool __result)
         {
             // Unsure if this runs when the prefix returns false, so only do anything if !force
-            if (!IsForceSwapPressed() && CanSwap(__instance, itemContext, targetItemContext, ____itemController, ref operation, ___ItemViews, false))
+            if (!IsForceSwapPressed() && CanSwap(__instance, itemContext, targetItemContext, __instance._itemController, ref operation, __instance.ItemViews, false))
             {
                 __result = true;
             }
@@ -890,11 +866,11 @@ public static class SwapPatches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(ItemManipulator.CG_QuickFindAppropriatePlace), nameof(ItemManipulator.CG_QuickFindAppropriatePlace.method_1));
+            return AccessTools.Method(typeof(ItemManipulator.__c__DisplayClass3_0), nameof(ItemManipulator.__c__DisplayClass3_0.Method_Internal_OperationResult_1_IItemOperationResult_IEnumerable_1_IContainer_PDM_0));
         }
 
         [PatchPostfix]
-        public static void Postfix(ItemManipulator.CG_QuickFindAppropriatePlace __instance, IEnumerable<IContainer> containersToPut, ref OperationResult<IItemOperationResult> __result)
+        public static void Postfix(ItemManipulator.__c__DisplayClass3_0 __instance, IEnumerable<IContainer> containersToPut, ref OperationResult<IItemOperationResult> __result)
         {
             if (!containersToPut.Any(c => c is Grid) && __result.Error == __instance.noSpaceError)
             {

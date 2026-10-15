@@ -10,7 +10,7 @@ using EFT.InventoryLogic;
 using EFT.UI;
 using EFT.UI.DragAndDrop;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 using UnityEngine;
 
 namespace UIFixes;
@@ -283,7 +283,7 @@ public static class WeaponModdingPatches
 
             InPatch = true;
 
-            __instance.RunNetworkTransaction(extraOperation, extraResult =>
+            __instance.RunNetworkTransaction(extraOperation, (System.Action<Comfort.Common.IResult>)(extraResult =>
             {
                 if (extraResult.Failed)
                 {
@@ -293,7 +293,7 @@ public static class WeaponModdingPatches
                     return;
                 }
 
-                ItemUiContext.Instance.WaitOneFrame(() => __instance.RunNetworkTransaction(operationResult, result =>
+                ItemUiContext.Instance.WaitOneFrame((System.Action)(() => __instance.RunNetworkTransaction(operationResult, (System.Action<Comfort.Common.IResult>)(result =>
                 {
                     InPatch = false;
                     callback?.Invoke(result);
@@ -314,8 +314,8 @@ public static class WeaponModdingPatches
                         moddingScreen.WeaponUpdate();
                         return;
                     }
-                }));
-            });
+                }))));
+            }));
 
             return false;
         }
@@ -408,7 +408,7 @@ public static class WeaponModdingPatches
 
         // Enable context menu on normally unmoddable slots, maybe keep them gray
         [PatchPostfix]
-        public static void Postfix(ModSlotView __instance, ref bool ____locked, CanvasGroup ____canvasGroup, ItemController ___ItemController)
+        public static void Postfix(ModSlotView __instance)
         {
             if (__instance.Slot.Locked)
             {
@@ -423,9 +423,9 @@ public static class WeaponModdingPatches
             }
 
             // Keep it grayed out and warning text if its not draggable, even if context menu is enabled
-            if (CanModify(__instance.Slot.ContainedItem, ___ItemController as InventoryController, out _))
+            if (CanModify(__instance.Slot.ContainedItem, __instance.ItemController as InventoryController, out _))
             {
-                ____locked = false;
+                __instance._locked = false;
                 __instance._canvasGroup.alpha = 1f;
             }
 
@@ -662,11 +662,11 @@ public static class WeaponModdingPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(Slot slot, ref KeyValuePair<EModLockedState, ModSlotView.TooltipData> __result, ItemController ____itemController)
+        public static void Postfix(ItemSpecificationPanel __instance, Slot slot, ref KeyValuePair<EModLockedState, ModSlotView.TooltipData> __result)
         {
             if (__result.Value.Error == "<color=red>" + "Raid lock".Localized() + "</color>")
             {
-                if (CanModify(slot, ____itemController as InventoryController, out string error))
+                if (CanModify(slot, __instance._itemController as InventoryController, out string error))
                 {
                     __result = new(EModLockedState.Unlocked, new()
                     {
@@ -856,7 +856,7 @@ public static class WeaponModdingPatches
 
         // BSG's implemention uses a lazy-eval linq that doesn't see mods that are nested once the higher level mod is removed
         [PatchPrefix]
-        public static bool Prefix(ItemUiContext __instance, ItemContext itemContext, bool simulate, ref List<OperationResult> __result, ItemController ____itemController)
+        public static bool Prefix(ItemUiContext __instance, ItemContext itemContext, bool simulate, ref List<OperationResult> __result)
         {
             if (!Settings.FullyDisassemble.Value)
             {
@@ -873,7 +873,7 @@ public static class WeaponModdingPatches
             foreach (Mod mod in weapon.Mods.Where(__instance.CG_DisassembleOperationsList).ToArray()) // ToArray copies the list so it's set
             {
                 ItemContext itemContextAbstractClass = itemContext.CreateChild(mod);
-                OperationResult operation = __instance.QuickFindAppropriatePlace(itemContextAbstractClass, ____itemController, !Plugin.InRaid(), false, false);
+                OperationResult operation = __instance.QuickFindAppropriatePlace(itemContextAbstractClass, __instance._itemController, !Plugin.InRaid(), false, false);
                 if (operation.Succeeded)
                 {
                     operations.Add(operation);
@@ -942,12 +942,12 @@ public static class WeaponModdingPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(ref string __result, Item ___Item, ItemContext ____itemContext, Item ____itemBody)
+        public static void Postfix(EditBuildScreen __instance, ref string __result)
         {
-            List<Mod> installedMods = WeaponAssembler.GetInstalledMods(____itemBody as Weapon);
+            List<Mod> installedMods = WeaponAssembler.GetInstalledMods(__instance._itemBody as Weapon);
 
             // Due to when this is called, Item may not be set yet, but I can still grab it through the parent class's context
-            var item = ___Item ?? ____itemContext.Item;
+            var item = __instance.Item ?? __instance._itemContext.Item;
 
             if (WeaponAssembler.CheckIfAlreadyBuilt(installedMods, item as Weapon))
             {

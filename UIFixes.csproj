@@ -1,59 +1,64 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="Shared.props" />
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <AssemblyName>Tyfon.UIFixes</AssemblyName>
     <Description>SPT UI Fixes</Description>
     <SPTModType>Client</SPTModType>
     <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
 
   <PropertyGroup>
-    <DefaultItemExcludes>$(DefaultItemExcludes);UIFixes.Test\**;UIFixes.Net\**;UIFixes.Server\**</DefaultItemExcludes>
+    <DefaultItemExcludes>$(DefaultItemExcludes);UIFixes.Test\**;UIFixes.Server\**;libs\**</DefaultItemExcludes>
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="spt-common" />
-    <Reference Include="spt-reflection" />
-    <Reference Include="AnimationSystem.Types" />
-    <Reference Include="Assembly-CSharp" />
-    <Reference Include="Comfort" />
-    <Reference Include="Comfort.Unity" />
-    <Reference Include="CommonExtensions" />
-    <Reference Include="ConfigurationManager" />
-    <Reference Include="Fika.Core" />
-    <Reference Include="ItemComponent.Types" />
-    <Reference Include="Newtonsoft.Json" />
-    <Reference Include="Sirenix.Serialization" />
-    <Reference Include="Unity.TextMeshPro" />
-    <Reference Include="UnityEngine" />
-    <Reference Include="UnityEngine.AnimationModule" />
-    <Reference Include="UnityEngine.CoreModule" />
-    <Reference Include="UnityEngine.IMGUIModule" />
-    <Reference Include="UnityEngine.InputLegacyModule" />
-    <Reference Include="UnityEngine.TextRenderingModule" />
-    <Reference Include="UnityEngine.UI" />
-    <Reference Include="UnityEngine.UIModule" />
-    <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
-    <PackageReference Include="BepInEx.Core" Version="5.*" />
-    <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2"
-      PrivateAssets="all" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="UIFixes.Net\UIFixes.Net.csproj" />
+    <Reference Include="SPTushonka.Common" Private="false" />
+    <Reference Include="SPTushonka.Reflection" Private="false" />
+    <Reference Include="0Harmony" Private="false" />
+    <Reference Include="BepInEx.Core" Private="false" />
+    <Reference Include="BepInEx.Unity.Common" Private="false" />
+    <Reference Include="BepInEx.Unity.IL2CPP" Private="false" />
+    <Reference Include="SemanticVersioning" Private="false" />
+    <Reference Include="Il2CppInterop.Common" Private="false" />
+    <Reference Include="Il2CppInterop.Runtime" Private="false" />
+    <Reference Include="Il2Cppmscorlib" Private="false" />
+    <Reference Include="Il2CppSystem" Private="false" />
+    <Reference Include="AnimationSystem.Types" Private="false" />
+    <Reference Include="Assembly-CSharp" Private="false" />
+    <Reference Include="Assembly-CSharp-firstpass" Private="false" />
+    <Reference Include="Comfort" Private="false" />
+    <Reference Include="Comfort.Unity" Private="false" />
+    <Reference Include="CommonExtensions" Private="false" />
+    <Reference Include="CoreServices" Private="false" />
+    <Reference Include="Diz.Binding" Private="false" />
+    <Reference Include="Diz.Jobs" Private="false" />
+    <Reference Include="Diz.Resources" Private="false" />
+    <Reference Include="Utils" Private="false" />
+    <Reference Include="BSG.GameSettings" Private="false" />
+    <Reference Include="ItemComponent.Types" Private="false" />
+    <Reference Include="ItemTemplate.Types" Private="false" />
+    <Reference Include="Newtonsoft.Json" Private="false" />
+    <Reference Include="Sirenix.Serialization" Private="false" />
+    <Reference Include="Unity.TextMeshPro" Private="false" />
+    <Reference Include="UnityEngine" Private="false" />
+    <Reference Include="UnityEngine.AnimationModule" Private="false" />
+    <Reference Include="UnityEngine.CoreModule" Private="false" />
+    <Reference Include="UnityEngine.IMGUIModule" Private="false" />
+    <Reference Include="UnityEngine.InputLegacyModule" Private="false" />
+    <Reference Include="UnityEngine.TextRenderingModule" Private="false" />
+    <Reference Include="UnityEngine.UI" Private="false" />
+    <Reference Include="UnityEngine.UIModule" Private="false" />
+    <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" PrivateAssets="all" />
   </ItemGroup>
 
   <Target Name="PostBuildRelease" AfterTargets="PostBuildEvent"
-    Condition="'$(Configuration)'=='Release'">
+    Condition="'$(Configuration)'=='Release' And '$(OS)'=='Windows_NT'">
     <Exec
       Command='7z a -tzip dist\$(TargetName.Replace(".", "-"))-$(Version).zip $(SolutionDir)dist\BepInEx $(SolutionDir)dist\SPT_Runtime' />
   </Target>

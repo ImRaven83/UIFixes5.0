@@ -4,7 +4,7 @@ using EFT;
 using EFT.Hideout;
 using EFT.UI;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 using UnityEngine;
 
 namespace UIFixes;
@@ -25,11 +25,11 @@ public static class RemoveAdsPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(GameObject ____externalObtainIcon)
+        public static void Postfix(SimpleStashPanel __instance)
         {
-            if (____externalObtainIcon != null)
+            if (__instance._externalObtainIcon != null)
             {
-                ____externalObtainIcon.SetActive(false);
+                __instance._externalObtainIcon.SetActive(false);
             }
         }
     }
@@ -42,9 +42,9 @@ public static class RemoveAdsPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(Dictionary<EAreaType, GameObject> ____additionalInfo)
+        public static void Postfix(InteractionPanel __instance)
         {
-            ____additionalInfo[EAreaType.Stash].SetActive(false);
+            __instance._additionalInfo[EAreaType.Stash].SetActive(false);
         }
     }
 }

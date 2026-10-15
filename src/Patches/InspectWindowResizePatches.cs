@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using EFT.InputSystem;
 using EFT.InventoryLogic;
 using EFT.UI;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -44,17 +44,17 @@ internal static class InspectWindowResizePatches
         }
 
         [PatchPostfix]
-        public static void Postfix(LayoutElement ____stretchableObject)
+        public static void Postfix(StretchArea __instance)
         {
-            if (!Settings.RememberInspectSize.Value || ____stretchableObject.GetComponent<ItemSpecificationPanel>() == null)
+            if (!Settings.RememberInspectSize.Value || __instance._stretchableObject.GetComponent<ItemSpecificationPanel>() == null)
             {
                 return;
             }
 
-            SavedPreferredWidth = ____stretchableObject.preferredWidth;
-            SavedPreferredHeight = ____stretchableObject.preferredHeight;
+            SavedPreferredWidth = __instance._stretchableObject.preferredWidth;
+            SavedPreferredHeight = __instance._stretchableObject.preferredHeight;
 
-            Button resizeButton = ____stretchableObject.transform.Find("Inner/Caption Panel/Restore")?.GetComponent<Button>();
+            Button resizeButton = __instance._stretchableObject.transform.Find("Inner/Caption Panel/Restore")?.GetComponent<Button>();
             if (resizeButton != null && !resizeButton.IsActive())
             {
                 resizeButton.gameObject.SetActive(true);
@@ -70,16 +70,16 @@ internal static class InspectWindowResizePatches
         }
 
         [PatchPrefix]
-        public static void Prefix(LayoutElement ____layoutElement)
+        public static void Prefix(ItemSpecificationPanel __instance)
         {
             if (Settings.RememberInspectSize.Value)
             {
-                RestoreSavedSize(____layoutElement);
+                RestoreSavedSize(__instance._layoutElement);
             }
         }
 
         [PatchPostfix]
-        public static void Postfix(ItemSpecificationPanel __instance, LayoutElement ____layoutElement, ItemUiContext ____itemUiContext)
+        public static void Postfix(ItemSpecificationPanel __instance)
         {
             if (Settings.LockInspectPreviewSize.Value)
             {
@@ -93,7 +93,7 @@ internal static class InspectWindowResizePatches
             if (ButtonBackground == null)
             {
                 // Steal the background image fom gridwindow sort
-                ButtonBackground = ____itemUiContext._gridWindowTemplate._sortPanel._button.image;
+                ButtonBackground = __instance._itemUiContext._gridWindowTemplate._sortPanel._button.image;
             }
 
             Button closeButton = __instance.transform.Find("Inner/Caption Panel/Close Button")?.GetComponent<Button>();
@@ -101,7 +101,7 @@ internal static class InspectWindowResizePatches
             {
                 CreateRightButton(__instance, closeButton);
                 CreateLeftButton(__instance, closeButton);
-                CreateRestoreButton(__instance, ____layoutElement, closeButton);
+                CreateRestoreButton(__instance, __instance._layoutElement, closeButton);
             }
         }
 
@@ -150,7 +150,7 @@ internal static class InspectWindowResizePatches
 
                 StretchDescription(inspectLayout);
             });
-            inspectPanel.AddDisposable(() => restoreButton.onClick.RemoveAllListeners());
+            inspectPanel.AddDisposable((System.Action)(() => restoreButton.onClick.RemoveAllListeners()));
         }
 
         private static void CreateLeftButton(ItemSpecificationPanel inspectPanel, Button template)
@@ -171,8 +171,8 @@ internal static class InspectWindowResizePatches
             leftImage.overrideSprite = null;
             leftImage.SetNativeSize();
 
-            leftButton.onClick.AddListener(() => SnapLeft(inspectPanel));
-            inspectPanel.AddDisposable(() => leftButton.onClick.RemoveAllListeners());
+            leftButton.onClick.AddListener((System.Action)(() => SnapLeft(inspectPanel)));
+            inspectPanel.AddDisposable((System.Action)(() => leftButton.onClick.RemoveAllListeners()));
         }
 
         private static void CreateRightButton(ItemSpecificationPanel inspectPanel, Button template)
@@ -194,8 +194,8 @@ internal static class InspectWindowResizePatches
             rightImage.overrideSprite = null;
             rightImage.SetNativeSize();
 
-            rightButton.onClick.AddListener(() => SnapRight(inspectPanel));
-            inspectPanel.AddDisposable(() => rightButton.onClick.RemoveAllListeners());
+            rightButton.onClick.AddListener((System.Action)(() => SnapRight(inspectPanel)));
+            inspectPanel.AddDisposable((System.Action)(() => rightButton.onClick.RemoveAllListeners()));
         }
 
         // Informed by StretchArea.OnDrag
@@ -250,9 +250,9 @@ internal static class InspectWindowResizePatches
         }
 
         [PatchPostfix]
-        public static void Postfix(List<InputNode> ____children)
+        public static void Postfix(ItemUiContext __instance)
         {
-            var inspectWindow = ____children.Last();
+            var inspectWindow = __instance._children.Last();
             if (inspectWindow != null)
             {
                 StretchDescription(inspectWindow.GetComponent<LayoutElement>());

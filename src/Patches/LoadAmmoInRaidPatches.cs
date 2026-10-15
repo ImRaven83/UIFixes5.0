@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using SPTushonka.Reflection.Il2Cpp;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -7,7 +8,7 @@ using EFT.InventoryLogic;
 using EFT.UI;
 using EFT.UI.DragAndDrop;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 
 namespace UIFixes;
 
@@ -54,14 +55,14 @@ public class LoadAmmoInRaidPatches
 
         // This code is a mix of ItemUiContext.LoadAmmoByType, but then switching over to GridView.AcceptItem
         [PatchPrefix]
-        public static bool Prefix(ItemUiContext __instance, Magazine magazine, string ammoTemplateId, InventoryController ____inventoryController, ref Task __result)
+        public static bool Prefix(ItemUiContext __instance, Magazine magazine, string ammoTemplateId, ref Il2CppSystem.Threading.Tasks.Task __result)
         {
             if (!Plugin.InRaid() || !Settings.EnableLoadAmmoInRaid.Value)
             {
                 return true;
             }
 
-            InventoryEquipment equipment = ____inventoryController.Inventory.Equipment;
+            InventoryEquipment equipment = __instance._inventoryController.Inventory.Equipment;
 
             List<Ammo> ammo = [];
             equipment.GetAllAssembledItems(ammo);
@@ -75,11 +76,11 @@ public class LoadAmmoInRaidPatches
             if (bullets != null)
             {
                 int count = GridView.CG_smethod_0(magazine, bullets);
-                __result = ____inventoryController.LoadMagazine(bullets, magazine, count, false);
+                __result = __instance._inventoryController.LoadMagazine(bullets, magazine, count, false);
             }
             else
             {
-                __result = Task.CompletedTask;
+                __result = Task.CompletedTask.ToIl2Cpp();
             }
 
             return false;

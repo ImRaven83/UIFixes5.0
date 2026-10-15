@@ -1,4 +1,5 @@
-﻿using System;
+using SPTushonka.Reflection.Il2Cpp;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -7,7 +8,7 @@ using Comfort.Common;
 using EFT.InventoryLogic;
 using EFT.UI;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 
 namespace UIFixes;
 
@@ -67,7 +68,7 @@ public static class UnloadAmmoPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(InventoryController __instance, Magazine magazine, bool equipmentBlocked, ref Task<IResult> __result)
+        public static bool Prefix(InventoryController __instance, Magazine magazine, bool equipmentBlocked, ref Il2CppSystem.Threading.Tasks.Task<IResult> __result)
         {
             if (ItemUiContext.Instance.ContextType != EItemUiContextType.ScavengerInventoryScreen)
             {

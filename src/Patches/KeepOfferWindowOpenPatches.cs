@@ -1,7 +1,7 @@
-﻿using System.Reflection;
+using System.Reflection;
 using EFT.UI.Ragfair;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 
 namespace UIFixes;
 
@@ -24,7 +24,7 @@ public static class KeepOfferWindowOpenPatches
         }
 
         [PatchPrefix]
-        public static void Prefix(AddOfferWindow __instance, RagFair ____ragfair)
+        public static void Prefix(AddOfferWindow __instance)
         {
             if (!Settings.KeepAddOfferOpen.Value)
             {
@@ -32,7 +32,7 @@ public static class KeepOfferWindowOpenPatches
             }
 
             // Close the window if you're gonna hit max offers
-            if (Settings.KeepAddOfferOpenIgnoreMaxOffers.Value || ____ragfair.MyOffersCount + 1 < ____ragfair.GetMaxOffersCount(____ragfair.MyRating))
+            if (Settings.KeepAddOfferOpenIgnoreMaxOffers.Value || __instance._ragfair.MyOffersCount + 1 < __instance._ragfair.GetMaxOffersCount(__instance._ragfair.MyRating))
             {
                 BlockClose = true;
             }

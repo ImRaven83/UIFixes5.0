@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using BepInEx;
-using BepInEx.Bootstrap;
+using BepInEx.Unity.IL2CPP;
 using EFT.InventoryLogic;
 using EFT.UI;
 using HarmonyLib;
@@ -41,7 +41,7 @@ namespace UIFixesInterop
     /// </summary>
     internal static class MultiSelect
     {
-        private static readonly Version RequiredVersion = new Version(6, 0);
+        private static readonly SemanticVersioning.Version RequiredVersion = new(7, 0, 0);
 
         private static bool? UIFixesLoaded;
 
@@ -121,7 +121,7 @@ namespace UIFixesInterop
         {
             if (!UIFixesLoaded.HasValue)
             {
-                bool present = Chainloader.PluginInfos.TryGetValue("com.tyfon.uifixes", out PluginInfo pluginInfo);
+                bool present = IL2CPPChainloader.Instance.Plugins.TryGetValue("com.tyfon.uifixes", out PluginInfo pluginInfo);
                 UIFixesLoaded = present && pluginInfo.Metadata.Version >= RequiredVersion;
 
                 if (UIFixesLoaded.Value)

@@ -1,8 +1,8 @@
-﻿using System.Reflection;
+using System.Reflection;
 using EFT.Trading;
 using EFT.UI;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 using TMPro;
 using UnityEngine.EventSystems;
 
@@ -42,7 +42,7 @@ public static class TradeQuantityPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(BarterSchemePanel __instance, Assortment ____traderAssortment)
+        public static void Postfix(BarterSchemePanel __instance)
         {
             FocusFleaOfferNumberPatches.AllButtonKeybind allKeybind = __instance.GetOrAddComponent<FocusFleaOfferNumberPatches.AllButtonKeybind>();
             allKeybind.Init(() =>
@@ -50,7 +50,7 @@ public static class TradeQuantityPatches
                 if (EventSystem.current?.currentSelectedGameObject != null &&
                     EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() == __instance._quantity)
                 {
-                    ____traderAssortment.CurrentQuantity = ____traderAssortment.SelectedItem.StackObjectsCount;
+                    __instance._traderAssortment.CurrentQuantity = __instance._traderAssortment.SelectedItem.StackObjectsCount;
                     __instance._quantity.MoveTextEnd(false);
                 }
             });

@@ -1,13 +1,56 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
 namespace UIFixes;
 
-public class TaskSerializerBase : MonoBehaviour
+// Generic MonoBehaviours can't be injected into il2cpp, so the serializers are plain managed objects
+// driven by a single non-generic runner component
+public class TaskSerializerRunner : MonoBehaviour
+{
+    public TaskSerializerRunner(IntPtr pointer) : base(pointer) { }
+
+    public TaskSerializerBase Serializer;
+
+    public void LateUpdate()
+    {
+        Serializer?.LateUpdate();
+    }
+
+    public void OnDisable()
+    {
+        Serializer?.OnDisable();
+    }
+}
+
+public abstract class TaskSerializerBase
 {
     protected static int GlobalDepth = 0;
+
+    private TaskSerializerRunner _runner;
+
+    public static T Create<T>(GameObject gameObject) where T : TaskSerializerBase, new()
+    {
+        T serializer = new();
+        serializer._runner = gameObject.AddComponent<TaskSerializerRunner>();
+        serializer._runner.Serializer = serializer;
+        return serializer;
+    }
+
+    public abstract void LateUpdate();
+
+    public abstract void OnDisable();
+
+    protected void DestroyRunner()
+    {
+        if (_runner != null)
+        {
+            _runner.Serializer = null;
+            UnityEngine.Object.Destroy(_runner);
+            _runner = null;
+        }
+    }
 }
 
 public class TaskSerializer<T, TaskT> : TaskSerializerBase
@@ -17,7 +60,7 @@ public class TaskSerializer<T, TaskT> : TaskSerializerBase
     private Func<T, TaskT, bool> _canContinue;
     private IEnumerator<T> _enumerator;
     private Task<TaskT> _currentTask;
-    private TaskCompletionSource _totalTask;
+    private System.Threading.Tasks.TaskCompletionSource _totalTask;
 
     public Task Initialize(IEnumerable<T> items, Func<T, Task<TaskT>> func, Func<T, TaskT, bool> canContinue = null)
     {
@@ -26,7 +69,7 @@ public class TaskSerializer<T, TaskT> : TaskSerializerBase
         _canContinue = canContinue;
 
         _currentTask = null;
-        _totalTask = new TaskCompletionSource();
+        _totalTask = new System.Threading.Tasks.TaskCompletionSource();
 
         ++GlobalDepth;
         _depth = GlobalDepth;
@@ -45,12 +88,12 @@ public class TaskSerializer<T, TaskT> : TaskSerializerBase
         }
     }
 
-    public void OnDisable()
+    public override void OnDisable()
     {
         Cancel();
     }
 
-    public void LateUpdate()
+    public override void LateUpdate()
     {
         if (_totalTask.Task.IsCompleted)
         {
@@ -94,10 +137,10 @@ public class TaskSerializer<T, TaskT> : TaskSerializerBase
 
     private void Complete()
     {
-        _totalTask.TryComplete();
+        _totalTask.TrySetResult();
         --GlobalDepth;
         _func = null;
-        Destroy(this);
+        DestroyRunner();
     }
 }
 

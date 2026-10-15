@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
-using BepInEx.Bootstrap;
 using BepInEx.Configuration;
+using BepInEx.Unity.IL2CPP.Configuration;
 using UnityEngine;
 
 namespace UIFixes;
@@ -191,14 +191,14 @@ internal partial class Settings
         return AllConfigs.Where(c => c.IsSynced());
     }
 
-    public static ConfigurationManager.ConfigurationManager ConfigManager { get; set; }
+    public static ConfigManagerProxy ConfigManager { get; set; }
 
     // Categories
     public static void Init(ConfigFile config)
     {
         var configEntries = AllConfigs;
 
-        ConfigManager = Chainloader.PluginInfos["com.bepis.bepinex.configurationmanager"].Instance as ConfigurationManager.ConfigurationManager;
+        ConfigManager = new ConfigManagerProxy();
 
         // Interface
         configEntries.Add(KeepMessagesOpen = config.Bind(

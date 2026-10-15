@@ -6,7 +6,7 @@ using EFT.InventoryLogic;
 using EFT.UI;
 using EFT.UI.DragAndDrop;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,7 +18,6 @@ public static class GridHighlightPatches
     {
         new NoFitOutlinePatch().Enable();
         new HideNoFitOutlinePatch().Enable();
-        new SilencePixelPerfectSpriteScalerPatch().Enable();
     }
 
     public class NoFitOutlinePatch : ModulePatch
@@ -31,7 +30,7 @@ public static class GridHighlightPatches
         }
 
         [PatchPostfix]
-        public static void PatchPostfix(GridView __instance, DragItemContext itemContext, bool preview, Color ___InvalidOperationColor)
+        public static void PatchPostfix(GridView __instance, DragItemContext itemContext, bool preview)
         {
             if (!Settings.NoFitBorder.Value || preview)
             {
@@ -39,7 +38,7 @@ public static class GridHighlightPatches
             }
 
             var border = __instance.transform.Find("NoFitBorder")?.gameObject;
-            if (!__instance._highlightPanel.IsActive() || __instance._highlightPanel.color != ___InvalidOperationColor)
+            if (!__instance._highlightPanel.IsActive() || __instance._highlightPanel.color != __instance.InvalidOperationColor)
             {
                 if (border != null)
                 {
@@ -138,42 +137,6 @@ public static class GridHighlightPatches
             }
 
             border.gameObject.SetActive(false);
-        }
-    }
-
-    public class SilencePixelPerfectSpriteScalerPatch : ModulePatch
-    {
-        protected override MethodBase GetTargetMethod()
-        {
-            return AccessTools.Method(typeof(PixelPerfectSpriteScaler), nameof(PixelPerfectSpriteScaler.Awake));
-        }
-
-        [PatchTranspiler]
-        public static IEnumerable<CodeInstruction> Transpile(IEnumerable<CodeInstruction> instructions)
-        {
-            bool skipping = false;
-            foreach (var instruction in instructions)
-            {
-                // Stop skipping when it hits ret
-                if (skipping && instruction.opcode == OpCodes.Ret)
-                {
-                    skipping = false;
-                }
-
-                if (skipping)
-                {
-                    continue;
-                }
-
-                // Start skipping when it calls ldstr
-                if (instruction.opcode == OpCodes.Ldstr)
-                {
-                    skipping = true;
-                    continue;
-                }
-
-                yield return instruction;
-            }
         }
     }
 }

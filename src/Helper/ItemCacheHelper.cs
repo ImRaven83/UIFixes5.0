@@ -5,7 +5,7 @@ namespace UIFixes;
 
 public static class ItemCacheHelper
 {
-    private static readonly List<Item> AllItemsCache = [];
+    private static readonly Il2CppSystem.Collections.Generic.List<Item> AllItemsCache = new();
 
     public static void UpdateAllItemsCache(InventoryController inventoryController)
     {
@@ -15,7 +15,7 @@ public static class ItemCacheHelper
         inventoryController.Inventory.QuestRaidItems.GetAllAssembledItemsNonAlloc(AllItemsCache);
     }
 
-    public static List<Item> GetAllItemsCache()
+    public static Il2CppSystem.Collections.Generic.List<Item> GetAllItemsCache()
     {
         return AllItemsCache;
     }

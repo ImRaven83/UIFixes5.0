@@ -1,3 +1,4 @@
+using SPTushonka.Reflection.Il2Cpp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using Diz.LanguageExtensions;
 using EFT.InventoryLogic;
 using EFT.UI;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 
 namespace UIFixes;
 
@@ -83,7 +84,7 @@ public static class RevolverPatches
             Magazine magazine,
             int loadCount,
             bool ignoreRestrictions,
-            ref Task<IResult> __result)
+            ref Il2CppSystem.Threading.Tasks.Task<IResult> __result)
         {
             if (InPatch || loadCount < 1 || magazine is not CylinderMagazine cylinder)
             {
@@ -102,26 +103,26 @@ public static class RevolverPatches
             Task task;
             if (loadCount > 1)
             {
-                var taskSerializer = ItemUiContext.Instance.gameObject.AddComponent<LoadTaskSerializer>();
+                var taskSerializer = TaskSerializerBase.Create<LoadTaskSerializer>(ItemUiContext.Instance.gameObject);
 
                 // Pass in loadCount - 1 symbolically, in reality this will only ever load 1 at a time
                 task = taskSerializer.Initialize(
                     Enumerable.Range(0, loadCount),
-                    i => __instance.LoadMagazine(ammo, magazine, loadCount - i, ignoreRestrictions));
+                    i => (__instance.LoadMagazine(ammo, magazine, loadCount - i, ignoreRestrictions)).AsManaged());
             }
             else
             {
                 // BSG doesn't handle 1 bullet correctly, and will have already moved the stack into the magazine
                 task = ammo.Parent.Container.ParentItem == magazine
                     ? Task.CompletedTask
-                    : __instance.LoadMagazine(ammo, magazine, 1, ignoreRestrictions);
+                    : __instance.LoadMagazine(ammo, magazine, 1, ignoreRestrictions).AsManaged();
             }
 
             __result = task.ContinueWith(t =>
             {
                 InPatch = false;
                 return SuccessfulResult.New;
-            });
+            }).ToIl2Cpp();
 
             return false;
         }
@@ -137,19 +138,19 @@ public static class RevolverPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(InventoryController __instance, Magazine magazine, bool equipmentBlocked, ref Task<IResult> __result)
+        public static bool Prefix(InventoryController __instance, Magazine magazine, bool equipmentBlocked, ref Il2CppSystem.Threading.Tasks.Task<IResult> __result)
         {
             if (magazine is not CylinderMagazine cylinder)
             {
                 return true;
             }
 
-            var taskSerializer = ItemUiContext.Instance.gameObject.AddComponent<UnloadCamorasTaskSerializer>();
+            var taskSerializer = TaskSerializerBase.Create<UnloadCamorasTaskSerializer>(ItemUiContext.Instance.gameObject);
             var task = taskSerializer.Initialize(
                 cylinder.Camoras,
                 c => UnloadCamora(__instance, c, equipmentBlocked));
 
-            __result = Task.FromResult(SuccessfulResult.New);
+            __result = Task.FromResult(SuccessfulResult.New).ToIl2Cpp();
             return false;
         }
 

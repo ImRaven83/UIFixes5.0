@@ -1,4 +1,5 @@
-﻿using System;
+using SPTushonka.Reflection.Il2Cpp;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -236,7 +237,7 @@ public class MultiSelect
             Plugin.Instance.Logger.LogError("Multiple multi-select task serializers active!");
         }
 
-        TaskSerializer = gameObject.AddComponent<MultiSelectItemContextTaskSerializer>();
+        TaskSerializer = TaskSerializerBase.Create<MultiSelectItemContextTaskSerializer>(gameObject);
         return TaskSerializer;
     }
 
@@ -250,7 +251,7 @@ public class MultiSelect
             LoadUnloadSerializer = null;
         }
 
-        LoadUnloadSerializer = gameObject.AddComponent<MultiSelectItemContextTaskSerializer>();
+        LoadUnloadSerializer = TaskSerializerBase.Create<MultiSelectItemContextTaskSerializer>(gameObject);
         return LoadUnloadSerializer;
     }
 
@@ -308,7 +309,7 @@ public class MultiSelect
     {
         if (draggedItemView != null && Count > 1)
         {
-            GameObject textOverlay = new("MultiSelectText", [typeof(RectTransform), typeof(TextMeshProUGUI)]);
+            GameObject textOverlay = new("MultiSelectText", [typeof(RectTransform).Il2CppType(), typeof(TextMeshProUGUI).Il2CppType()]);
             textOverlay.transform.SetParent(draggedItemView.transform, false);
             textOverlay.transform.SetAsLastSibling();
             textOverlay.SetActive(true);
@@ -422,22 +423,22 @@ public class MultiSelect
 
     public static void EquipAll(ItemUiContext itemUiContext, bool allOrNothing)
     {
-        ApplyAll(itemUiContext, EItemInfoButton.Equip, context => itemUiContext.EquipItem(context.Item), allOrNothing);
+        ApplyAll(itemUiContext, EItemInfoButton.Equip, context => itemUiContext.EquipItem(context.Item).AsManaged(), allOrNothing);
     }
 
     public static void UnequipAll(ItemUiContext itemUiContext, bool allOrNothing)
     {
-        ApplyAll(itemUiContext, EItemInfoButton.Unequip, context => itemUiContext.Uninstall(context), allOrNothing);
+        ApplyAll(itemUiContext, EItemInfoButton.Unequip, context => itemUiContext.Uninstall(context).AsManaged(), allOrNothing);
     }
 
     public static void LoadAll(ItemUiContext itemUiContext, CompoundItem[] collections, bool allOrNothing)
     {
-        ApplyAll(itemUiContext, EItemInfoButton.Load, context => itemUiContext.LoadWeapon(context.Item as Weapon, collections), allOrNothing);
+        ApplyAll(itemUiContext, EItemInfoButton.Load, context => itemUiContext.LoadWeapon(context.Item as Weapon, collections).AsManaged(), allOrNothing);
     }
 
     public static void UnloadAll(ItemUiContext itemUiContext, bool allOrNothing)
     {
-        ApplyAll(itemUiContext, EItemInfoButton.Unload, context => itemUiContext.UnloadWeapon(context.Item as Weapon), allOrNothing);
+        ApplyAll(itemUiContext, EItemInfoButton.Unload, context => itemUiContext.UnloadWeapon(context.Item as Weapon).AsManaged(), allOrNothing);
     }
 
     public static Task LoadAmmoAll(ItemUiContext itemUiContext, string ammoTemplateId, bool allOrNothing)
@@ -453,7 +454,7 @@ public class MultiSelect
                 itemContext =>
                 {
                     IgnoreStopLoading = true;
-                    return itemUiContext.LoadAmmoByType(itemContext.Item as Magazine, ammoTemplateId, itemContext.UpdateView);
+                    return itemUiContext.LoadAmmoByType(itemContext.Item as Magazine, ammoTemplateId, (System.Action)(itemContext.UpdateView)).AsManaged();
                 });
 
             itemUiContext.Tooltip?.Close();
@@ -478,7 +479,7 @@ public class MultiSelect
                     }
 
                     IgnoreStopLoading = true;
-                    return itemUiContext.UnloadAmmo(itemContext);
+                    return itemUiContext.UnloadAmmo(itemContext).AsManaged();
                 });
 
             itemUiContext.Tooltip?.Close();
@@ -487,12 +488,12 @@ public class MultiSelect
 
     public static void InstallAll(ItemUiContext itemUiContext, bool allOrNothing)
     {
-        ApplyAll(itemUiContext, EItemInfoButton.Install, context => itemUiContext.InstallMod(context, itemUiContext.PlayerCollections), allOrNothing);
+        ApplyAll(itemUiContext, EItemInfoButton.Install, context => itemUiContext.InstallMod(context, itemUiContext.PlayerCollections).AsManaged(), allOrNothing);
     }
 
     public static void UninstallAll(ItemUiContext itemUiContext, bool allOrNothing)
     {
-        ApplyAll(itemUiContext, EItemInfoButton.Uninstall, context => itemUiContext.Uninstall(context), allOrNothing);
+        ApplyAll(itemUiContext, EItemInfoButton.Uninstall, context => itemUiContext.Uninstall(context).AsManaged(), allOrNothing);
     }
 
     private static void ApplyAll(ItemUiContext itemUiContext, EItemInfoButton interaction, Func<MultiSelectItemContext, Task> action, bool allOrNothing)
@@ -538,7 +539,7 @@ public class MultiSelect
                 itemContext =>
                 {
                     Deselect(itemContext);
-                    return itemUiContext.UnpackItem(itemContext.Item);
+                    return itemUiContext.UnpackItem(itemContext.Item).AsManaged();
                 });
 
             itemUiContext.Tooltip?.Close();

@@ -23,7 +23,7 @@ public static class MultiSelectController
     public static Task Apply(Func<Item, Task> func, ItemUiContext itemUiContext = null)
     {
         itemUiContext ??= ItemUiContext.Instance;
-        var taskSerializer = itemUiContext.gameObject.AddComponent<ItemTaskSerializer>();
+        var taskSerializer = TaskSerializerBase.Create<ItemTaskSerializer>(itemUiContext.gameObject);
         return taskSerializer.Initialize(GetItems(), func);
     }
 }

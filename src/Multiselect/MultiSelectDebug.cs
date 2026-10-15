@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Text;
 using EFT;
 using EFT.InventoryLogic;
@@ -9,6 +9,8 @@ namespace UIFixes;
 
 public class MultiSelectDebug : MonoBehaviour
 {
+    public MultiSelectDebug(System.IntPtr pointer) : base(pointer) { }
+
     private GUIStyle _guiStyle;
     private Rect _guiRect = new(20, 70, 0, 0);
 

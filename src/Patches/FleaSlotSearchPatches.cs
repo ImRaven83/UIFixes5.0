@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using SPTushonka.Reflection.Il2Cpp;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -8,7 +9,7 @@ using EFT;
 using EFT.HandBook;
 using EFT.UI.Ragfair;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 
 namespace UIFixes;
 
@@ -100,7 +101,7 @@ public static class FleaSlotSearchPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(EftClientBackendSession __instance, ref Task<Result<OffersList>> __result, int page, int limit, int sortType, bool direction, int currency, int priceFrom, int priceTo, int quantityFrom, int quantityTo, int conditionFrom, int conditionTo, bool oneHourExpiration, bool removeBartering, int offerOwnerType, bool onlyFunctional, string handbookId, string linkedSearchId, string neededSearchId, Dictionary<string, int> buildItems, int buildCount, bool updateOfferCount)
+        public static bool Prefix(EftClientBackendSession __instance, ref Il2CppSystem.Threading.Tasks.Task<Result<OffersList>> __result, int page, int limit, int sortType, bool direction, int currency, int priceFrom, int priceTo, int quantityFrom, int quantityTo, int conditionFrom, int conditionTo, bool oneHourExpiration, bool removeBartering, int offerOwnerType, bool onlyFunctional, string handbookId, string linkedSearchId, string neededSearchId, Dictionary<string, int> buildItems, int buildCount, bool updateOfferCount)
         {
             if (string.IsNullOrEmpty(linkedSearchId) || !linkedSearchId.Contains(":"))
             {
@@ -120,7 +121,7 @@ public static class FleaSlotSearchPatches
                 completionSource.SetFromRequestResult<Result<OffersList>>(result);
             });
 
-            __result = completionSource.Task;
+            __result = completionSource.Task.ToIl2Cpp();
 
             return false;
         }

@@ -1,8 +1,8 @@
-﻿using System.Reflection;
+using System.Reflection;
 using EFT.UI;
 using EFT.UI.Ragfair;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 using UnityEngine;
 
 namespace UIFixes;
@@ -52,11 +52,11 @@ public static class AddOfferRememberAutoselectPatches
         }
 
         [PatchPrefix]
-        public static void Prefix(UpdatableToggle ____autoSelectSimilar)
+        public static void Prefix(AddOfferWindow __instance)
         {
             if (Settings.RememberAutoselectSimilar.Value && PlayerPrefs.HasKey(PlayerPrefKey))
             {
-                ____autoSelectSimilar.UpdateValue(PlayerPrefs.GetInt(PlayerPrefKey) == 1);
+                __instance._autoSelectSimilar.UpdateValue(PlayerPrefs.GetInt(PlayerPrefKey) == 1);
                 PlayerPrefs.Save();
             }
         }

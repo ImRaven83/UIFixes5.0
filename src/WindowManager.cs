@@ -10,6 +10,8 @@ namespace UIFixes;
 
 public class WindowManager : MonoBehaviour
 {
+    public WindowManager(System.IntPtr pointer) : base(pointer) { }
+
     private class OpenWindow(UIInputNode window, MongoID itemId, Type windowType)
     {
         public UIInputNode Window { get; set; } = window;

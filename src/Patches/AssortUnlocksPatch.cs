@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -7,8 +7,8 @@ using EFT.UI;
 using EFT.UI.Ragfair;
 using HarmonyLib;
 using Newtonsoft.Json;
-using SPT.Common.Http;
-using SPT.Reflection.Patching;
+using SPTushonka.Common.Http;
+using SPTushonka.Reflection.Patching;
 
 namespace UIFixes;
 
@@ -23,7 +23,7 @@ public class AssortUnlocksPatch : ModulePatch
     }
 
     [PatchPostfix]
-    public static void Postfix(OfferView __instance, HoverTooltipArea ____hoverTooltipArea)
+    public static void Postfix(OfferView __instance)
     {
         if (!Settings.ShowRequiredQuest.Value)
         {
@@ -58,7 +58,7 @@ public class AssortUnlocksPatch : ModulePatch
         {
             if (AssortUnlocks != null && AssortUnlocks.TryGetValue(__instance.Offer.Item.Id, out string questName))
             {
-                ____hoverTooltipArea.SetMessageText(____hoverTooltipArea.Message + " (" + questName.Localized() + ")", true);
+                __instance._hoverTooltipArea.SetMessageText(__instance._hoverTooltipArea.Message + " (" + questName.Localized() + ")", true);
             }
         }
     }

@@ -1,7 +1,7 @@
 using System.Reflection;
 using EFT.UI.WeaponModding;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 
 namespace UIFixes;
 
@@ -18,13 +18,13 @@ public static class WeaponPreviewPatches
         {
             // this is called when WeaponPreview is opened and fully initialized,
             // WeaponPreview is used both by weapon modding screen, edit build screen, and item overview
-            return AccessTools.Method(typeof(WeaponPreview.CG_SetupItemPreview), nameof(WeaponPreview.CG_SetupItemPreview.method_1));
+            return AccessTools.Method(typeof(WeaponPreview.__c__DisplayClass23_0), nameof(WeaponPreview.__c__DisplayClass23_0.Method_Internal_Void_Token_IEasyBundle_0));
         }
 
         [PatchPostfix]
-        public static void Postfix(WeaponPreview.CG_SetupItemPreview __instance)
+        public static void Postfix(WeaponPreview.__c__DisplayClass23_0 __instance)
         {
-            __instance.weaponPreview_0.WeaponPreviewCamera.nearClipPlane = 0.01f;
+            __instance.__4__this.WeaponPreviewCamera.nearClipPlane = 0.01f;
         }
     }
 }

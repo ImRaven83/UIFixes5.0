@@ -1,4 +1,5 @@
-﻿using System;
+using SPTushonka.Reflection.Il2Cpp;
+using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -6,8 +7,8 @@ using EFT.Builds;
 using EFT.InventoryLogic;
 using EFT.UI;
 using HarmonyLib;
-using SPT.Reflection.Patching;
-using SPT.Reflection.Utils;
+using SPTushonka.Reflection.Patching;
+using SPTushonka.Reflection.Utils;
 using UnityEngine;
 
 namespace UIFixes;
@@ -79,14 +80,14 @@ public static class LoadMultipleMagazinesPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(LoadMagContextInteractions __instance, string ammoTemplateId, ref Task __result)
+        public static bool Prefix(LoadMagContextInteractions __instance, string ammoTemplateId, ref Il2CppSystem.Threading.Tasks.Task __result)
         {
             if (!MultiSelect.Active)
             {
                 return true;
             }
 
-            __result = MultiSelect.LoadAmmoAll(__instance.UIContext, ammoTemplateId, false);
+            __result = MultiSelect.LoadAmmoAll(__instance.UIContext, ammoTemplateId, false).ToIl2Cpp();
             return false;
         }
     }

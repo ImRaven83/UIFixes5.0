@@ -6,7 +6,7 @@ using EFT.Communications;
 using EFT.InventoryLogic;
 using EFT.UI.DragAndDrop;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 
 namespace UIFixes;
 
@@ -27,14 +27,14 @@ public static class SortPatches
         // Normally this method just calls SortAsync and eats the exceptions
         // This reimplements SortAsync, calling stack before ItemManipulator.Sort()
         [PatchPrefix]
-        public static bool Prefix(GridSortPanel __instance, CompoundItem ____item, InventoryController ____controller)
+        public static bool Prefix(GridSortPanel __instance)
         {
             if (!Settings.StackBeforeSort.Value)
             {
                 return true;
             }
 
-            Sort(__instance, ____item, ____controller).HandleExceptions();
+            Sort(__instance, __instance._item, __instance._controller).HandleExceptions();
             return false;
         }
 

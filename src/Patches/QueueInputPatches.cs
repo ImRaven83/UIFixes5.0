@@ -3,7 +3,7 @@ using Comfort.Common;
 using EFT;
 using EFT.InputSystem;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 
 namespace UIFixes;
 
@@ -32,13 +32,13 @@ public static class QueueInputPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(Player.FirearmController __instance, bool value, Player ____player)
+        public static void Postfix(Player.FirearmController __instance, bool value)
         {
             var firearmController = __instance;
-            if (firearmController == null && ____player != null)
+            if (firearmController == null && __instance._player != null)
             {
                 // At certain times during weapon switch, the old firearm controller has been destroyed but is still hooked up, grab the new one
-                firearmController = ____player.HandsController as Player.FirearmController;
+                firearmController = __instance._player.HandsController as Player.FirearmController;
             }
 
             if (!Settings.QueueHeldInputs.Value || InAttempt || firearmController == null)
@@ -49,12 +49,12 @@ public static class QueueInputPatches
             InputRepeater repeater;
             if (value && !firearmController.IsAiming)
             {
-                repeater = ____player.GetOrAddComponent<InputRepeater>();
+                repeater = __instance._player.GetOrAddComponent<InputRepeater>();
                 repeater.BeginTrying(EGameKey.Aim, () =>
                 {
                     if (firearmController == null)
                     {
-                        firearmController = ____player.HandsController as Player.FirearmController;
+                        firearmController = __instance._player.HandsController as Player.FirearmController;
                         if (firearmController == null)
                         {
                             return true;
@@ -70,7 +70,7 @@ public static class QueueInputPatches
             }
             else if (!value)
             {
-                repeater = ____player.GetComponent<InputRepeater>();
+                repeater = __instance._player.GetComponent<InputRepeater>();
                 if (repeater != null)
                 {
                     repeater.StopTrying();
@@ -196,14 +196,14 @@ public static class QueueInputPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(MovementContext __instance, Player ____player)
+        public static bool Prefix(MovementContext __instance)
         {
             if (!Settings.QueueHeldInputs.Value)
             {
                 return true;
             }
 
-            if (____player.UsedSimplifiedSkeleton)
+            if (__instance._player.UsedSimplifiedSkeleton)
             {
                 return false;
             }

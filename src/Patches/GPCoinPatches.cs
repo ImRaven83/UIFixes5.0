@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using EFT.InventoryLogic;
 using EFT.UI;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,7 +27,7 @@ public static class GPCoinPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(DisplayMoneyPanel __instance, IEnumerable<Item> inventoryItems, TextMeshProUGUI ____roubles, TextMeshProUGUI ____euros, TextMeshProUGUI ____dollars)
+        public static bool Prefix(DisplayMoneyPanel __instance, IEnumerable<Item> inventoryItems)
         {
             if (!Settings.ShowGPCurrency.Value)
             {
@@ -39,7 +39,7 @@ public static class GPCoinPatches
             Transform gpCoinsTransform = __instance.transform.Find("GPCoins");
             if (gpCoinsTransform == null)
             {
-                Transform dollars = ____dollars.transform.parent;
+                Transform dollars = __instance._dollars.transform.parent;
                 gpCoinsTransform = UnityEngine.Object.Instantiate(dollars, __instance.transform, false);
                 gpCoinsTransform.name = "GPCoins";
 
@@ -69,9 +69,9 @@ public static class GPCoinPatches
 
             NumberFormatInfo numberFormatInfo = new() { NumberGroupSeparator = " " };
 
-            ____roubles.text = sums[ECurrencyType.RUB].ToString("N0", numberFormatInfo);
-            ____euros.text = sums[ECurrencyType.EUR].ToString("N0", numberFormatInfo);
-            ____dollars.text = sums[ECurrencyType.USD].ToString("N0", numberFormatInfo);
+            __instance._roubles.text = sums[ECurrencyType.RUB].ToString("N0", numberFormatInfo);
+            __instance._euros.text = sums[ECurrencyType.EUR].ToString("N0", numberFormatInfo);
+            __instance._dollars.text = sums[ECurrencyType.USD].ToString("N0", numberFormatInfo);
             gpLabel.text = sums[ECurrencyType.GP].ToString("N0", numberFormatInfo);
 
             return false;
@@ -86,7 +86,7 @@ public static class GPCoinPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(DisplayMoneyPanelTMPText __instance, IEnumerable<Item> inventoryItems, TMP_Text ____roubles, TMP_Text ____euros, TMP_Text ____dollars)
+        public static bool Prefix(DisplayMoneyPanelTMPText __instance, IEnumerable<Item> inventoryItems)
         {
             if (!Settings.ShowGPCurrency.Value)
             {
@@ -117,9 +117,9 @@ public static class GPCoinPatches
 
             NumberFormatInfo numberFormatInfo = new() { NumberGroupSeparator = " " };
 
-            ____roubles.text = CurrencyUtil.GetCurrencyChar(ECurrencyType.RUB) + " " + sums[ECurrencyType.RUB].ToString("N0", numberFormatInfo);
-            ____euros.text = CurrencyUtil.GetCurrencyChar(ECurrencyType.EUR) + " " + sums[ECurrencyType.EUR].ToString("N0", numberFormatInfo);
-            ____dollars.text = CurrencyUtil.GetCurrencyChar(ECurrencyType.USD) + " " + sums[ECurrencyType.USD].ToString("N0", numberFormatInfo);
+            __instance._roubles.text = CurrencyUtil.GetCurrencyChar(ECurrencyType.RUB) + " " + sums[ECurrencyType.RUB].ToString("N0", numberFormatInfo);
+            __instance._euros.text = CurrencyUtil.GetCurrencyChar(ECurrencyType.EUR) + " " + sums[ECurrencyType.EUR].ToString("N0", numberFormatInfo);
+            __instance._dollars.text = CurrencyUtil.GetCurrencyChar(ECurrencyType.USD) + " " + sums[ECurrencyType.USD].ToString("N0", numberFormatInfo);
             gpCoins.text = "GP " + sums[ECurrencyType.GP].ToString("N0", numberFormatInfo);
 
             return false;

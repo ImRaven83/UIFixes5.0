@@ -1,8 +1,9 @@
-﻿using System.Reflection;
+using SPTushonka.Reflection.Il2Cpp;
+using System.Reflection;
 using System.Threading.Tasks;
 using EFT.UI;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 
 namespace UIFixes;
 
@@ -14,7 +15,7 @@ public class TransferConfirmPatch : ModulePatch
     }
 
     [PatchPrefix]
-    public static bool Prefix(TransferItemsScreen __instance, ref Task<bool> __result)
+    public static bool Prefix(TransferItemsScreen __instance, ref Il2CppSystem.Threading.Tasks.Task<bool> __result)
     {
         if (Settings.ShowTransferConfirmations.Value == TransferConfirmationOption.Always)
         {

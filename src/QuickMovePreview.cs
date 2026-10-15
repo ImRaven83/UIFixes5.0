@@ -10,6 +10,8 @@ namespace UIFixes;
 
 public class QuickMovePreview : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
+    public QuickMovePreview(System.IntPtr pointer) : base(pointer) { }
+
     private GameObject _targetBorder;
 
     private ItemContext _itemContext;

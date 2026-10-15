@@ -2,7 +2,7 @@ using System.Reflection;
 using EFT.InventoryLogic;
 using EFT.UI.DragAndDrop;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 using UnityEngine;
 
 namespace UIFixes;
@@ -16,7 +16,7 @@ public class RotateKeybindPatch : ModulePatch
 
     // Rotate is hardcoded to R in this method, so just replace the whole thing
     [PatchPrefix]
-    public static bool Prefix(DraggedItemView __instance, IContainerView ____currentContainerUnderCursor, ItemContext ____currentTargetItemContext)
+    public static bool Prefix(DraggedItemView __instance)
     {
         if (Settings.RotateKeyBind.Value.MainKey == KeyCode.None)
         {
@@ -33,9 +33,9 @@ public class RotateKeybindPatch : ModulePatch
             Vector2 offset = rectTransform.rect.size * rectTransform.pivot * rectTransform.lossyScale;
             __instance.ItemContext.SetPosition(position, position - offset);
 
-            if (____currentContainerUnderCursor != null)
+            if (__instance._currentContainerUnderCursor != null)
             {
-                ____currentContainerUnderCursor.HighlightItemViewPosition(__instance.ItemContext, ____currentTargetItemContext, false);
+                __instance._currentContainerUnderCursor.HighlightItemViewPosition(__instance.ItemContext, __instance._currentTargetItemContext, false);
             }
         }
 

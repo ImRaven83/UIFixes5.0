@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using EFT.Hideout;
@@ -8,7 +8,7 @@ using EFT.UI.Chat;
 using EFT.UI.Ragfair;
 using EFT.UI.Utilities.LightScroller;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -132,33 +132,45 @@ public static class ScrollPatches
         return false;
     }
 
-    private static IEnumerable<CodeInstruction> RemovePageUpDownHandling(IEnumerable<CodeInstruction> instructions)
+    // Transpilers can't edit il2cpp method bodies, so instead of removing BSG's PageUp/PageDown handling,
+    // remember the scroll position before their Update and put it back afterwards
+    private static bool PageKeyDown()
     {
-        foreach (var instruction in instructions)
+        return Settings.RebindPageUpDown.Value && !Plugin.TextboxActive() && (Input.GetKeyDown(KeyCode.PageUp) || Input.GetKeyDown(KeyCode.PageDown));
+    }
+
+    private static float? CaptureScroll(ScrollRect scrollRect)
+    {
+        return scrollRect != null && PageKeyDown() ? scrollRect.verticalNormalizedPosition : null;
+    }
+
+    private static float? CaptureScroll(LightScroller lightScroller)
+    {
+        return lightScroller != null && PageKeyDown() ? lightScroller.NormalizedScrollPosition : null;
+    }
+
+    private static void RestoreScroll(ScrollRect scrollRect, float? position)
+    {
+        if (scrollRect != null && position.HasValue)
         {
-            if (instruction.LoadsConstant((int)KeyCode.PageUp))
-            {
-                yield return new CodeInstruction(instruction)
-                {
-                    operand = 0
-                };
-            }
-            else if (instruction.LoadsConstant((int)KeyCode.PageDown))
-            {
-                yield return new CodeInstruction(instruction)
-                {
-                    operand = 0
-                };
-            }
-            else
-            {
-                yield return instruction;
-            }
+            scrollRect.verticalNormalizedPosition = position.Value;
+            HandleInput(scrollRect);
+        }
+    }
+
+    private static void RestoreScroll(LightScroller lightScroller, float? position)
+    {
+        if (lightScroller != null && position.HasValue)
+        {
+            lightScroller.SetScrollPosition(position.Value);
+            HandleInput(lightScroller);
         }
     }
 
     public class KeyScrollListener : MonoBehaviour
     {
+        public KeyScrollListener(System.IntPtr pointer) : base(pointer) { }
+
         private ScrollRect _scrollRect;
 
         public UnityEvent OnKeyScroll;
@@ -187,22 +199,27 @@ public static class ScrollPatches
         }
 
         [PatchPrefix]
-        public static void Prefix(SimpleStashPanel __instance, ScrollRect ____stashScroll, ItemUiContext ____itemUiContext)
+        public static void Prefix(SimpleStashPanel __instance, ref float? __state)
         {
             // Ignore Trading screen, that is handled separately
-            if (____itemUiContext?.ContextType == EItemUiContextType.TraderScreen)
+            if (__instance._itemUiContext?.ContextType == EItemUiContextType.TraderScreen)
             {
                 return;
             }
 
             // For some reason, sometimes SimpleStashPanel doesn't have a reference to its own ScrollRect? 
-            HandleInput(____stashScroll ?? __instance.GetComponentInChildren<ScrollRect>());
+            var scrollRect = __instance._stashScroll ?? __instance.GetComponentInChildren<ScrollRect>();
+            __state = CaptureScroll(scrollRect);
+            if (!__state.HasValue)
+            {
+                HandleInput(scrollRect);
+            }
         }
 
-        [PatchTranspiler]
-        public static IEnumerable<CodeInstruction> Transpile(IEnumerable<CodeInstruction> instructions)
+        [PatchPostfix]
+        public static void Postfix(SimpleStashPanel __instance, float? __state)
         {
-            return Settings.RebindPageUpDown.Value ? RemovePageUpDownHandling(instructions) : instructions;
+            RestoreScroll(__instance._stashScroll ?? __instance.GetComponentInChildren<ScrollRect>(), __state);
         }
     }
 
@@ -214,15 +231,20 @@ public static class ScrollPatches
         }
 
         [PatchPrefix]
-        public static void Prefix(TraderDealScreen __instance)
+        public static void Prefix(TraderDealScreen __instance, ref float? __state)
         {
-            HandleInput(__instance.TradeMode == ETradeMode.Purchase ? __instance._traderScroll : __instance._stashScroll);
+            var scrollRect = __instance.TradeMode == ETradeMode.Purchase ? __instance._traderScroll : __instance._stashScroll;
+            __state = CaptureScroll(scrollRect);
+            if (!__state.HasValue)
+            {
+                HandleInput(scrollRect);
+            }
         }
 
-        [PatchTranspiler]
-        public static IEnumerable<CodeInstruction> Transpile(IEnumerable<CodeInstruction> instructions)
+        [PatchPostfix]
+        public static void Postfix(TraderDealScreen __instance, float? __state)
         {
-            return Settings.RebindPageUpDown.Value ? RemovePageUpDownHandling(instructions) : instructions;
+            RestoreScroll(__instance.TradeMode == ETradeMode.Purchase ? __instance._traderScroll : __instance._stashScroll, __state);
         }
     }
 
@@ -234,15 +256,19 @@ public static class ScrollPatches
         }
 
         [PatchPrefix]
-        public static void Prefix(OfferViewList __instance)
+        public static void Prefix(OfferViewList __instance, ref float? __state)
         {
-            HandleInput(__instance._scroller);
+            __state = CaptureScroll(__instance._scroller);
+            if (!__state.HasValue)
+            {
+                HandleInput(__instance._scroller);
+            }
         }
 
-        [PatchTranspiler]
-        private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        [PatchPostfix]
+        public static void Postfix(OfferViewList __instance, float? __state)
         {
-            return Settings.RebindPageUpDown.Value ? RemovePageUpDownHandling(instructions) : instructions;
+            RestoreScroll(__instance._scroller, __state);
         }
     }
 
@@ -274,15 +300,19 @@ public static class ScrollPatches
         }
 
         [PatchPrefix]
-        public static void Prefix(MessagesContainer __instance)
+        public static void Prefix(MessagesContainer __instance, ref float? __state)
         {
-            HandleInput(__instance._scroller);
+            __state = CaptureScroll(__instance._scroller);
+            if (!__state.HasValue)
+            {
+                HandleInput(__instance._scroller);
+            }
         }
 
-        [PatchTranspiler]
-        private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        [PatchPostfix]
+        public static void Postfix(MessagesContainer __instance, float? __state)
         {
-            return Settings.RebindPageUpDown.Value ? RemovePageUpDownHandling(instructions) : instructions;
+            RestoreScroll(__instance._scroller, __state);
         }
     }
 
@@ -333,6 +363,8 @@ public static class ScrollPatches
 
     public class KeyScroller : MonoBehaviour
     {
+        public KeyScroller(System.IntPtr pointer) : base(pointer) { }
+
         ScrollRect _scrollRect;
 
         public void Init(ScrollRect scrollRect)
@@ -364,8 +396,8 @@ public static class ScrollPatches
             }
 
             Toggle toggle = __instance.GetComponent<Toggle>();
-            toggle.onValueChanged.AddListener(OnTaskSelected);
-            __instance.R().UI.AddDisposable(() => toggle.onValueChanged.RemoveListener(OnTaskSelected));
+            toggle.onValueChanged.AddListener((System.Action<bool>)(OnTaskSelected));
+            __instance.R().UI.AddDisposable(() => toggle.onValueChanged.RemoveListener((System.Action<bool>)(OnTaskSelected)));
 
             if (quest.Id == LastQuestId)
             {

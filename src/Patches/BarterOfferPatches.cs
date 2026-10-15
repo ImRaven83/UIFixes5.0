@@ -7,7 +7,7 @@ using EFT.UI;
 using EFT.UI.DragAndDrop;
 using EFT.UI.Ragfair;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -40,15 +40,7 @@ public static class BarterOfferPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(
-            OfferItemPriceBarter __instance,
-            IExchangeRequirement requirement,
-            InventoryController inventoryController,
-            ItemUiContext itemUiContext,
-            bool expanded,
-            GameObject ____barterIcon,
-            TextMeshProUGUI ____requirementName,
-            GameObject ____separator)
+        public static void Postfix(OfferItemPriceBarter __instance, IExchangeRequirement requirement, InventoryController inventoryController, ItemUiContext itemUiContext, bool expanded)
         {
             if (!Settings.ShowBarterIcons.Value)
             {
@@ -68,7 +60,7 @@ public static class BarterOfferPatches
                 layoutGroup.spacing = 1f;
             }
 
-            Vector2 smallSizeDelta = ____barterIcon.RectTransform().sizeDelta;
+            Vector2 smallSizeDelta = __instance._barterIcon.RectTransform().sizeDelta;
 
             RagfairOfferItemView itemView = ItemViewFactory.CreateFromPool<RagfairOfferItemView>("ragfair_offer_layout");
             itemView.transform.SetParent(__instance.transform, false);
@@ -125,16 +117,16 @@ public static class BarterOfferPatches
             ItemViewManager itemViewManager = __instance.GetOrAddComponent<ItemViewManager>();
             itemViewManager.Init(itemView);
 
-            ____barterIcon.SetActive(false);
-            ____separator?.SetActive(false);
+            __instance._barterIcon.SetActive(false);
+            __instance._separator?.SetActive(false);
 
             if (expanded)
             {
-                ____requirementName.transform.parent.gameObject.SetActive(false); // The name and the ? icon
+                __instance._requirementName.transform.parent.gameObject.SetActive(false); // The name and the ? icon
             }
             else
             {
-                ____requirementName.gameObject.SetActive(false);
+                __instance._requirementName.gameObject.SetActive(false);
             }
         }
 
@@ -169,18 +161,18 @@ public static class BarterOfferPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(RagfairOfferItemView __instance, Image ___MainImage)
+        public static void Postfix(RagfairOfferItemView __instance)
         {
             Vector2? sizeOverride = __instance.GetSizeOverride();
             if (sizeOverride.HasValue)
             {
-                Vector2 sizeDelta = ___MainImage.rectTransform.sizeDelta;
+                Vector2 sizeDelta = __instance.MainImage.rectTransform.sizeDelta;
                 float x = sizeDelta.x;
                 float y = sizeDelta.y;
 
                 // Calculate scale and multiply to preserve aspect ratio
                 float scale = Mathf.Min((float)sizeOverride.Value.x / x, (float)sizeOverride.Value.y / y);
-                ___MainImage.rectTransform.sizeDelta = new Vector2(x * scale, y * scale);
+                __instance.MainImage.rectTransform.sizeDelta = new Vector2(x * scale, y * scale);
             }
         }
     }
@@ -232,7 +224,7 @@ public static class BarterOfferPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(GridItemView __instance, ItemUiContext ___ItemUiContext)
+        public static bool Prefix(GridItemView __instance)
         {
             if (__instance is not RagfairOfferItemView ragfairOfferItemView)
             {
@@ -242,7 +234,7 @@ public static class BarterOfferPatches
             string tooltip = ragfairOfferItemView.GetTooltip();
             if (!string.IsNullOrEmpty(tooltip))
             {
-                ___ItemUiContext.Tooltip.Show(tooltip, null, 0.5f);
+                __instance.ItemUiContext.Tooltip.Show(tooltip, null, 0.5f);
                 return false;
             }
 
@@ -258,17 +250,17 @@ public static class BarterOfferPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(ItemViewStats __instance, Image ____modIcon, Image ____modTypeIcon, Image ____specialIcon, Image ____armorClassIcon)
+        public static bool Prefix(ItemViewStats __instance)
         {
             if (!__instance.GetHideMods())
             {
                 return true;
             }
 
-            ____modIcon.gameObject.SetActive(false);
-            ____modTypeIcon.gameObject.SetActive(false);
-            ____specialIcon.gameObject.SetActive(false);
-            ____armorClassIcon?.gameObject.SetActive(false);
+            __instance._modIcon.gameObject.SetActive(false);
+            __instance._modTypeIcon.gameObject.SetActive(false);
+            __instance._specialIcon.gameObject.SetActive(false);
+            __instance._armorClassIcon?.gameObject.SetActive(false);
 
             return false;
         }
@@ -338,14 +330,16 @@ public static class BarterOfferPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(ref InventoryController ____inventoryController)
+        public static void Postfix(RagfairScreen __instance)
         {
-            ItemCacheHelper.UpdateAllItemsCache(____inventoryController);
+            ItemCacheHelper.UpdateAllItemsCache(__instance._inventoryController);
         }
     }
 
     public class ItemViewManager : MonoBehaviour
     {
+        public ItemViewManager(System.IntPtr pointer) : base(pointer) { }
+
         RagfairOfferItemView _itemView;
 
         public void Init(RagfairOfferItemView itemView)

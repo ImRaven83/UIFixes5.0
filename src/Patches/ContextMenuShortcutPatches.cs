@@ -1,11 +1,11 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Comfort.Common;
 using EFT.Communications;
 using EFT.InventoryLogic;
 using EFT.UI;
 using EFT.UI.DragAndDrop;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 using TMPro;
 using UnityEngine.EventSystems;
 
@@ -38,7 +38,7 @@ public static class ContextMenuShortcutPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(ItemUiContext __instance, DragItemContext ____dragItemContext)
+        public static void Postfix(ItemUiContext __instance)
         {
             // Need an item context to operate on
             ItemContext itemContext = __instance.CurrentItemContext;
@@ -46,7 +46,7 @@ public static class ContextMenuShortcutPatches
             // itemContext is what the mouse is over
             // ___itemContextClass is the currently dragged item
             // Only do anything if the mouse is over an item and nothing is being dragged
-            if (itemContext == null || ____dragItemContext != null)
+            if (itemContext == null || __instance._dragItemContext != null)
             {
                 return;
             }
@@ -207,10 +207,10 @@ public static class ContextMenuShortcutPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(HideoutItemView __instance, ItemUiContext ___ItemUiContext)
+        public static void Postfix(HideoutItemView __instance)
         {
             // Without waiting, this somehow causes a race condition and doesn't work.
-            __instance.WaitForEndOfFrame(() => ___ItemUiContext.RegisterCurrentItemContext(__instance.ItemContext));
+            __instance.WaitForEndOfFrame((System.Action)(() => __instance.ItemUiContext.RegisterCurrentItemContext(__instance.ItemContext)));
         }
     }
 
@@ -222,9 +222,9 @@ public static class ContextMenuShortcutPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(ItemUiContext ____itemUiContext, ItemContext ____itemContext)
+        public static void Postfix(TradingRequisitePanel __instance)
         {
-            ____itemUiContext.RegisterCurrentItemContext(____itemContext);
+            __instance._itemUiContext.RegisterCurrentItemContext(__instance._itemContext);
         }
     }
 
@@ -236,9 +236,9 @@ public static class ContextMenuShortcutPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(ItemUiContext ____itemUiContext, ItemContext ____itemContext)
+        public static void Postfix(TradingRequisitePanel __instance)
         {
-            ____itemUiContext.UnregisterCurrentItemContext(____itemContext);
+            __instance._itemUiContext.UnregisterCurrentItemContext(__instance._itemContext);
         }
     }
 

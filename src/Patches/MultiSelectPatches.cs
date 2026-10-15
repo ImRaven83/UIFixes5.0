@@ -1,4 +1,5 @@
-﻿using System;
+using SPTushonka.Reflection.Il2Cpp;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -15,8 +16,8 @@ using EFT.UI.DragAndDrop;
 using EFT.UI.Insurance;
 using EFT.UI.Ragfair;
 using HarmonyLib;
-using SPT.Reflection.Patching;
-using SPT.Reflection.Utils;
+using SPTushonka.Reflection.Patching;
+using SPTushonka.Reflection.Utils;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -175,7 +176,7 @@ public static class MultiSelectPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(ItemView __instance, PointerEventData eventData, ItemController ___ItemController)
+        public static void Postfix(ItemView __instance, PointerEventData eventData)
         {
             if (!MultiSelect.Enabled || __instance is RagfairNewOfferItemView || __instance is InsuranceItemView)
             {
@@ -191,7 +192,7 @@ public static class MultiSelectPatches
             if (Settings.DefaultSortingTableBind.Value &&
                 shiftDown &&
                 eventData.button == PointerEventData.InputButton.Left &&
-                ___ItemController is InventoryController inventoryController)
+                __instance.ItemController is InventoryController inventoryController)
             {
                 SortingTable sortingTable = inventoryController.Inventory.SortingTable;
                 if (sortingTable != null && sortingTable.IsNotEmpty && !Plugin.InRaid())
@@ -232,9 +233,9 @@ public static class MultiSelectPatches
 
         [PatchPrefix]
         [HarmonyPriority(Priority.Last)] // Run last so that other click handlers run before I potentially clear the multi-select
-        public static bool Prefix(GridItemView __instance, PointerEventData.InputButton button, ItemUiContext ___ItemUiContext, ItemController ___ItemController)
+        public static bool Prefix(GridItemView __instance, PointerEventData.InputButton button)
         {
-            if (!MultiSelect.Active || button != PointerEventData.InputButton.Left || ___ItemUiContext == null || !__instance.IsSearched)
+            if (!MultiSelect.Active || button != PointerEventData.InputButton.Left || __instance.ItemUiContext == null || !__instance.IsSearched)
             {
                 return true;
             }
@@ -245,13 +246,13 @@ public static class MultiSelectPatches
 
             if (ctrlDown && !shiftDown && !altDown)
             {
-                QuickMove(__instance, ___ItemUiContext, ___ItemController);
+                QuickMove(__instance, __instance.ItemUiContext, __instance.ItemController);
                 return false;
             }
 
             if (altDown && !shiftDown && !ctrlDown)
             {
-                MultiSelect.EquipAll(___ItemUiContext, true);
+                MultiSelect.EquipAll(__instance.ItemUiContext, true);
                 return false;
             }
 
@@ -259,7 +260,7 @@ public static class MultiSelectPatches
             {
                 if (Settings.DefaultSortingTableBind.Value)
                 {
-                    QuickMove(__instance, ___ItemUiContext, ___ItemController, true);
+                    QuickMove(__instance, __instance.ItemUiContext, __instance.ItemController, true);
                     return false;
                 }
 
@@ -343,7 +344,7 @@ public static class MultiSelectPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(ItemView __instance, ItemUiContext ___ItemUiContext)
+        public static void Postfix(ItemView __instance)
         {
             if (!MultiSelect.Enabled || __instance is not GridItemView gridItemView || !gridItemView.IsSearched)
             {
@@ -356,9 +357,9 @@ public static class MultiSelectPatches
             }
 
             if (__instance.Item == null || //empty 
-                ___ItemUiContext == null || // UI not initialized
-                ___ItemUiContext.CurrentItemContext != __instance.ItemContext || // different item is under cursor
-                ___ItemUiContext.R().DragItemContext != null) // something is being dragged
+                __instance.ItemUiContext == null || // UI not initialized
+                __instance.ItemUiContext.CurrentItemContext != __instance.ItemContext || // different item is under cursor
+                __instance.ItemUiContext.R().DragItemContext != null) // something is being dragged
             {
                 return;
             }
@@ -493,7 +494,7 @@ public static class MultiSelectPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(Item itemToSelect, ItemUiContext itemUiContext, RagfairNewOfferContext ____offerContext)
+        public static void Postfix(AddOfferWindow __instance, Item itemToSelect, ItemUiContext itemUiContext)
         {
             if (itemToSelect == null || !MultiSelect.Active || !MultiSelect.AreSameTemplate())
             {
@@ -503,7 +504,7 @@ public static class MultiSelectPatches
             var taskSerializer = MultiSelect.CreateTaskSerializer(itemUiContext.gameObject);
             taskSerializer.Initialize(
                 MultiSelect.ItemContexts.Where(ic => ic.Item != itemToSelect),
-                ic => ____offerContext.SelectItem(ic.Item));
+                ic => __instance._offerContext.SelectItem(ic.Item));
         }
     }
 
@@ -727,14 +728,7 @@ public static class MultiSelectPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(
-            GridView __instance,
-            DragItemContext itemContext,
-            ItemContext targetItemContext,
-            ref OperationResult operation,
-            ref bool __result,
-            ItemUiContext ____itemUiContext,
-            ItemController ____itemController)
+        public static bool Prefix(GridView __instance, DragItemContext itemContext, ItemContext targetItemContext, ref OperationResult operation, ref bool __result)
         {
             if (InPatch || !MultiSelect.Active)
             {
@@ -799,13 +793,13 @@ public static class MultiSelectPatches
 
                 if (targetItem is SortingTable)
                 {
-                    operation = ____itemUiContext.QuickMoveToSortingTable(selectedItemContext, ____itemController, false /* simulate */);
+                    operation = __instance._itemUiContext.QuickMoveToSortingTable(selectedItemContext, __instance._itemController, false /* simulate */);
                 }
                 else
                 {
                     operation = targetItem != null
-                        ? ____itemController.ExecutePossibleAction(selectedItemContext, targetItem, false /* splitting */, false /* simulate */)
-                        : ____itemController.ExecutePossibleAction(selectedItemContext, hoveredAddress, false /* splitting */, false /* simulate */);
+                        ? __instance._itemController.ExecutePossibleAction(selectedItemContext, targetItem, false /* splitting */, false /* simulate */)
+                        : __instance._itemController.ExecutePossibleAction(selectedItemContext, hoveredAddress, false /* splitting */, false /* simulate */);
                 }
 
                 FindOrigin = null;
@@ -893,19 +887,13 @@ public static class MultiSelectPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(
-            GridView __instance,
-            DragItemContext itemContext,
-            ItemContext targetItemContext,
-            ref Task __result,
-            ItemUiContext ____itemUiContext,
-            ItemController ____itemController)
+        public static bool Prefix(GridView __instance, DragItemContext itemContext, ItemContext targetItemContext, ref Il2CppSystem.Threading.Tasks.Task __result)
         {
             // Need to fully implement AcceptItem for the sorting table - normally that just uses null targetItemContext
             if (InPatch && targetItemContext?.Item is SortingTable)
             {
-                MoveToSortingTable(__instance, itemContext, ____itemUiContext, ____itemController);
-                __result = Task.CompletedTask;
+                MoveToSortingTable(__instance, itemContext, __instance._itemUiContext, __instance._itemController);
+                __result = Task.CompletedTask.ToIl2Cpp();
                 return false;
             }
 
@@ -971,19 +959,19 @@ public static class MultiSelectPatches
                             LoadMultiBarrelWeaponPatch.CurrentTask = null;
                         }
                     }
-                });
+                }).ToIl2Cpp();
 
             // Setting the fallback after initializing means it only applies after the first item is already moved
             GridViewPickTargetPatch.FallbackResult = __instance.Grid.ParentItem;
 
-            __result.ContinueWith(_ =>
+            __result.ContinueWith((System.Action<Il2CppSystem.Threading.Tasks.Task>)(_ =>
             {
                 InPatch = false;
                 FindOrigin = null;
                 FindVerticalFirst = false;
                 DisableMerge = false;
                 GridViewPickTargetPatch.FallbackResult = null;
-            });
+            }));
 
             return false;
         }
@@ -1071,11 +1059,11 @@ public static class MultiSelectPatches
         }
 
         [PatchPrefix]
-        public static void Prefix(ItemUiContext ____itemUiContext)
+        public static void Prefix(GridView __instance)
         {
-            if (____itemUiContext.Tooltip.isActiveAndEnabled)
+            if (__instance._itemUiContext.Tooltip.isActiveAndEnabled)
             {
-                ____itemUiContext.Tooltip.Close();
+                __instance._itemUiContext.Tooltip.Close();
             }
         }
     }
@@ -1088,7 +1076,7 @@ public static class MultiSelectPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(SlotView __instance, ItemContext targetItemContext, ref OperationResult operation, ref bool __result, ItemController ___ItemController)
+        public static bool Prefix(SlotView __instance, ItemContext targetItemContext, ref OperationResult operation, ref bool __result)
         {
             if (InPatch || !MultiSelect.Active)
             {
@@ -1107,7 +1095,7 @@ public static class MultiSelectPatches
             Stack<OperationResult> operations = new();
             foreach (DragItemContext itemContext in MultiSelect.SortedItemContexts())
             {
-                __result = itemContext.CanAccept(__instance.Slot, ___ItemController, out operation, false /* simulate */);
+                __result = itemContext.CanAccept(__instance.Slot, __instance.ItemController, out operation, false /* simulate */);
                 if (operation.Succeeded)
                 {
                     operations.Push(operation);
@@ -1142,7 +1130,7 @@ public static class MultiSelectPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(SlotView __instance, ItemContext targetItemContext, ref Task __result)
+        public static bool Prefix(SlotView __instance, ItemContext targetItemContext, ref Il2CppSystem.Threading.Tasks.Task __result)
         {
             if (InPatch || !MultiSelect.Active)
             {
@@ -1159,7 +1147,7 @@ public static class MultiSelectPatches
                 MultiSelect.SortedItemContexts(),
                 async selectedItemContext =>
                 {
-                    // There is a case with SlotViews where the slot view is recreated after each item, so I need to check and refind the instance)
+                    // There is a case with SlotViews where the slot view is recreated after each item, so I need to check and refind the instance).ToIl2Cpp().ToIl2Cpp()
                     if (slotView == null)
                     {
                         if (parentTransform == null)
@@ -1218,7 +1206,7 @@ public static class MultiSelectPatches
                     }
                 });
 
-            __result.ContinueWith(_ => { InPatch = false; });
+            __result.ContinueWith((System.Action<Il2CppSystem.Threading.Tasks.Task>)(_ => { InPatch = false; }));
 
             return false;
         }
@@ -1307,7 +1295,7 @@ public static class MultiSelectPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(TradingTableGridView __instance, DragItemContext itemContext, ref OperationResult operation, ref bool __result, Assortment ____traderAssortment)
+        public static bool Prefix(TradingTableGridView __instance, DragItemContext itemContext, ref OperationResult operation, ref bool __result)
         {
             if (!MultiSelect.Active)
             {
@@ -1329,7 +1317,7 @@ public static class MultiSelectPatches
             Stack<OperationResult> operations = new();
             foreach (DragItemContext selectedItemContext in MultiSelect.SortedItemContexts(itemContext))
             {
-                if (____traderAssortment.CanPrepareItemToSell(selectedItemContext.Item))
+                if (__instance._traderAssortment.CanPrepareItemToSell(selectedItemContext.Item))
                 {
                     FindOrigin = GetTargetGridAddress(itemContext, selectedItemContext, hoveredAddress);
                     FindVerticalFirst = selectedItemContext.ItemRotation == ItemRotation.Vertical;
@@ -1338,11 +1326,11 @@ public static class MultiSelectPatches
                         ItemManipulator.Move(
                             selectedItemContext.Item,
                             new Grid.ProtectedGridItemAddress(__instance.Grid, __instance.CalculateItemLocation(selectedItemContext)),
-                            ____traderAssortment.TraderController,
+                            __instance._traderAssortment.TraderController,
                             false) :
                         ItemManipulator.QuickFindAppropriatePlace(
                             selectedItemContext.Item,
-                            ____traderAssortment.TraderController,
+                            __instance._traderAssortment.TraderController,
                             [__instance.Grid.ParentItem as CompoundItem],
                             ItemManipulator.EMoveItemOrder.Apply,
                             false);
@@ -1398,7 +1386,7 @@ public static class MultiSelectPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(TradingTableGridView __instance, DragItemContext itemContext, ref Task __result, Assortment ____traderAssortment)
+        public static bool Prefix(TradingTableGridView __instance, DragItemContext itemContext, ref Il2CppSystem.Threading.Tasks.Task __result)
         {
             if (!MultiSelect.Active)
             {
@@ -1409,7 +1397,7 @@ public static class MultiSelectPatches
             GridItemAddress hoveredAddress = new Grid.ProtectedGridItemAddress(__instance.Grid, hoveredLocation);
 
             itemContext.DragCancelled();
-            ____traderAssortment.PrepareToSell(itemContext.Item, hoveredLocation);
+            __instance._traderAssortment.PrepareToSell(itemContext.Item, hoveredLocation);
             itemContext.CloseDependentWindows();
 
             DisableMerge = true;
@@ -1422,7 +1410,7 @@ public static class MultiSelectPatches
 
                 OperationResult operation = ItemManipulator.QuickFindAppropriatePlace(
                     selectedItemContext.Item,
-                    ____traderAssortment.TraderController,
+                    __instance._traderAssortment.TraderController,
                     [__instance.Grid.ParentItem],
                     ItemManipulator.EMoveItemOrder.Apply,
                     true);
@@ -1434,14 +1422,14 @@ public static class MultiSelectPatches
                     break;
                 }
 
-                ____traderAssortment.PrepareToSell(selectedItemContext.Item, gridAddress.LocationInGrid);
+                __instance._traderAssortment.PrepareToSell(selectedItemContext.Item, gridAddress.LocationInGrid);
             }
 
             DisableMerge = false;
             FindOrigin = null;
 
             MultiSelect.Clear(); // explicitly clear since the items are no longer selectable
-            __result = Task.CompletedTask;
+            __result = Task.CompletedTask.ToIl2Cpp();
             return false;
         }
     }
@@ -1456,14 +1444,14 @@ public static class MultiSelectPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(TradingTableGridView __instance, ItemContext targetItemContext, ref Color __result, Assortment ____traderAssortment)
+        public static bool Prefix(TradingTableGridView __instance, ItemContext targetItemContext, ref Color __result)
         {
             if (!MultiSelect.Active || targetItemContext != null)
             {
                 return true;
             }
 
-            __result = MultiSelect.ItemContexts.All(ic => ____traderAssortment.CanPrepareItemToSell(ic.Item))
+            __result = MultiSelect.ItemContexts.All(ic => __instance._traderAssortment.CanPrepareItemToSell(ic.Item))
                 ? R.GridView.ValidMoveColor
                 : R.GridView.InvalidOperationColor;
 

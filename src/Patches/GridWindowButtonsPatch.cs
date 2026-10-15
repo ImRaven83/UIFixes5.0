@@ -1,8 +1,8 @@
-﻿using System.Reflection;
+using System.Reflection;
 using EFT.InventoryLogic;
 using EFT.UI;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,23 +16,23 @@ public class GridWindowButtonsPatch : ModulePatch
     }
 
     [PatchPostfix]
-    public static void Postfix(GridWindow __instance, CompoundItem ____item)
+    public static void Postfix(GridWindow __instance)
     {
         var wrappedInstance = __instance.R();
-        if (Settings.AddContainerButtons.Value && ____item.TotalGridWidth > 3) // Greater than 3 cells wide
+        if (Settings.AddContainerButtons.Value && __instance._item.TotalGridWidth > 3) // Greater than 3 cells wide
         {
             Transform closeButton = __instance.transform.Find("Caption Panel/Close Button");
             Image sortBackground = __instance.transform.Find("Caption Panel/Sort Button")?.GetComponent<Image>();
 
             // Left button
             Button leftButton = CreateButton(closeButton, sortBackground.sprite, EItemAttributeId.RecoilBack);
-            leftButton.onClick.AddListener(() => SnapLeft(__instance));
+            leftButton.onClick.AddListener((System.Action)(() => SnapLeft(__instance)));
             wrappedInstance.UI.AddDisposable(() => leftButton.onClick.RemoveAllListeners());
 
             // Right button
             Button rightButton = CreateButton(closeButton, sortBackground.sprite, EItemAttributeId.RecoilBack);
             rightButton.transform.Find("X").Rotate(0f, 180f, 0f);
-            rightButton.onClick.AddListener(() => SnapRight(__instance));
+            rightButton.onClick.AddListener((System.Action)(() => SnapRight(__instance)));
             wrappedInstance.UI.AddDisposable(() => rightButton.onClick.RemoveAllListeners());
 
             // Put close back on the end
@@ -64,6 +64,8 @@ public class GridWindowButtonsPatch : ModulePatch
 
     public class LeftRightKeybind : MonoBehaviour
     {
+        public LeftRightKeybind(System.IntPtr pointer) : base(pointer) { }
+
         private GridWindow _window;
 
         public void Init(GridWindow window)

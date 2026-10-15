@@ -2,7 +2,7 @@ using System.Reflection;
 using EFT.Trading;
 using EFT.UI.DragAndDrop;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 
 namespace UIFixes;
 
@@ -22,11 +22,11 @@ public static class TradingHighlightPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(TradingGridView __instance, Assortment ____traderAssortment)
+        public static void Postfix(TradingGridView __instance)
         {
-            if (____traderAssortment != null)
+            if (__instance._traderAssortment != null)
             {
-                ____traderAssortment.RequisiteChanged += __instance.RequisiteChangedHandler;
+                __instance._traderAssortment.RequisiteChanged += __instance.RequisiteChangedHandler;
             }
         }
     }
@@ -39,11 +39,11 @@ public static class TradingHighlightPatches
         }
 
         [PatchPrefix]
-        public static void Prefix(TradingGridView __instance, Assortment ____traderAssortment)
+        public static void Prefix(TradingGridView __instance)
         {
-            if (____traderAssortment != null)
+            if (__instance._traderAssortment != null)
             {
-                ____traderAssortment.RequisiteChanged -= __instance.RequisiteChangedHandler;
+                __instance._traderAssortment.RequisiteChanged -= __instance.RequisiteChangedHandler;
             }
         }
     }

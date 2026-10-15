@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Reflection;
 using EFT.UI.Ragfair;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 using TMPro;
 using UnityEngine;
 
@@ -24,14 +24,14 @@ public static class FocusFleaOfferNumberPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(HandoverRagfairMoneyWindow __instance, TMP_InputField ____inputField)
+        public static void Postfix(HandoverRagfairMoneyWindow __instance)
         {
             AllButtonKeybind allKeybind = __instance.GetOrAddComponent<AllButtonKeybind>();
             allKeybind.Init(__instance.CG_Awake1); // same as _allItemsButton.onClick
 
-            ____inputField.contentType = TMP_InputField.ContentType.IntegerNumber;
-            ____inputField.ActivateInputField();
-            ____inputField.Select();
+            __instance._inputField.contentType = TMP_InputField.ContentType.IntegerNumber;
+            __instance._inputField.ActivateInputField();
+            __instance._inputField.Select();
         }
     }
 
@@ -43,19 +43,21 @@ public static class FocusFleaOfferNumberPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(HandoverExchangeableItemsWindow __instance, TMP_InputField ____inputField)
+        public static void Postfix(HandoverExchangeableItemsWindow __instance)
         {
             AllButtonKeybind allKeybind = __instance.GetOrAddComponent<AllButtonKeybind>();
             allKeybind.Init(__instance.CG_Awake1); // same as _allItemsButton.onClick
 
-            ____inputField.contentType = TMP_InputField.ContentType.IntegerNumber;
-            ____inputField.ActivateInputField();
-            ____inputField.Select();
+            __instance._inputField.contentType = TMP_InputField.ContentType.IntegerNumber;
+            __instance._inputField.ActivateInputField();
+            __instance._inputField.Select();
         }
     }
 
     public class AllButtonKeybind : MonoBehaviour
     {
+        public AllButtonKeybind(System.IntPtr pointer) : base(pointer) { }
+
         private Action _purchaseAllAction;
 
         public void Init(Action purchaseAllAction)

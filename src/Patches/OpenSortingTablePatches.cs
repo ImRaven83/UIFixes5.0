@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Reflection;
 using Comfort.Common;
 using Diz.LanguageExtensions;
@@ -6,7 +6,7 @@ using EFT.InventoryLogic;
 using EFT.UI;
 using EFT.UI.DragAndDrop;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -31,7 +31,7 @@ public static class OpenSortingTablePatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(ItemUiContext __instance, ref OperationResult __result, InventoryController ____inventoryController)
+        public static bool Prefix(ItemUiContext __instance, ref OperationResult __result)
         {
             // BSG checks visibility, not in-raid. There's a bug where somehow that visibility can be true in raid
             if (Plugin.InRaid())
@@ -52,7 +52,7 @@ public static class OpenSortingTablePatches
                 return true;
             }
 
-            SortingTable sortingTable = ____inventoryController.Inventory.SortingTable;
+            SortingTable sortingTable = __instance._inventoryController.Inventory.SortingTable;
             if (sortingTable != null && !sortingTable.IsNotEmpty)
             {
                 if (__instance.ContextType == EItemUiContextType.InventoryScreen)

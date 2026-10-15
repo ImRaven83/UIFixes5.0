@@ -6,6 +6,8 @@ namespace UIFixes;
 
 public class SearchKeyListener : MonoBehaviour
 {
+    public SearchKeyListener(System.IntPtr pointer) : base(pointer) { }
+
     private Action _onSearch;
 
     public void Init(Action onSearch)

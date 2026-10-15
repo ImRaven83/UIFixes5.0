@@ -1,3 +1,4 @@
+using SPTushonka.Reflection.Il2Cpp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using EFT;
 using EFT.UI;
 using EFT.UI.Chat;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 
 namespace UIFixes;
 
@@ -63,13 +64,13 @@ public static class MailPatches
         }
 
         [PatchPrefix]
-        public static void Prefix(ref DateTime ____lastResponse)
+        public static void Prefix(ChatScreen __instance)
         {
             // The target method is hardcoded to 80 seconds. Rather than try to change that, just lie to it about when it last sent
-            DateTime dateTime = ____lastResponse.AddSeconds(Settings.MailReadQueueTime.Value);
+            DateTime dateTime = __instance._lastResponse.AddSeconds(Settings.MailReadQueueTime.Value).ToManaged();
             if (DateTimeExtensions.UtcNow > dateTime)
             {
-                ____lastResponse = new DateTime(0);
+                __instance._lastResponse = new DateTime(0).ToIl2Cpp();
             }
         }
     }
@@ -100,9 +101,9 @@ public static class MailPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(MenuTaskBar __instance, KeyValuePair<UpdatableChatDialogue, DialogueChatMessage> pair, SocialNetwork ____social)
+        public static void Postfix(MenuTaskBar __instance, KeyValuePair<UpdatableChatDialogue, DialogueChatMessage> pair)
         {
-            if (!____social.CanReadDialogue(pair.Key))
+            if (!__instance._social.CanReadDialogue(pair.Key))
             {
                 return;
             }
@@ -123,9 +124,9 @@ public static class MailPatches
         }
 
         [PatchPrefix]
-        public static void Prefix(DialogueView __instance, DialogueChatMessage message, bool ____selected, UpdatableChatDialogue ____dialogue)
+        public static void Prefix(DialogueView __instance, DialogueChatMessage message)
         {
-            if (____selected)
+            if (__instance._selected)
             {
                 return;
             }
@@ -133,7 +134,7 @@ public static class MailPatches
             // Normally it won't increment new if it has rewards
             if (message.HasRewards)
             {
-                __instance.NewMessagesCount = ____dialogue.New;
+                __instance.NewMessagesCount = __instance._dialogue.New;
             }
         }
     }
@@ -149,24 +150,24 @@ public static class MailPatches
         }
 
         [PatchPostfix]
-        public static async void Postfix(IEnumerable<DialogueChatMessage> ____messages, ItemUiContext ____itemUiContext)
+        public static async void Postfix(DialogueView __instance)
         {
-            if (____messages == null || !____messages.Any())
+            if (__instance._messages == null || !__instance._messages.Any())
             {
                 return;
             }
 
-            var dialogue = GetDialogFromMessage(____messages.First(), ____itemUiContext.Session.SocialNetwork);
+            var dialogue = GetDialogFromMessage(__instance._messages.First(), __instance._itemUiContext.Session.SocialNetwork);
             if (dialogue == null)
             {
                 return;
             }
 
             // Need to flush any moves
-            await ____itemUiContext.ClientSession.FlushOperationQueue();
+            await __instance._itemUiContext.ClientSession.FlushOperationQueue();
 
             // count messages that no longer have rewards
-            var claimed = ____messages.Count(m => !m.DisplayRewardStatus);
+            var claimed = __instance._messages.Count(m => !m.DisplayRewardStatus);
 
             // Update dialog
             dialogue.AttachmentsNew -= claimed;
@@ -242,132 +243,46 @@ public static class MailPatches
             return AccessTools.Method(typeof(DialogueView), nameof(DialogueView.SelectView));
         }
 
-        // Skipping the following:
-        // ldarg.0
-        // ldc.i4.0
-        // call instance void EFT.UI.Chat.DialogueView::set_Int32_1(int32)
-        [PatchTranspiler]
-        public static IEnumerable<CodeInstruction> Transpile(IEnumerable<CodeInstruction> instructions)
+        // Transpilers can't edit il2cpp bodies; SelectView zeroes NewAttachmentsMessagesCount, so put it back afterwards
+        [PatchPrefix]
+        public static void Prefix(DialogueView __instance, ref int __state)
         {
-            CodeInstruction loadThisInstruction = null;
-            CodeInstruction loadZeroInstruction = null;
+            __state = __instance.NewAttachmentsMessagesCount;
+        }
 
-            bool skipped = false;
-            foreach (var instruction in instructions)
+        [PatchPostfix]
+        public static void Postfix(DialogueView __instance, int __state)
+        {
+            if (__instance.NewAttachmentsMessagesCount != __state)
             {
-                if (skipped)
-                {
-                    yield return instruction;
-                    continue;
-                }
-
-                if (instruction.IsLdarg(0))
-                {
-                    loadThisInstruction = instruction;
-                    continue;
-                }
-
-                if (loadThisInstruction != null && instruction.LoadsConstant(0))
-                {
-                    loadZeroInstruction = instruction;
-                    continue;
-                }
-
-                if (loadZeroInstruction != null && instruction.Calls(SetNewAttachmentsMessagesCountMethod))
-                {
-                    skipped = true;
-                    continue;
-                }
-
-                // Wasn't the block
-                if (loadThisInstruction != null)
-                {
-                    yield return loadThisInstruction;
-                    loadThisInstruction = null;
-                }
-
-                if (loadZeroInstruction != null)
-                {
-                    yield return loadZeroInstruction;
-                    loadZeroInstruction = null;
-                }
-
-                yield return instruction;
+                SetNewAttachmentsMessagesCountMethod.Invoke(__instance, [__state]);
             }
         }
     }
 
     public class SocialNetworkDisplayPatch : ModulePatch
     {
-        private static FieldInfo AttachmentsField;
-
         protected override MethodBase GetTargetMethod()
         {
-            AttachmentsField = AccessTools.Field(typeof(UpdatableChatDialogue), nameof(UpdatableChatDialogue.AttachmentsNew));
             return AccessTools.Method(typeof(SocialNetwork), nameof(SocialNetwork.DisplayMessage), [typeof(DialogueChatMessage), typeof(UpdatableChatDialogue)]);
         }
 
         [PatchPostfix]
-        public static void Postfix(DialogueChatMessage message, UpdatableChatDialogue dialogue)
+        public static void Postfix(DialogueChatMessage message, UpdatableChatDialogue dialogue, int __state)
         {
+            dialogue.AttachmentsNew = __state;
+
             if (message.HasRewards)
             {
                 dialogue.HasMessagesWithRewards = true;
             }
         }
 
-        // Skipping the following:
-        // ldarg.2
-        // ldc.i4.0
-        // stfld int32 UpdatableChatDialogue::AttachmentsNew
-        [PatchTranspiler]
-        public static IEnumerable<CodeInstruction> Transpile(IEnumerable<CodeInstruction> instructions)
+        // Transpilers can't edit il2cpp bodies; DisplayMessage zeroes AttachmentsNew, so put it back afterwards
+        [PatchPrefix]
+        public static void Prefix(UpdatableChatDialogue dialogue, ref int __state)
         {
-            CodeInstruction loadArgInstruction = null;
-            CodeInstruction loadZeroInstruction = null;
-
-            bool skipped = false;
-            foreach (var instruction in instructions)
-            {
-                if (skipped)
-                {
-                    yield return instruction;
-                    continue;
-                }
-
-                if (instruction.IsLdarg(2))
-                {
-                    loadArgInstruction = instruction;
-                    continue;
-                }
-
-                if (loadArgInstruction != null && instruction.LoadsConstant(0))
-                {
-                    loadZeroInstruction = instruction;
-                    continue;
-                }
-
-                if (loadZeroInstruction != null && instruction.StoresField(AttachmentsField))
-                {
-                    skipped = true;
-                    continue;
-                }
-
-                // Wasn't the block
-                if (loadArgInstruction != null)
-                {
-                    yield return loadArgInstruction;
-                    loadArgInstruction = null;
-                }
-
-                if (loadZeroInstruction != null)
-                {
-                    yield return loadZeroInstruction;
-                    loadZeroInstruction = null;
-                }
-
-                yield return instruction;
-            }
+            __state = dialogue.AttachmentsNew;
         }
     }
 
@@ -410,17 +325,17 @@ public static class MailPatches
         // Can handle the 0 attachments case because HasMessagesWithRewards will be false, so in that case can set AttachmentsNew to 0
         // Leaves problematic case of HasMessagesWithRewards = true, but some have expired since the server cleaned up, so count will be off
         [PatchPostfix]
-        public static void Postfix(DialogueView __instance, UpdatableChatDialogue ____dialogue)
+        public static void Postfix(DialogueView __instance)
         {
-            __instance.R().UI.AddDisposable(____dialogue.OnDialogueAttachmentsChanged.Bind(() =>
+            __instance.R().UI.AddDisposable(__instance._dialogue.OnDialogueAttachmentsChanged.Bind((System.Action)(() =>
             {
-                if (____dialogue.MessagesLoaded && !____dialogue.HasMessagesWithRewards && ____dialogue.AttachmentsNew > 0)
+                if (__instance._dialogue.MessagesLoaded && !__instance._dialogue.HasMessagesWithRewards && __instance._dialogue.AttachmentsNew > 0)
                 {
-                    ____dialogue.AttachmentsNew = 0;
+                    __instance._dialogue.AttachmentsNew = 0;
                     __instance.NewAttachmentsMessagesCount = 0;
                     MonoBehaviourSingleton<PreloaderUI>.Instance.MenuTaskBar.SetNewMessagesCount();
                 }
-            }));
+            })));
         }
     }
 }

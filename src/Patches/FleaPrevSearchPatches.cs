@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ using EFT.UI;
 using EFT.UI.Ragfair;
 using EFT.UI.Utilities.LightScroller;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -48,6 +48,8 @@ public static class FleaPrevSearchPatches
 
     public class PreviousFilterButton : MonoBehaviour
     {
+        public PreviousFilterButton(System.IntPtr pointer) : base(pointer) { }
+
         private RagFair _ragfair;
         private RagfairScreen _ragfairScreen;
         private DefaultUIButton _button;
@@ -64,7 +66,7 @@ public static class FleaPrevSearchPatches
             _layoutElement = GetComponent<LayoutElement>();
 
             _button.OnClick.RemoveAllListeners();
-            _button.OnClick.AddListener(OnClick);
+            _button.OnClick.AddListener((System.Action)(OnClick));
         }
 
         public void Show(RagfairScreen ragfairScreen, RagFair ragfair)
@@ -344,9 +346,9 @@ public static class FleaPrevSearchPatches
 
         // The first thing this method does is set scrollposition to 0, so grab it first
         [PatchPrefix]
-        public static void Prefix(LightScroller ____scroller)
+        public static void Prefix(OfferViewList __instance)
         {
-            PossibleScrollPosition = ____scroller.NormalizedScrollPosition;
+            PossibleScrollPosition = __instance._scroller.NormalizedScrollPosition;
         }
 
         [PatchPostfix]
@@ -364,11 +366,11 @@ public static class FleaPrevSearchPatches
         }
 
         [PatchPostfix]
-        public static async void Postfix(OfferViewList __instance, Task __result, EViewListType ____viewListType, BrowseCategoriesPanel ____browseCategoriesPanel)
+        public static async void Postfix(OfferViewList __instance, Task __result)
         {
             await __result;
 
-            if (____viewListType != EViewListType.AllOffers)
+            if (__instance._viewListType != EViewListType.AllOffers)
             {
                 return;
             }
@@ -380,7 +382,7 @@ public static class FleaPrevSearchPatches
 
             if (Settings.AutoExpandCategories.Value)
             {
-                ____browseCategoriesPanel.AutoExpandCategories();
+                __instance._browseCategoriesPanel.AutoExpandCategories();
             }
         }
     }

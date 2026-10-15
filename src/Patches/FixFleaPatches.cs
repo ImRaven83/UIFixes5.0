@@ -1,11 +1,11 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using EFT.HandBook;
 using EFT.UI;
 using EFT.UI.Ragfair;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -40,11 +40,11 @@ public static class FixFleaPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(Image ____toggleImage, Sprite ____closeSprite, bool ____categoryOpen)
+        public static void Postfix(CategoryView __instance)
         {
-            if (!____categoryOpen)
+            if (!__instance._categoryOpen)
             {
-                ____toggleImage.sprite = ____closeSprite;
+                __instance._toggleImage.sprite = __instance._closeSprite;
             }
         }
     }
@@ -57,11 +57,11 @@ public static class FixFleaPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(Image ____toggleImage, Sprite ____openSprite, bool ____categoryOpen)
+        public static void Postfix(CategoryView __instance)
         {
-            if (____categoryOpen)
+            if (__instance._categoryOpen)
             {
-                ____toggleImage.sprite = ____openSprite;
+                __instance._toggleImage.sprite = __instance._openSprite;
             }
         }
     }
@@ -74,7 +74,7 @@ public static class FixFleaPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(OfferView __instance, GameObject ____expirationTimePanel)
+        public static void Postfix(OfferView __instance)
         {
             // Intercept clicks on the actions area
             var blocker = __instance.transform.Find("Actions").gameObject.GetOrAddComponent<Button>();
@@ -82,10 +82,10 @@ public static class FixFleaPatches
 
             // But enable clicks specifically on the minimize button
             var minimizeButton = __instance.transform.Find("Actions/MinimizeButton").gameObject.GetOrAddComponent<Button>();
-            minimizeButton.onClick.AddListener(() => __instance.OnPointerClick(null));
+            minimizeButton.onClick.AddListener((System.Action)(() => __instance.OnPointerClick(null)));
 
             // Stop expiration clock from dancing around
-            var timeLeft = ____expirationTimePanel.transform.Find("TimeLeft").GetComponent<HorizontalLayoutGroup>();
+            var timeLeft = __instance._expirationTimePanel.transform.Find("TimeLeft").GetComponent<HorizontalLayoutGroup>();
             timeLeft.childControlWidth = false;
         }
     }
@@ -179,9 +179,9 @@ public static class FixFleaPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(TMP_InputField ___SearchInputField)
+        public static void Postfix(HandbookCategoriesPanel __instance)
         {
-            ___SearchInputField.GetOrAddComponent<SearchKeyListener>();
+            __instance.SearchInputField.GetOrAddComponent<SearchKeyListener>();
         }
     }
 
@@ -193,11 +193,11 @@ public static class FixFleaPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(ref float ____maxVisibleHeight)
+        public static void Postfix(DropDownBox __instance)
         {
-            if (____maxVisibleHeight == 120f)
+            if (__instance._maxVisibleHeight == 120f)
             {
-                ____maxVisibleHeight = 150f;
+                __instance._maxVisibleHeight = 150f;
             }
         }
     }

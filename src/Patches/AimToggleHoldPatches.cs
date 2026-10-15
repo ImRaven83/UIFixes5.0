@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -9,7 +9,7 @@ using EFT.Settings;
 using EFT.Settings.Game;
 using EFT.UI;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 
 namespace UIFixes;
 
@@ -140,9 +140,9 @@ public static class AimToggleHoldPatches
         }
 
         [PatchPrefix]
-        public static void Prefix(ref ECommand command, GamePlayerOwner ____owner)
+        public static void Prefix(ActionPanel __instance, ref ECommand command)
         {
-            if (command == ECommand.BeginInteracting && ____owner != null && ____owner.Player.CurrentManagedState is PlantPlayerState)
+            if (command == ECommand.BeginInteracting && __instance._owner != null && __instance._owner.Player.CurrentManagedState is PlantPlayerState)
             {
                 command = ECommand.EndInteracting;
             }

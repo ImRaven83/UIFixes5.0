@@ -1,3 +1,4 @@
+using SPTushonka.Reflection.Il2Cpp;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -7,8 +8,8 @@ using EFT.UI;
 using EFT.UI.Builds;
 using EFT.UI.Ragfair;
 using HarmonyLib;
-using SPT.Reflection.Patching;
-using SPT.Reflection.Utils;
+using SPTushonka.Reflection.Patching;
+using SPTushonka.Reflection.Utils;
 using TMPro;
 using UnityEngine.UI;
 
@@ -33,20 +34,7 @@ public static class FilterStockPresetsPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(
-            BuildsCategoriesPanel __instance,
-            RagFair ragfair,
-            Handbook handbook,
-            HandbookNodes nodes,
-            HandbookNodes filteredNodes,
-            SimpleContextMenu contextMenu,
-            EViewListType viewListType,
-            EWindowType windowType,
-            string initialNodeId,
-            Action<NodeBaseView, string> onSelection,
-            Action<NodeBaseView, string> onConfirmedSelection,
-            TMP_InputField ___SearchInputField,
-            ref Task __result)
+        public static bool Prefix(BuildsCategoriesPanel __instance, RagFair ragfair, Handbook handbook, HandbookNodes nodes, HandbookNodes filteredNodes, SimpleContextMenu contextMenu, EViewListType viewListType, EWindowType windowType, string initialNodeId, Action<NodeBaseView, string> onSelection, Action<NodeBaseView, string> onConfirmedSelection, ref Il2CppSystem.Threading.Tasks.Task __result)
         {
             if (InPatch)
             {
@@ -55,7 +43,7 @@ public static class FilterStockPresetsPatches
 
             if (LastSearch != null)
             {
-                ___SearchInputField.text = LastSearch;
+                __instance.SearchInputField.text = LastSearch;
                 LastSearch = null;
             }
 
@@ -63,7 +51,7 @@ public static class FilterStockPresetsPatches
             var originalFilteredNodes = new HandbookNodes(filteredNodes);
             void Reload(object sender, EventArgs args)
             {
-                LastSearch = ___SearchInputField.text;
+                LastSearch = __instance.SearchInputField.text;
                 __instance.Close();
                 __instance.Show(ragfair, handbook, originalNodes, originalFilteredNodes, contextMenu, viewListType, windowType, initialNodeId, onSelection, onConfirmedSelection);
             }
@@ -146,11 +134,11 @@ public static class FilterStockPresetsPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(BuildsCategoriesPanel ____categoriesPanel)
+        public static void Postfix(OpenBuildWindow __instance)
         {
-            var subPanel = ____categoriesPanel.transform.Find("Panel");
+            var subPanel = __instance._categoriesPanel.transform.Find("Panel");
 
-            var onlyAvailableToggle = ____categoriesPanel.GetComponentInParent<EditBuildScreen>().transform.Find("Toggle Group/OnlyAvailable");
+            var onlyAvailableToggle = __instance._categoriesPanel.GetComponentInParent<EditBuildScreen>().transform.Find("Toggle Group/OnlyAvailable");
             Toggle stockCheckbox = UnityEngine.Object.Instantiate(onlyAvailableToggle.GetComponent<Toggle>(), subPanel, false);
             stockCheckbox.name = "StockCheckbox";
             stockCheckbox.transform.SetSiblingIndex(2);
@@ -163,7 +151,7 @@ public static class FilterStockPresetsPatches
             textMesh.enableAutoSizing = false;
             textMesh.fontSize = 13f;
 
-            stockCheckbox.onValueChanged.AddListener(value => Settings.ShowStockPresets.Value = value);
+            stockCheckbox.onValueChanged.AddListener((System.Action<bool>)(value => Settings.ShowStockPresets.Value = value));
             Settings.ShowStockPresets.Bind(enabled => stockCheckbox.Set(enabled, false));
         }
     }

@@ -8,8 +8,8 @@ using EFT.InventoryLogic;
 using EFT.Quests;
 using EFT.UI;
 using HarmonyLib;
-using SPT.Reflection.Patching;
-using SPT.Reflection.Utils;
+using SPTushonka.Reflection.Patching;
+using SPTushonka.Reflection.Utils;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -78,13 +78,10 @@ public static class TraderAvatarPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(
-            TraderAvatar __instance,
-            Profile.TraderInfo ____traderInfo,
-            QuestController ____questController)
+        public static void Postfix(TraderAvatar __instance)
         {
-            var quests = ____questController.Quests;
-            var traderQuests = quests.GetQuests(____traderInfo.Id);
+            var quests = __instance._questController.Quests;
+            var traderQuests = quests.GetQuests(__instance._traderInfo.Id);
 
             // Differentiate between daily and non-daily quests aviailable for start
             bool showDailyIcon = Settings.DailyQuestIcon.Value;
@@ -110,7 +107,7 @@ public static class TraderAvatarPatches
             }
 
             // Show quests that have turn-ins available
-            bool handInsAvailable = Settings.HandOverQuestItemsIcon.Value && QuestHandInAvailable(traderQuests, ____questController.InventoryController.Inventory);
+            bool handInsAvailable = Settings.HandOverQuestItemsIcon.Value && QuestHandInAvailable(traderQuests, __instance._questController.InventoryController.Inventory);
             Transform handInQuestsIcon = __instance.transform.Find("QuestsIcons/AvailableHandInQuests");
             if (handInQuestsIcon != null)
             {
@@ -123,11 +120,11 @@ public static class TraderAvatarPatches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(QuestListItem), nameof(QuestListItem.UpdateView));
+            return AccessTools.Method(typeof(QuestListItemView), nameof(QuestListItemView.UpdateView));
         }
 
         [PatchPostfix]
-        public static void Postfix(QuestListItem __instance, Image ____lockedIcon)
+        public static void Postfix(QuestListItemView __instance)
         {
             Inventory inventory = PatchConstants.BackEndSession?.Profile?.Inventory;
             if (inventory == null)
@@ -135,14 +132,14 @@ public static class TraderAvatarPatches
                 return;
             }
 
-            var iconTransform = ____lockedIcon.transform.parent.Find("AvailableHandInIcon");
+            var iconTransform = __instance._statusIcon.transform.parent.Find("AvailableHandInIcon");
             if (Settings.QuestHandOverQuestItemsIcon.Value &&
                 __instance.Quest.QuestStatus == EQuestStatus.Started &&
                 QuestHandInAvailable([__instance.Quest], inventory))
             {
                 if (iconTransform == null)
                 {
-                    var handInIcon = UnityEngine.Object.Instantiate(____lockedIcon, ____lockedIcon.transform.parent, false);
+                    var handInIcon = UnityEngine.Object.Instantiate(__instance._statusIcon, __instance._statusIcon.transform.parent, false);
                     handInIcon.name = "AvailableHandInIcon";
 
                     var image = handInIcon.GetComponent<Image>();

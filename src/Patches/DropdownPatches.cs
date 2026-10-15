@@ -8,7 +8,7 @@ using EFT.UI;
 using EFT.UI.DragAndDrop;
 using EFT.UI.WeaponModding;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -153,9 +153,9 @@ public static class DropdownPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(bool value, ref bool ____interactable)
+        public static bool Prefix(EmptyItemView __instance, bool value)
         {
-            ____interactable = value;
+            __instance._interactable = value;
             return false;
         }
     }
@@ -168,16 +168,16 @@ public static class DropdownPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(EmptyItemView __instance, ref bool ____interactable, ModdingSelectableItemContext ____itemContext)
+        public static void Postfix(EmptyItemView __instance)
         {
             // initialize _interactable since BSG can't be bothered to
-            ____interactable = true;
+            __instance._interactable = true;
 
             __instance.GetOrAddComponent<ClickHandler>().Init(() =>
             {
                 if (__instance.Interactable) // normal behavior
                 {
-                    ____itemContext?.ToggleSelection();
+                    __instance._itemContext?.ToggleSelection();
                 }
                 else // Patched behavior
                 {
@@ -247,6 +247,8 @@ public static class DropdownPatches
 
     private class ClickHandler : MonoBehaviour, IPointerClickHandler
     {
+        public ClickHandler(System.IntPtr pointer) : base(pointer) { }
+
         private Action _onClick;
 
         public void Init(Action onClick)

@@ -1,4 +1,5 @@
-﻿using System;
+using SPTushonka.Reflection.Il2Cpp;
+using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ using EFT.InventoryLogic;
 using EFT.UI;
 using EFT.UI.Builds;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 
 namespace UIFixes;
 
@@ -57,7 +58,7 @@ public static class WeaponPresetConfirmPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(ref Task<bool> __result)
+        public static bool Prefix(ref Il2CppSystem.Threading.Tasks.Task<bool> __result)
         {
             if (MoveForward && Settings.ShowPresetConfirmations.Value == WeaponPresetConfirmationOption.Always)
             {
@@ -69,7 +70,7 @@ public static class WeaponPresetConfirmPatches
                 return true;
             }
 
-            __result = Task.FromResult(true);
+            __result = Task.FromResult(true).ToIl2Cpp();
             return false;
         }
     }
@@ -128,9 +129,9 @@ public static class WeaponPresetConfirmPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(BindableState<bool> ____itemChanged)
+        public static void Postfix(EditBuildScreen __instance)
         {
-            ____itemChanged.Value = false;
+            __instance._itemChanged.Value = false;
         }
     }
 }

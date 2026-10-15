@@ -1,7 +1,7 @@
 using System.Reflection;
 using EFT.UI;
 using HarmonyLib;
-using SPT.Reflection.Patching;
+using SPTushonka.Reflection.Patching;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -47,6 +47,8 @@ public static class SliderPatches
 
     public class SliderMouseListener : MonoBehaviour
     {
+        public SliderMouseListener(System.IntPtr pointer) : base(pointer) { }
+
         private Slider _slider;
 
         public void Init(Slider slider)

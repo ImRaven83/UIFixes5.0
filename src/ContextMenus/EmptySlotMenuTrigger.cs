@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using EFT.InventoryLogic;
 using EFT.UI;
+using Il2CppInterop.Runtime.Injection;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -8,6 +9,8 @@ namespace UIFixes;
 
 public class EmptySlotMenuTrigger : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
 {
+    public EmptySlotMenuTrigger(System.IntPtr pointer) : base(pointer) { }
+
     private ItemUiContext _itemUiContext;
     private Slot _slot;
     private ItemContext _parentContext;
@@ -62,12 +65,24 @@ public class EmptySlotMenuTrigger : MonoBehaviour, IPointerClickHandler, IPointe
     public void OnPointerUp(PointerEventData eventData) { }
 }
 
-public class EmptySlotContext(Slot slot, ItemContext parentContext, ItemUiContext itemUiContext) : ItemContext(parentContext.Item, parentContext.ViewType, parentContext)
+// Injected into il2cpp (see Plugin.Load) so the game's context menu code sees these overrides
+public class EmptySlotContext : ItemContext
 {
-    private readonly Slot _slot = slot;
-    private readonly ItemUiContext _itemUiContext = itemUiContext;
+    private readonly Slot _slot;
+    private readonly ItemUiContext _itemUiContext;
 
-    public override ContextInteractions<EItemInfoButton> GetItemContextInteractions(Action closeAction)
+    public EmptySlotContext(IntPtr pointer) : base(pointer) { }
+
+    public EmptySlotContext(Slot slot, ItemContext parentContext, ItemUiContext itemUiContext)
+        : base(ClassInjector.DerivedConstructorPointer<EmptySlotContext>())
+    {
+        ClassInjector.DerivedConstructorBody(this);
+        ClassInjector.InvokeBaseConstructor(this, parentContext.Item, parentContext.ViewType, parentContext);
+        _slot = slot;
+        _itemUiContext = itemUiContext;
+    }
+
+    public override ContextInteractions<EItemInfoButton> GetItemContextInteractions(Il2CppSystem.Action closeAction)
     {
         return new EmptySlotMenu(_slot, Source, _itemUiContext, () =>
         {
