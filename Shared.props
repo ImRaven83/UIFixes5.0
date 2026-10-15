@@ -1,13 +1,15 @@
 <Project>
   <PropertyGroup>
-    <Version>6.0.4</Version>
-    <SPTPath>$(MSBuildThisFileDirectory)..\..\..\..\SPT\4.1</SPTPath>
-    <FikaPath>$(MSBuildThisFileDirectory)..\..\..\..\SPT\Fika</FikaPath>
+    <Version>7.0.0</Version>
+    <SPTPath>$(MSBuildThisFileDirectory)..\..\..\..\SPT\5.0</SPTPath>
+    <LibsPath>$(MSBuildThisFileDirectory)libs</LibsPath>
     <AssemblySearchPaths>
-      $(SPTPath)\EscapeFromTarkov_Data\Managed;
+      $(SPTPath)\BepInEx\interop;
+      $(SPTPath)\BepInEx\core;
       $(SPTPath)\BepInEx\plugins\spt;
-      $(SPTPath)\BepInEx\plugins\spt\ConfigurationManager;
-      $(FikaPath);
+      $(LibsPath)\managed;
+      $(LibsPath)\core;
+      $(LibsPath)\spt;
       $(AssemblySearchPaths)
     </AssemblySearchPaths>
   </PropertyGroup>
@@ -23,7 +25,7 @@
     </DeployTarget>
   </ItemGroup>
 
-  <Target Name="SPTClientDeploy" AfterTargets="PostBuildEvent" Condition="'$(SPTModType)'=='Client'">
+  <Target Name="SPTClientDeploy" AfterTargets="PostBuildEvent" Condition="'$(SPTModType)'=='Client' And '$(OS)'=='Windows_NT'">
     <Exec
       Command='
         xcopy /F /Y "$(TargetPath)" "%(DeployTarget.Path)\BepInEx\plugins\"
@@ -34,7 +36,7 @@
     />
   </Target>
 
-  <Target Name="SPTServerDeploy" AfterTargets="PostBuildEvent" Condition="'$(SPTModType)'=='Server'">
+  <Target Name="SPTServerDeploy" AfterTargets="PostBuildEvent" Condition="'$(SPTModType)'=='Server' And '$(OS)'=='Windows_NT'">
     <Exec
       Command='
         xcopy /F /Y "$(TargetPath)" "%(DeployTarget.Path)\SPT_Runtime\user\mods\$(TargetName)\"
