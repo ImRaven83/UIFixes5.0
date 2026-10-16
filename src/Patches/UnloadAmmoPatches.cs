@@ -31,11 +31,11 @@ public static class UnloadAmmoPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(ref IEnumerable<EItemInfoButton> __result)
+        public static void Postfix(ref Il2CppSystem.Collections.Generic.IEnumerable<EItemInfoButton> __result)
         {
             var list = __result.ToList();
             list.Insert(list.IndexOf(EItemInfoButton.Repair), EItemInfoButton.UnloadAmmo);
-            __result = list;
+            __result = list.ToIl2CppList();
         }
     }
 
@@ -48,11 +48,11 @@ public static class UnloadAmmoPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(ref IEnumerable<EItemInfoButton> __result)
+        public static void Postfix(ref Il2CppSystem.Collections.Generic.IEnumerable<EItemInfoButton> __result)
         {
             var list = __result.ToList();
             list.Insert(list.IndexOf(EItemInfoButton.Fold), EItemInfoButton.UnloadAmmo);
-            __result = list;
+            __result = list.ToIl2CppList();
         }
     }
 
@@ -92,7 +92,7 @@ public static class UnloadAmmoPatches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.GetDeclaredConstructors(typeof(ScavengerInventoryScreen.ScavengerInventoryScreenController)).Single(c => !c.IsIl2CppPointerConstructor());
+            return AccessTools.GetDeclaredConstructors(typeof(ScavengerInventoryScreen.ScavengerInventoryScreenController)).Single(c => !c.IsStatic && !c.IsIl2CppPointerConstructor());
         }
 
         [PatchPrefix]

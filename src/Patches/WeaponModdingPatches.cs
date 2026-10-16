@@ -663,7 +663,7 @@ public static class WeaponModdingPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(ItemSpecificationPanel __instance, Slot slot, ref KeyValuePair<EModLockedState, ModSlotView.TooltipData> __result)
+        public static void Postfix(ItemSpecificationPanel __instance, Slot slot, ref Il2CppSystem.Collections.Generic.KeyValuePair<EModLockedState, ModSlotView.TooltipData> __result)
         {
             if (__result.Value.Error == "<color=red>" + "Raid lock".Localized() + "</color>")
             {
@@ -729,11 +729,11 @@ public static class WeaponModdingPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(ref IEnumerable<Slot> __result)
+        public static bool Prefix(ref Il2CppSystem.Collections.Generic.IEnumerable<Slot> __result)
         {
             if (CanApplyPatch.SuccessOverride)
             {
-                __result = [];
+                __result = new Il2CppSystem.Collections.Generic.List<Slot>();
                 return false;
             }
 
@@ -816,7 +816,7 @@ public static class WeaponModdingPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(IEnumerable<Item> installedMods, Weapon assemblingWeapon, ref bool __result)
+        public static bool Prefix(Il2CppSystem.Collections.Generic.IEnumerable<Item> installedMods, Weapon assemblingWeapon, ref bool __result)
         {
             if (assemblingWeapon == null || installedMods == null)
             {

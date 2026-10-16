@@ -1,3 +1,4 @@
+using SPTushonka.Reflection.Il2Cpp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -149,9 +150,9 @@ public static class ContextMenuPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(BaseInventoryItemContextInteractions __instance, ref IEnumerable<EItemInfoButton> __result)
+        public static void Postfix(BaseInventoryItemContextInteractions __instance, ref Il2CppSystem.Collections.Generic.IEnumerable<EItemInfoButton> __result)
         {
-            __result = __result.Append(EItemInfoButton.Repair).Append(EItemInfoButton.Insure);
+            __result = __result.Append(EItemInfoButton.Repair).Append(EItemInfoButton.Insure).ToIl2CppList();
 
             if (__instance.Item is CompoundItem container && container.Grids.Any())
             {
@@ -160,7 +161,7 @@ public static class ContextMenuPatches
                     .Where(i => i is CompoundItem innerContainer && innerContainer.Grids.Any());
                 if (innerContainers.Count() == 1)
                 {
-                    __result = __result.Append(EItemInfoButton.Open);
+                    __result = __result.Append(EItemInfoButton.Open).ToIl2CppList();
                 }
             }
         }
@@ -241,11 +242,11 @@ public static class ContextMenuPatches
         [PatchPostfix]
         public static void Postfix(
             ContextInteractions<EItemInfoButton> __instance,
-            ref IEnumerable<EItemInfoButton> __result)
+            ref Il2CppSystem.Collections.Generic.IEnumerable<EItemInfoButton> __result)
         {
             if (__instance is TradingPlayerContextInteractions)
             {
-                __result = __result.Append(EItemInfoButton.Repair).Append(EItemInfoButton.Insure);
+                __result = __result.Append(EItemInfoButton.Repair).Append(EItemInfoButton.Insure).ToIl2CppList();
             }
         }
     }

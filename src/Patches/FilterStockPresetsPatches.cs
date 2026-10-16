@@ -34,7 +34,7 @@ public static class FilterStockPresetsPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(BuildsCategoriesPanel __instance, RagFair ragfair, Handbook handbook, HandbookNodes nodes, HandbookNodes filteredNodes, SimpleContextMenu contextMenu, EViewListType viewListType, EWindowType windowType, string initialNodeId, Action<NodeBaseView, string> onSelection, Action<NodeBaseView, string> onConfirmedSelection, ref Il2CppSystem.Threading.Tasks.Task __result)
+        public static bool Prefix(BuildsCategoriesPanel __instance, RagFair ragfair, Handbook handbook, HandbookNodes nodes, HandbookNodes filteredNodes, SimpleContextMenu contextMenu, EViewListType viewListType, EWindowType windowType, string initialNodeId, Il2CppSystem.Action<NodeBaseView, string> onSelection, Il2CppSystem.Action<NodeBaseView, string> onConfirmedSelection, ref Il2CppSystem.Threading.Tasks.Task __result)
         {
             if (InPatch)
             {

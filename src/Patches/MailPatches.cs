@@ -101,7 +101,7 @@ public static class MailPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(MenuTaskBar __instance, KeyValuePair<UpdatableChatDialogue, DialogueChatMessage> pair)
+        public static void Postfix(MenuTaskBar __instance, Il2CppSystem.Collections.Generic.KeyValuePair<UpdatableChatDialogue, DialogueChatMessage> pair)
         {
             if (!__instance._social.CanReadDialogue(pair.Key))
             {

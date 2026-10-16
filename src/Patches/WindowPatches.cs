@@ -1,3 +1,5 @@
+using SPTushonka.Reflection.Il2Cpp;
+using System.Threading.Tasks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -74,9 +76,9 @@ public static class WindowPatches
             return AccessTools.DeclaredMethod(typeof(InventoryScreen), nameof(InventoryScreen.ShowWithTab));
         }
 
-        // The actual work of showing the inventory is in a coroutine that runs ShowWithTab, so wrap it and run after
+        // In 5.0 ShowWithTab is async and returns a task, so chain onto it and restore once it finishes
         [PatchPostfix]
-        public static void Postfix(InventoryScreen __instance, ref IEnumerator __result)
+        public static void Postfix(InventoryScreen __instance, ref Il2CppSystem.Threading.Tasks.Task __result)
         {
             // Only restore windows out of raid
             if (Plugin.InRaid())
@@ -85,16 +87,12 @@ public static class WindowPatches
                 return;
             }
 
-            __result = PostfixEnumerator(__result, __instance._itemContext);
+            __result = RestoreAfter(__result.AsManaged(), __instance._itemContext).ToIl2Cpp();
         }
 
-        private static IEnumerator PostfixEnumerator(IEnumerator enumerator, ItemContext itemContext)
+        private static async Task RestoreAfter(Task task, ItemContext itemContext)
         {
-            while (enumerator.MoveNext())
-            {
-                yield return enumerator.Current;
-            }
-
+            await task;
             WindowManager.Instance.RestoreWindows(itemContext);
         }
     }

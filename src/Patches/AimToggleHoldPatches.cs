@@ -17,7 +17,8 @@ public static class AimToggleHoldPatches
 {
     public static void Enable()
     {
-        new AddTwoKeyStatesPatch().Enable();
+        new AddTwoKeyStatesPatch(4).Enable();
+        new AddTwoKeyStatesPatch(5).Enable();
         new AddOneKeyStatesPatch().Enable();
         new UpdateInputPatch().Enable();
 
@@ -32,11 +33,13 @@ public static class AimToggleHoldPatches
         Settings.ToggleOrHoldGoggles.SettingChanged += OnSettingChanged;
     }
 
-    public class AddTwoKeyStatesPatch : ModulePatch
+    // 5.0 has two ToggleInputKeyCombination constructors (with and without a pressing command); patch each
+    public class AddTwoKeyStatesPatch(int parameterCount) : ModulePatch
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.GetDeclaredConstructors(typeof(ToggleInputKeyCombination)).Single(c => !c.IsIl2CppPointerConstructor());
+            return AccessTools.GetDeclaredConstructors(typeof(ToggleInputKeyCombination))
+                .Single(c => !c.IsStatic && !c.IsIl2CppPointerConstructor() && c.GetParameters().Length == parameterCount);
         }
 
         [PatchPostfix]
@@ -62,7 +65,7 @@ public static class AimToggleHoldPatches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.GetDeclaredConstructors(typeof(InputKeyCombination)).Single(c => !c.IsIl2CppPointerConstructor());
+            return AccessTools.GetDeclaredConstructors(typeof(InputKeyCombination)).Single(c => !c.IsStatic && !c.IsIl2CppPointerConstructor());
         }
 
         [PatchPostfix]

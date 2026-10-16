@@ -101,7 +101,13 @@ public static class TagPatches
         }
 
         [PatchPostfix]
-        public static IEnumerable<EItemInfoButton> Postfix(IEnumerable<EItemInfoButton> values, Item __instance)
+        public static Il2CppSystem.Collections.Generic.IEnumerable<EItemInfoButton> Postfix(Il2CppSystem.Collections.Generic.IEnumerable<EItemInfoButton> values, Item __instance)
+        {
+            // il2cpp can't consume a managed iterator, so materialize it into an il2cpp list
+            return AddTagButtons(values, __instance).ToIl2CppList();
+        }
+
+        private static IEnumerable<EItemInfoButton> AddTagButtons(IEnumerable<EItemInfoButton> values, Item __instance)
         {
             foreach (var value in values)
             {

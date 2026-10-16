@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Reflection;
 using EFT;
 using EFT.Builds;
@@ -30,7 +30,7 @@ public static class MagPresetsPatches
         // in equipment if stash + sorting table are not present. 
         // Can't just add equipment because that includes equipped slots and it likes to pull the chambered bullet out of equipped guns
         [PatchPostfix]
-        public static void Postfix(Inventory inventory, List<CompoundItem> __result)
+        public static void Postfix(Inventory inventory, Il2CppSystem.Collections.Generic.List<CompoundItem> __result)
         {
             if (!__result.Contains(inventory.Equipment))
             {

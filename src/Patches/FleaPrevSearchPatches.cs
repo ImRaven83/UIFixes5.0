@@ -363,7 +363,7 @@ public static class FleaPrevSearchPatches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(OfferViewList), nameof(OfferViewList.GetOffers), [typeof(bool), typeof(Action)]);
+            return AccessTools.Method(typeof(OfferViewList), nameof(OfferViewList.GetOffers), [typeof(bool), typeof(Il2CppSystem.Action)]);
         }
 
         [PatchPostfix]

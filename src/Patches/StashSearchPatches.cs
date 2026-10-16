@@ -169,7 +169,7 @@ public static class StashSearchPatches
             return AccessTools.Method(
                 typeof(InteractionButtonsContainer),
                 nameof(InteractionButtonsContainer.CreateContextButton),
-                [typeof(string), typeof(string), typeof(SimpleContextMenuButton), typeof(RectTransform), typeof(Sprite), typeof(Action), typeof(Action), typeof(bool), typeof(bool)]);
+                [typeof(string), typeof(string), typeof(SimpleContextMenuButton), typeof(RectTransform), typeof(Sprite), typeof(Il2CppSystem.Action), typeof(Il2CppSystem.Action), typeof(bool), typeof(bool)]);
         }
 
         [PatchPostfix]

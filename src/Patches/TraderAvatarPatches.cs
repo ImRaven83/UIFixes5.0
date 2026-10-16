@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Comfort.Common;
+using Diz.LanguageExtensions;
 using EFT;
 using EFT.InventoryLogic;
 using EFT.Quests;
@@ -168,12 +169,11 @@ public static class TraderAvatarPatches
         }
 
         [PatchPostfix]
-        public static async void Postfix(Quest quest, Il2CppSystem.Threading.Tasks.Task<IResult> __result)
+        public static void Postfix(Quest quest, bool simulate, OperationResult<QuestHandoverResult> __result)
         {
-            var result = await __result.AsManaged();
-
+            // HandoverItem is synchronous in 5.0.
             // The status possibly didn't change, but it will still cause the trader avatar to update
-            if (result.Succeed)
+            if (!simulate && __result.Succeeded)
             {
                 quest.CallOnStatusChangedEvent(quest, false);
             }

@@ -1504,7 +1504,7 @@ public static class MultiSelectPatches
         }
 
         [PatchPrefix]
-        public static void Prefix(ref IEnumerable<IContainer> containersToPut)
+        public static void Prefix(ref Il2CppSystem.Collections.Generic.IEnumerable<IContainer> containersToPut)
         {
             if (!MultiSelect.Active || FindOrigin == null)
             {
@@ -1525,7 +1525,7 @@ public static class MultiSelectPatches
                 list.RemoveAt(0);
             }
 
-            containersToPut = list;
+            containersToPut = list.ToIl2CppList();
         }
 
         [PatchPostfix]
@@ -1576,8 +1576,8 @@ public static class MultiSelectPatches
             ItemRotation rotation,
             int firstDimensionSize,
             int secondDimensionSize,
-            List<int> firstDimensionSpaces, // For each cell (left to right, top to bottom), how many spaces are open in that dimension (including that cell)
-            List<int> secondDimensionSpaces, // For each cell (left to right, top to bottom), how many spaces are open in that dimension
+            Il2CppSystem.Collections.Generic.List<int> firstDimensionSpaces, // For each cell (left to right, top to bottom), how many spaces are open in that dimension (including that cell)
+            Il2CppSystem.Collections.Generic.List<int> secondDimensionSpaces, // For each cell (left to right, top to bottom), how many spaces are open in that dimension
             bool invertDimensions,
             ref LocationInGrid __result)
         {

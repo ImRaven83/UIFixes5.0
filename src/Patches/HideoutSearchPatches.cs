@@ -1,3 +1,4 @@
+using SPTushonka.Reflection.Il2Cpp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -121,13 +122,14 @@ public static class HideoutSearchPatches
 
         // Copied directly from GetSortedSchemes
         [PatchPrefix]
-        public static bool Prefix(ProductionPanel __instance, ref IEnumerable<ProductionScheme> __result)
+        public static bool Prefix(ProductionPanel __instance, ref Il2CppSystem.Collections.Generic.IEnumerable<ProductionScheme> __result)
         {
             __result = __instance._schemes.OfType<ProductionScheme>().Where(scheme => !scheme.locked)
                 .OrderBy(scheme => scheme.endProduct.LocalizedName().Contains(__instance._searchInputField.text) ? 0 : 1) // search-matching items first
                 .ThenBy(scheme => __instance.Method_Private_Int32_ProductionScheme_PDM_0(scheme))
                 .ThenBy(scheme => scheme.FavoriteIndex)
-                .ThenBy(scheme => scheme.Level);
+                .ThenBy(scheme => scheme.Level)
+                .ToIl2CppList();
 
             return false;
         }

@@ -1,3 +1,4 @@
+using SPTushonka.Reflection.Il2Cpp;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -26,9 +27,9 @@ public static class BTRPaymentPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(InventoryEquipment __instance, ref IReadOnlyList<Slot> __result)
+        public static bool Prefix(InventoryEquipment __instance, ref Il2CppSystem.Collections.Generic.IReadOnlyList<Slot> __result)
         {
-            __result = [.. PaymentSlots.Select(__instance.GetSlot)];
+            __result = PaymentSlots.Select(__instance.GetSlot).ToIl2CppList();
             return false;
         }
     }

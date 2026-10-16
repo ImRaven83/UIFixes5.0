@@ -1,3 +1,4 @@
+using SPTushonka.Reflection.Il2Cpp;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -112,7 +113,7 @@ public static class WishlistPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(ref List<AreaData> __result)
+        public static void Postfix(ref Il2CppSystem.Collections.Generic.List<AreaData> __result)
         {
             if (!InPatch || Settings.AutoWishlistUpgrades.Value != AutoWishlistBehavior.Visible)
             {
@@ -153,7 +154,7 @@ public static class WishlistPatches
         }
 
         [PatchPostfix] // This is a postfix to avoid conflicting with HIP
-        public static void Postfix(ref IEnumerator<Requirement> __result)
+        public static void Postfix(ref Il2CppSystem.Collections.Generic.IEnumerator<Requirement> __result)
         {
             if (Settings.AutoWishlistUpgrades.Value == AutoWishlistBehavior.Normal || !InPatch)
             {
@@ -161,7 +162,7 @@ public static class WishlistPatches
             }
 
             // The autowishlist feature will skip over the returned items if there is an unfulfilled area or rep requirement. Just remove all those
-            __result = FilterNonItemRequirements(__result).GetEnumerator();
+            __result = FilterNonItemRequirements(__result).ToIl2CppList().Cast<Il2CppSystem.Collections.Generic.IEnumerable<Requirement>>().GetEnumerator();
         }
 
         private static IEnumerable<Requirement> FilterNonItemRequirements(IEnumerator<Requirement> enumerator)

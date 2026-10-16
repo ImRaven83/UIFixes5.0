@@ -1,3 +1,4 @@
+using SPTushonka.Reflection.Il2Cpp;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -123,14 +124,14 @@ public static class FilterOutOfStockPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(ref IEnumerable<Item> __result)
+        public static void Postfix(ref Il2CppSystem.Collections.Generic.IEnumerable<Item> __result)
         {
             if (ShowOutOfStockItems)
             {
                 return;
             }
 
-            __result = __result.Where(item => item.StackObjectsCount > 0);
+            __result = __result.Where(item => item.StackObjectsCount > 0).ToIl2CppList();
         }
     }
 }

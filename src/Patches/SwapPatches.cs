@@ -871,7 +871,7 @@ public static class SwapPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(ItemManipulator.__c__DisplayClass3_0 __instance, IEnumerable<IContainer> containersToPut, ref OperationResult<IItemOperationResult> __result)
+        public static void Postfix(ItemManipulator.__c__DisplayClass3_0 __instance, Il2CppSystem.Collections.Generic.IEnumerable<IContainer> containersToPut, ref OperationResult<IItemOperationResult> __result)
         {
             if (!containersToPut.Any(c => c is Grid) && __result.Error == __instance.noSpaceError)
             {

@@ -31,7 +31,7 @@ public static class LoadMultipleMagazinesPatches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(ItemUiContext), nameof(ItemUiContext.FindCompatibleAmmo));
+            return AccessTools.Method(typeof(ItemUiContext), nameof(ItemUiContext.FindCompatibleAmmo), [typeof(Magazine)]);
         }
 
         [PatchPrefix]
