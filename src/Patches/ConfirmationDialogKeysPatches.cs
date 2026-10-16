@@ -29,16 +29,15 @@ public static class ConfirmDialogKeysPatches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(R.DialogWindow.Type, "Update");
+            // il2cpp shares one body across reference-type instantiations, so this patches every DialogWindow<T>
+            return AccessTools.Method(typeof(DialogWindow<DialogWindowContext>), nameof(DialogWindow<DialogWindowContext>.Update));
         }
 
         [PatchPostfix]
-        public static void Postfix(object __instance)
+        public static void Postfix(DialogWindow<DialogWindowContext> __instance)
         {
-            var instance = new R.DialogWindow(__instance);
-
             // Special case for StashSearchWindow
-            if (__instance is StashSearchWindow)
+            if (__instance.TryCast<StashSearchWindow>() != null)
             {
                 return;
             }
@@ -50,7 +49,7 @@ public static class ConfirmDialogKeysPatches
 
             if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Space))
             {
-                instance.Accept();
+                __instance.Accept();
                 return;
             }
         }

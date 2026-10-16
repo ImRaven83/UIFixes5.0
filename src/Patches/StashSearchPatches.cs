@@ -149,12 +149,14 @@ public static class StashSearchPatches
             __result._dynamicInteractions["StashSearch"] = new(
                 "StashSearch",
                 text,
-                () =>
+                (System.Action)(() =>
                 {
                     Query = item.Name.Localized();
                     OpenSearch();
-                },
-                ResourcesCache.Pop<Sprite>("Characteristics/Icons/FilterSearch"));
+                }),
+                ResourcesCache.Pop<Sprite>("Characteristics/Icons/FilterSearch"),
+                null,
+                null);
         }
     }
 

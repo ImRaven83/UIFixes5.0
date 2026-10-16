@@ -330,7 +330,7 @@ public static class BarrelOnlyPatches
                 return;
             }
 
-            List<CompoundItem> destinations = [];
+            var destinations = new Il2CppSystem.Collections.Generic.List<CompoundItem>();
             if (!equipmentBlocked)
             {
                 destinations.Add(inventoryController.Inventory.Equipment);

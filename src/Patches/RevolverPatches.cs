@@ -163,7 +163,7 @@ public static class RevolverPatches
                 return new FailedResult("InventoryError/You can't unload from this item", 0);
             }
 
-            List<CompoundItem> destinations = [];
+            var destinations = new Il2CppSystem.Collections.Generic.List<CompoundItem>();
             if (!equipmentBlocked)
             {
                 destinations.Add(inventoryController.Inventory.Equipment);

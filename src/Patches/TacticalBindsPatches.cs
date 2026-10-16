@@ -84,7 +84,7 @@ public static class TacticalBindsPatches
             if (lightComponent != null)
             {
                 ToggleLight(__instance, boundItem, lightComponent);
-                callback(null);
+                callback.Invoke(null);
                 return false;
             }
 
@@ -99,7 +99,7 @@ public static class TacticalBindsPatches
                         nightVisionComponent.Togglable.Set(!nightVisionComponent.Togglable.On, true, false));
                 }
 
-                callback(null);
+                callback.Invoke(null);
                 return false;
             }
 

@@ -31,7 +31,7 @@ public static class CursorPatches
                 Settings.UnlockCursor.Value && WindowedModes.Contains(fullscreenMode) ? CursorLockMode.None : CursorLockMode.Confined :
                 CursorLockMode.Locked;
 
-            CursorSwitcher._lockModeChanged?.Invoke();
+            CursorSwitcher.LockModeChangedField?.Invoke();
 
             return false;
         }

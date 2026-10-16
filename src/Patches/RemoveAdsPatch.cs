@@ -27,9 +27,9 @@ public static class RemoveAdsPatches
         [PatchPostfix]
         public static void Postfix(SimpleStashPanel __instance)
         {
-            if (__instance._externalObtainIcon != null)
+            if (__instance._externalObtainButton != null)
             {
-                __instance._externalObtainIcon.SetActive(false);
+                __instance._externalObtainButton.gameObject.SetActive(false);
             }
         }
     }

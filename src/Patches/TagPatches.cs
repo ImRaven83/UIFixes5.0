@@ -171,7 +171,7 @@ public static class TagPatches
                 var propDictionary = properties.JToken.ToObject<Dictionary<string, UnparsedData>>();
                 if (propDictionary.TryGetValue("Tag", out UnparsedData tagProperty))
                 {
-                    tagProperty.ParseJsonTo(tagComponent.GetType(), tagComponent);
+                    tagProperty.ParseJsonTo(tagComponent.GetIl2CppType(), tagComponent);
                 }
             }
         }

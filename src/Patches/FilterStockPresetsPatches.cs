@@ -62,7 +62,7 @@ public static class FilterStockPresetsPatches
             if (!Settings.ShowStockPresets.Value)
             {
                 // These entity node things are a disaster, the only way to filter to is to competely clone the whole tree
-                HandbookNodes root = new(new Dictionary<string, HandbookNode>());
+                HandbookNodes root = new(new Il2CppSystem.Collections.Generic.Dictionary<string, HandbookNode>().Cast<Il2CppSystem.Collections.Generic.IDictionary<string, HandbookNode>>());
                 foreach (var node in nodes.Values)
                 {
                     // CreateDummy is in fact dummy and doesn't set child count properly; then I manually clone & add children

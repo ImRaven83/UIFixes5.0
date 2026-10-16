@@ -1,3 +1,4 @@
+using SPTushonka.Reflection.Il2Cpp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,19 +41,19 @@ public class WindowManager : MonoBehaviour
 
     public void OnOpen(ItemUiContext.WindowData windowData)
     {
-        if (windowData.WindowType != typeof(InfoWindow) && windowData.WindowType != typeof(GridWindow))
+        if (windowData.WindowType.ToManaged() != typeof(InfoWindow) && windowData.WindowType.ToManaged() != typeof(GridWindow))
         {
             return;
         }
 
-        var openWindow = _openWindows.FirstOrDefault(w => w.ItemId == windowData.Item.Id && w.WindowType == windowData.WindowType);
+        var openWindow = _openWindows.FirstOrDefault(w => w.ItemId == windowData.Item.Id && w.WindowType == windowData.WindowType.ToManaged());
         if (openWindow != null)
         {
             openWindow.Window = windowData.Window;
         }
         else
         {
-            openWindow = new OpenWindow(windowData.Window, windowData.Item.Id, windowData.WindowType);
+            openWindow = new OpenWindow(windowData.Window, windowData.Item.Id, windowData.WindowType.ToManaged());
             _openWindows.Add(openWindow);
         }
 

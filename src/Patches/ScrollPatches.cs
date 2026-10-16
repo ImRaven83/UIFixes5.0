@@ -193,13 +193,14 @@ public static class ScrollPatches
     // Improve scrolling on stashes
     public class EnhanceStashScrollingPatch : ModulePatch
     {
+        // SimpleStashPanel no longer has an Update method in 5.0, so drive the key handling from a component on its scroll rect
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(SimpleStashPanel), nameof(SimpleStashPanel.Update));
+            return AccessTools.DeclaredMethod(typeof(SimpleStashPanel), nameof(SimpleStashPanel.Show));
         }
 
-        [PatchPrefix]
-        public static void Prefix(SimpleStashPanel __instance, ref float? __state)
+        [PatchPostfix]
+        public static void Postfix(SimpleStashPanel __instance)
         {
             // Ignore Trading screen, that is handled separately
             if (__instance._itemUiContext?.ContextType == EItemUiContextType.TraderScreen)
@@ -207,19 +208,9 @@ public static class ScrollPatches
                 return;
             }
 
-            // For some reason, sometimes SimpleStashPanel doesn't have a reference to its own ScrollRect? 
+            // For some reason, sometimes SimpleStashPanel doesn't have a reference to its own ScrollRect?
             var scrollRect = __instance._stashScroll ?? __instance.GetComponentInChildren<ScrollRect>();
-            __state = CaptureScroll(scrollRect);
-            if (!__state.HasValue)
-            {
-                HandleInput(scrollRect);
-            }
-        }
-
-        [PatchPostfix]
-        public static void Postfix(SimpleStashPanel __instance, float? __state)
-        {
-            RestoreScroll(__instance._stashScroll ?? __instance.GetComponentInChildren<ScrollRect>(), __state);
+            scrollRect?.GetOrAddComponent<KeyScrollListener>();
         }
     }
 

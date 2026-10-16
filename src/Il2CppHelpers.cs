@@ -70,4 +70,21 @@ public static class Il2CppHelpers
             }
         }, System.Threading.Tasks.TaskContinuationOptions.OnlyOnFaulted);
     }
+
+    // The interop generator can't project multi-dimensional arrays, so they come through as a bare Il2CppObjectBase.
+    // Read an element straight from the il2cpp array layout: header (object, bounds*, max_length) followed by the data.
+    public static unsafe T Get2D<T>(this Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase array, int i, int j) where T : unmanaged
+    {
+        byte* ptr = (byte*)array.Pointer;
+        byte* bounds = *(byte**)(ptr + 2 * IntPtr.Size);
+
+        // Il2CppArrayBounds is { il2cpp_array_size_t length; int32 lower_bound; }, padded to 2 pointers
+        int boundsSize = 2 * IntPtr.Size;
+        long length1 = *(long*)(bounds + boundsSize);
+        int lower0 = *(int*)(bounds + IntPtr.Size);
+        int lower1 = *(int*)(bounds + boundsSize + IntPtr.Size);
+
+        T* data = (T*)(ptr + 4 * IntPtr.Size);
+        return data[(i - lower0) * length1 + (j - lower1)];
+    }
 }

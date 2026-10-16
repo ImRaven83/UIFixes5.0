@@ -87,7 +87,7 @@ public static class InternalMagPatches
             {
                 if (Settings.LoadAmmoOnInternalMags.Value && !Plugin.InRaid())
                 {
-                    __result = __result.Append(EItemInfoButton.LoadAmmo);
+                    __result = __result.Append(EItemInfoButton.LoadAmmo).ToIl2CppList();
                 }
             }
 
@@ -96,7 +96,7 @@ public static class InternalMagPatches
             {
                 if (!Settings.ShowReloadOnInternalMags.Value)
                 {
-                    __result = __result.Where(b => b != EItemInfoButton.Reload && b != EItemInfoButton.Load);
+                    __result = __result.Where(b => b != EItemInfoButton.Reload && b != EItemInfoButton.Load).ToIl2CppList();
                 }
             }
         }
@@ -155,7 +155,7 @@ public static class InternalMagPatches
 
             var equipmentBlocked = itemContext.ViewType == EItemViewType.InventoryDuringMatching;
 
-            __instance.WaitOneFrame(() => BarrelOnlyPatches.UnloadAmmoPatch.UnloadChamber(chamber, __instance._inventoryController, equipmentBlocked).HandleExceptions());
+            __instance.WaitOneFrame((System.Action)(() => BarrelOnlyPatches.UnloadAmmoPatch.UnloadChamber(chamber, __instance._inventoryController, equipmentBlocked).HandleExceptions()));
         }
     }
 }

@@ -152,7 +152,6 @@ public class Plugin : BasePlugin
     }
 
     private static bool? IsFikaPresent;
-    private static readonly System.Version MinimumFikaVersion = new("1.1.3");
 
     public static bool FikaPresent()
     {
@@ -160,11 +159,7 @@ public class Plugin : BasePlugin
         {
             if (IL2CPPChainloader.Instance.Plugins.TryGetValue("com.fika.core", out BepInEx.PluginInfo pluginInfo))
             {
-                if (pluginInfo.Metadata.Version < MinimumFikaVersion)
-                {
-                    Instance.Logger.LogError($"Unsupported Fika version! {MinimumFikaVersion} or newer is required");
-                }
-
+                // UI Fixes no longer ships Fika integration for SPT 5.0; this only gates features that conflict with it
                 IsFikaPresent = true;
             }
             else

@@ -389,9 +389,9 @@ public static class ContextMenuPatches
             }
 
             IEnumerable<Item> items = MultiSelect.Active ? MultiSelect.ItemContexts.Select(ic => ic.Item) : [__instance._item];
-            IEnumerable<InsuredItem> insuranceItemes = items.Select(InsuredItem.FindOrCreate);
-            IEnumerable<InsuredItem> insurableItems = insuranceItemes.SelectMany(__instance._insurance.GetItemChildren)
-                .Flatten(__instance._insurance.GetItemChildren)
+            IEnumerable<InsuredItem> insuranceItemes = items.Select(InsuredItem.FindOrCreate).ToList();
+            IEnumerable<InsuredItem> insurableItems = insuranceItemes.SelectMany(i => __instance._insurance.GetItemChildren(i))
+                .FlattenManaged(i => __instance._insurance.GetItemChildren(i))
                 .Concat(insuranceItemes)
                 .Where(i => __instance._insurance.ItemTypeAvailableForInsurance(i) && !__instance._insurance.InsuredItems.Contains(i));
 

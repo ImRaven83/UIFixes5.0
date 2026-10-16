@@ -38,7 +38,7 @@ public static class GridHighlightPatches
             }
 
             var border = __instance.transform.Find("NoFitBorder")?.gameObject;
-            if (!__instance._highlightPanel.IsActive() || __instance._highlightPanel.color != __instance.InvalidOperationColor)
+            if (!__instance._highlightPanel.IsActive() || __instance._highlightPanel.color != GridView.InvalidOperationColor)
             {
                 if (border != null)
                 {

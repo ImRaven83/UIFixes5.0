@@ -27,7 +27,7 @@ public static class GPCoinPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(DisplayMoneyPanel __instance, IEnumerable<Item> inventoryItems)
+        public static bool Prefix(DisplayMoneyPanel __instance, Il2CppSystem.Collections.Generic.IEnumerable<Item> inventoryItems)
         {
             if (!Settings.ShowGPCurrency.Value)
             {
@@ -86,7 +86,7 @@ public static class GPCoinPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(DisplayMoneyPanelTMPText __instance, IEnumerable<Item> inventoryItems)
+        public static bool Prefix(DisplayMoneyPanelTMPText __instance, Il2CppSystem.Collections.Generic.IEnumerable<Item> inventoryItems)
         {
             if (!Settings.ShowGPCurrency.Value)
             {

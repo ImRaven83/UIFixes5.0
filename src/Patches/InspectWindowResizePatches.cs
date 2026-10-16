@@ -74,7 +74,7 @@ internal static class InspectWindowResizePatches
         {
             if (Settings.RememberInspectSize.Value)
             {
-                RestoreSavedSize(__instance._layoutElement);
+                RestoreSavedSize(__instance.GetComponent<LayoutElement>());
             }
         }
 
@@ -101,7 +101,7 @@ internal static class InspectWindowResizePatches
             {
                 CreateRightButton(__instance, closeButton);
                 CreateLeftButton(__instance, closeButton);
-                CreateRestoreButton(__instance, __instance._layoutElement, closeButton);
+                CreateRestoreButton(__instance, __instance.GetComponent<LayoutElement>(), closeButton);
             }
         }
 

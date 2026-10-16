@@ -1258,7 +1258,7 @@ public static class MultiSelectPatches
                 return;
             }
 
-            List<Ammo> ammo = [];
+            var ammo = new Il2CppSystem.Collections.Generic.List<Ammo>();
             foreach (var itemContext in MultiSelect.ItemContexts)
             {
                 if (itemContext.Item is Ammo ammoItem)
@@ -1331,7 +1331,7 @@ public static class MultiSelectPatches
                         ItemManipulator.QuickFindAppropriatePlace(
                             selectedItemContext.Item,
                             __instance._traderAssortment.TraderController,
-                            [__instance.Grid.ParentItem as CompoundItem],
+                            Il2CppHelpers.Il2CppList(__instance.Grid.ParentItem as CompoundItem),
                             ItemManipulator.EMoveItemOrder.Apply,
                             false);
 
@@ -1411,7 +1411,7 @@ public static class MultiSelectPatches
                 OperationResult operation = ItemManipulator.QuickFindAppropriatePlace(
                     selectedItemContext.Item,
                     __instance._traderAssortment.TraderController,
-                    [__instance.Grid.ParentItem],
+                    Il2CppHelpers.Il2CppList(__instance.Grid.ParentItem as CompoundItem),
                     ItemManipulator.EMoveItemOrder.Apply,
                     true);
 

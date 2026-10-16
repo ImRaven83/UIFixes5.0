@@ -141,16 +141,13 @@ public static class MailPatches
 
     public class UpdateCountsAfterTransferPatch : ModulePatch
     {
-        private static FieldInfo DialogueViewDialogueField;
-
         protected override MethodBase GetTargetMethod()
         {
-            DialogueViewDialogueField = AccessTools.Field(typeof(DialogueView), "_dialogue");
             return AccessTools.DeclaredMethod(typeof(TransferItemsScreen), nameof(TransferItemsScreen.Close));
         }
 
         [PatchPostfix]
-        public static async void Postfix(DialogueView __instance)
+        public static async void Postfix(TransferItemsScreen __instance)
         {
             if (__instance._messages == null || !__instance._messages.Any())
             {
@@ -164,7 +161,7 @@ public static class MailPatches
             }
 
             // Need to flush any moves
-            await __instance._itemUiContext.ClientSession.FlushOperationQueue();
+            await __instance._itemUiContext.ClientSession.FlushOperationQueue().AsManaged();
 
             // count messages that no longer have rewards
             var claimed = __instance._messages.Count(m => !m.DisplayRewardStatus);
@@ -181,7 +178,7 @@ public static class MailPatches
             // If the chat screen is already open, I have to use UI to reach into it to update the attachment count
             var dialoguesContainer = MonoBehaviourSingleton<CommonUI>.Instance.ChatScreen.transform.Find("DialoguesPart").GetComponent<DialoguesContainer>();
             var dialogueViews = dialoguesContainer.GetComponentsInChildren<DialogueView>();
-            var dialogueView = dialogueViews?.FirstOrDefault(dv => DialogueViewDialogueField.GetValue(dv) == dialogue);
+            var dialogueView = dialogueViews?.FirstOrDefault(dv => dv._dialogue == dialogue);
             if (dialogueView != null)
             {
                 dialogueView.NewAttachmentsMessagesCount = dialogue.AttachmentsNew;
@@ -235,27 +232,29 @@ public static class MailPatches
 
     public class DialogueViewSelectedPatch : ModulePatch
     {
-        private static MethodInfo SetNewAttachmentsMessagesCountMethod;
-
         protected override MethodBase GetTargetMethod()
         {
-            SetNewAttachmentsMessagesCountMethod = AccessTools.Property(typeof(DialogueView), nameof(DialogueView.NewAttachmentsMessagesCount)).SetMethod;
             return AccessTools.Method(typeof(DialogueView), nameof(DialogueView.SelectView));
         }
 
-        // Transpilers can't edit il2cpp bodies; SelectView zeroes NewAttachmentsMessagesCount, so put it back afterwards
+        // Transpilers can't edit il2cpp bodies; SelectView zeroes NewAttachmentsMessagesCount, so put it back afterwards.
+        // The property is set-only, so read the current value back from the label it drives.
         [PatchPrefix]
         public static void Prefix(DialogueView __instance, ref int __state)
         {
-            __state = __instance.NewAttachmentsMessagesCount;
+            __state = 0;
+            if (__instance._newAttachmentsMessagesObject != null && __instance._newAttachmentsMessagesObject.activeSelf)
+            {
+                int.TryParse(__instance._newAttachmentsMessagesCount?.text, out __state);
+            }
         }
 
         [PatchPostfix]
         public static void Postfix(DialogueView __instance, int __state)
         {
-            if (__instance.NewAttachmentsMessagesCount != __state)
+            if (__state > 0)
             {
-                SetNewAttachmentsMessagesCountMethod.Invoke(__instance, [__state]);
+                __instance.NewAttachmentsMessagesCount = __state;
             }
         }
     }

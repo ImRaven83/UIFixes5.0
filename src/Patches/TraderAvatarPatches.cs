@@ -223,7 +223,7 @@ public static class TraderAvatarPatches
             }
             else
             {
-                return QuestController.GetItemsForCondition(inventory, conditionHandoverItem).Any();
+                return QuestController.GetItemsForCondition(inventory, conditionHandoverItem, EPlayerItems.LobbyHandoverItems).Any();
             }
         }
         else if (condition is ConditionWeaponAssembly conditionWeaponAssembly)

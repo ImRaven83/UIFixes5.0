@@ -1,3 +1,4 @@
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using SPTushonka.Reflection.Il2Cpp;
 using System;
 using System.Linq;
@@ -61,7 +62,7 @@ public static class LoadMultipleMagazinesPatches
         }
 
         [PatchPrefix]
-        public static void Prefix(ref ItemFilter[] filters)
+        public static void Prefix(ref Il2CppReferenceArray<ItemFilter> filters)
         {
             if (CombinedFilters == null)
             {
@@ -140,7 +141,7 @@ public static class LoadMultipleMagazinesPatches
             }
 
             var magazines = MultiSelect.SortedItemContexts().Select(itemContext => itemContext.Item).OfType<Magazine>();
-            __instance._uiContext.ApplyMagPreset(preset, [.. magazines]).HandleExceptions();
+            __instance._uiContext.ApplyMagPreset(preset, magazines.ToIl2CppList()).HandleExceptions();
 
             return false;
         }

@@ -82,16 +82,16 @@ public static class RebindConsumablesPatches
             return;
         }
 
-        ItemUiContext.Instance.WaitOneFrame(() =>
+        ItemUiContext.Instance.WaitOneFrame((System.Action)(() =>
         {
-            List<Item> matchItems = [];
-            controller.GetAcceptableItemsNonAlloc(Slots, matchItems, g => g.TemplateId == unbindOperation.Item.TemplateId);
+            var matchItems = new Il2CppSystem.Collections.Generic.List<Item>();
+            controller.GetAcceptableItemsNonAlloc<Item>(Slots, matchItems, (System.Func<Item, bool>)(g => g.TemplateId == unbindOperation.Item.TemplateId), null);
 
             var nextItem = matchItems.FirstOrDefault(g => controller.IsAtBindablePlace(g));
             if (nextItem != null)
             {
                 controller.TryRunNetworkTransaction(BindResult.Run(controller, nextItem, unbindOperation.Index, true), null);
             }
-        });
+        }));
     }
 }

@@ -1,3 +1,4 @@
+using SPTushonka.Reflection.Il2Cpp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -856,7 +857,7 @@ public static class WeaponModdingPatches
 
         // BSG's implemention uses a lazy-eval linq that doesn't see mods that are nested once the higher level mod is removed
         [PatchPrefix]
-        public static bool Prefix(ItemUiContext __instance, ItemContext itemContext, bool simulate, ref List<OperationResult> __result)
+        public static bool Prefix(ItemUiContext __instance, ItemContext itemContext, bool simulate, ref Il2CppSystem.Collections.Generic.List<OperationResult> __result)
         {
             if (!Settings.FullyDisassemble.Value)
             {
@@ -944,12 +945,12 @@ public static class WeaponModdingPatches
         [PatchPostfix]
         public static void Postfix(EditBuildScreen __instance, ref string __result)
         {
-            List<Mod> installedMods = WeaponAssembler.GetInstalledMods(__instance._itemBody as Weapon);
+            var installedMods = WeaponAssembler.GetInstalledMods(__instance._itemBody as Weapon);
 
             // Due to when this is called, Item may not be set yet, but I can still grab it through the parent class's context
             var item = __instance.Item ?? __instance._itemContext.Item;
 
-            if (WeaponAssembler.CheckIfAlreadyBuilt(installedMods, item as Weapon))
+            if (WeaponAssembler.CheckIfAlreadyBuilt(Enumerable.Cast<Item>(installedMods).ToIl2CppList(), item as Weapon))
             {
                 __result = "Weapon has been built"; // This localized string is used as a notification on success, seems good enough for this too
             }

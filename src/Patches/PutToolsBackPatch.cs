@@ -1,3 +1,4 @@
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -20,7 +21,7 @@ public class PutToolsBackPatch : ModulePatch
     // Find items that are in subcontainers and handle them first - the patched method will ignore items that have a CurrentAddress
     // This is a subset of the original method - doesn't handle slots, equipment containers, etc.
     [PatchPrefix]
-    public static void Prefix(ProfileUpdatesHandler __instance, ref FlatItem[] newItems)
+    public static void Prefix(ProfileUpdatesHandler __instance, ref Il2CppReferenceArray<FlatItem> newItems)
     {
         if (!newItems.Any())
         {
@@ -54,7 +55,7 @@ public class PutToolsBackPatch : ModulePatch
         }
 
         // Change the parameter to remove the items handled here
-        newItems = [.. newItems.Except(unhandledItems)];
+        newItems = newItems.Except(unhandledItems).ToIl2CppArray();
 
         List<Item> stashItems = [.. stash.GetNotMergedItems()];
 
@@ -62,13 +63,13 @@ public class PutToolsBackPatch : ModulePatch
         foreach (Item item in tree.Items.Values.Where(i => i.CurrentAddress == null))
         {
             var newItem = unhandledItems.First(i => i._id == item.Id);
-            if (newItem.parentId == null && newItem.slotId == null)
+            if (string.IsNullOrEmpty(newItem.StringParentId) && newItem.slotId == null)
             {
                 continue;
             }
 
             // Assuming here that unhandled items are trying to go into containers in the stash - find that container
-            Item parent = stashItems.FirstOrDefault(i => i.Id == newItem.parentId);
+            Item parent = stashItems.FirstOrDefault(i => i.Id == newItem.StringParentId);
             if (parent is not ContainerCollection containerCollection ||
                 containerCollection.GetContainer(newItem.slotId) is not Grid grid)
             {

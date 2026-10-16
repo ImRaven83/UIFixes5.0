@@ -38,7 +38,7 @@ public static class TextboxPatches
                 return true;
             }
 
-            __instance.Press = InputManager.UpdateInputMatrix[0, (int)__instance.Press];
+            __instance.Press = InputManager.UpdateInputMatrix.Get2D<EKeyPress>(0, (int)__instance.Press);
             return false;
         }
     }

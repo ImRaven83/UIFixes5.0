@@ -107,7 +107,7 @@ public static class SwapPatches
         }
 
         // Check if the source container is a non-interactable GridView. Specifically for StashSearch, but may exist in other scenarios?
-        if (SourceContainer != null && SourceContainer is GridView && new R.GridView(SourceContainer).NonInteractable)
+        if (SourceContainer != null && SourceContainer is GridView sourceGridView && sourceGridView._nonInteractable)
         {
             return false;
         }
@@ -473,7 +473,7 @@ public static class SwapPatches
             }
         }
 
-        private static bool CanSwap(GridView gridView, DragItemContext itemContext, ItemContext targetItemContext, ItemController itemController, ref OperationResult operation, Dictionary<string, ItemView> itemViews, bool prefix)
+        private static bool CanSwap(GridView gridView, DragItemContext itemContext, ItemContext targetItemContext, ItemController itemController, ref OperationResult operation, Il2CppSystem.Collections.Generic.Dictionary<string, ItemView> itemViews, bool prefix)
         {
             // BSG's "move entire stacks" code loops inside AcceptItem - don't want this method to run on 2nd+ calls. Swap only happens
             // on the first. This still works fine with multi-select since that calls AcceptItem per item 
@@ -769,7 +769,7 @@ public static class SwapPatches
             }
 
             // Check if the source container is a non-interactable GridView. Specifically for StashSearch, but may exist in other scenarios?
-            if (SourceContainer != null && SourceContainer is GridView && new R.GridView(SourceContainer).NonInteractable)
+            if (SourceContainer != null && SourceContainer is GridView sourceGridView && sourceGridView._nonInteractable)
             {
                 return;
             }
