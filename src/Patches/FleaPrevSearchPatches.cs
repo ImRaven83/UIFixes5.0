@@ -1,3 +1,4 @@
+using SPTushonka.Reflection.Il2Cpp;
 using System;
 using System.CodeDom;
 using System.Collections.Generic;
@@ -235,7 +236,7 @@ public static class FleaPrevSearchPatches
             searches.Add(new(EFilterType.OfferOwnerType, filterRule.OfferOwnerType, filterRule.OfferOwnerType != 0));
             searches.Add(new(EFilterType.OnlyFunctional, filterRule.OnlyFunctional ? 1 : 0, filterRule.OnlyFunctional));
 
-            _ragfair.SetSearches(filterRule.ViewListType, [.. searches], false, out FilterRule newRule);
+            _ragfair.SetSearches(filterRule.ViewListType, searches.ToIl2CppArray(), false, out FilterRule newRule);
 
             // These properties don't consistute a new search, so much as a different view of the same search
             newRule.Page = filterRule.Page;
@@ -366,9 +367,9 @@ public static class FleaPrevSearchPatches
         }
 
         [PatchPostfix]
-        public static async void Postfix(OfferViewList __instance, Task __result)
+        public static async void Postfix(OfferViewList __instance, Il2CppSystem.Threading.Tasks.Task __result)
         {
-            await __result;
+            await __result.AsManaged();
 
             if (__instance._viewListType != EViewListType.AllOffers)
             {

@@ -35,9 +35,9 @@ public static class VariableScopeFixPatches
         {
             if (__instance.Player != null && !__instance.Player.IsYourPlayer)
             {
-                __instance._tacticalComboVisualControllers = [.. __instance._weaponHierarchy.GetComponentsInChildrenActiveIgnoreFirstLevel<TacticalComboVisualController>()];
-                __instance._sightModVisualControllers = [.. __instance._weaponHierarchy.GetComponentsInChildrenActiveIgnoreFirstLevel<SightModVisualControllers>()];
-                __instance._launcherViauslControllers = [.. __instance._weaponHierarchy.GetComponentsInChildrenActiveIgnoreFirstLevel<LauncherViauslController>()];
+                __instance._tacticalComboVisualControllers = __instance._weaponHierarchy.GetComponentsInChildrenActiveIgnoreFirstLevel<TacticalComboVisualController>().ToIl2CppArray();
+                __instance._sightModVisualControllers = __instance._weaponHierarchy.GetComponentsInChildrenActiveIgnoreFirstLevel<SightModVisualControllers>().ToIl2CppArray();
+                __instance._launcherViauslControllers = __instance._weaponHierarchy.GetComponentsInChildrenActiveIgnoreFirstLevel<LauncherViauslController>().ToIl2CppArray();
                 __instance._bipodViewController = __instance._weaponHierarchy.GetComponentsInChildrenActiveIgnoreFirstLevel<BipodViewController>().FirstOrDefault();
 
                 return false;

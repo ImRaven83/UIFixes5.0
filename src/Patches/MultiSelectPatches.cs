@@ -1147,7 +1147,7 @@ public static class MultiSelectPatches
                 MultiSelect.SortedItemContexts(),
                 async selectedItemContext =>
                 {
-                    // There is a case with SlotViews where the slot view is recreated after each item, so I need to check and refind the instance).ToIl2Cpp().ToIl2Cpp()
+                    // There is a case with SlotViews where the slot view is recreated after each item, so I need to check and refind the instance
                     if (slotView == null)
                     {
                         if (parentTransform == null)
@@ -1204,7 +1204,7 @@ public static class MultiSelectPatches
                             LoadMultiBarrelWeaponPatch.CurrentTask = null;
                         }
                     }
-                });
+                }).ToIl2Cpp();
 
             __result.ContinueWith((System.Action<Il2CppSystem.Threading.Tasks.Task>)(_ => { InPatch = false; }));
 
@@ -1222,9 +1222,9 @@ public static class MultiSelectPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(Task<IResult> __result)
+        public static void Postfix(Il2CppSystem.Threading.Tasks.Task<IResult> __result)
         {
-            CurrentTask = __result;
+            CurrentTask = __result.AsManaged();
         }
     }
     public class LoadWeaponWithAmmoPatch : ModulePatch
@@ -1237,9 +1237,9 @@ public static class MultiSelectPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(Task<IResult> __result)
+        public static void Postfix(Il2CppSystem.Threading.Tasks.Task<IResult> __result)
         {
-            CurrentTask = __result;
+            CurrentTask = __result.AsManaged();
         }
     }
 
@@ -1281,9 +1281,9 @@ public static class MultiSelectPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(Task<IResult> __result)
+        public static void Postfix(Il2CppSystem.Threading.Tasks.Task<IResult> __result)
         {
-            CurrentTask = __result;
+            CurrentTask = __result.AsManaged();
         }
     }
 
@@ -1500,7 +1500,7 @@ public static class MultiSelectPatches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(ItemManipulator.CG_QuickFindAppropriatePlace), nameof(ItemManipulator.CG_QuickFindAppropriatePlace.method_1));
+            return AccessTools.Method(typeof(ItemManipulator.__c__DisplayClass3_0), nameof(ItemManipulator.__c__DisplayClass3_0.Method_Internal_OperationResult_1_IItemOperationResult_IEnumerable_1_IContainer_PDM_0));
         }
 
         [PatchPrefix]

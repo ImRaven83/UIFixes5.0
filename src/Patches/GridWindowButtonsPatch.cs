@@ -52,7 +52,7 @@ public class GridWindowButtonsPatch : ModulePatch
         background.sprite = backgroundSprite;
 
         Image icon = transform.Find("X").GetComponent<Image>();
-        icon.sprite = EFTHardSettings.Instance.StaticIcons.GetAttributeIcon(attributeIcon);
+        icon.sprite = EFTHardSettings.Instance.StaticIcons.GetAttributeIcon(attributeIcon.BoxEnum());
         icon.overrideSprite = null;
         icon.SetNativeSize();
 

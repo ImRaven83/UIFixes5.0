@@ -13,7 +13,7 @@ public class FixPlayerInspectPatch : ModulePatch
 {
     protected override MethodBase GetTargetMethod()
     {
-        return AccessTools.Method(typeof(PartyInfoPanel), nameof(PartyInfoPanel.CG_method_3)); // OnViewEquipmentClick
+        return AccessTools.Method(typeof(PartyInfoPanel), nameof(PartyInfoPanel.Method_Private_Void_RaidPlayer_PDM_0)); // OnViewEquipmentClick
     }
 
     [PatchPrefix]

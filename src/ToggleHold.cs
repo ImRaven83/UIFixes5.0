@@ -1,4 +1,6 @@
-﻿using EFT.InputSystem;
+using System;
+using EFT.InputSystem;
+using Il2CppInterop.Runtime.Injection;
 
 namespace UIFixes;
 
@@ -9,8 +11,18 @@ public enum ToggleHoldState
     Holding = 15
 }
 
-public class ToggleHoldIdleState(InputKeyCombination keyCombination) : InputKeyCombination.KeyCombinationState(keyCombination)
+// Injected into il2cpp (see Plugin.Load) so InputKeyCombination's state machine calls these overrides
+public class ToggleHoldIdleState : InputKeyCombination.KeyCombinationState
 {
+    public ToggleHoldIdleState(IntPtr pointer) : base(pointer) { }
+
+    public ToggleHoldIdleState(InputKeyCombination keyCombination)
+        : base(ClassInjector.DerivedConstructorPointer<ToggleHoldIdleState>())
+    {
+        ClassInjector.DerivedConstructorBody(this);
+        ClassInjector.InvokeBaseConstructor(this, keyCombination);
+    }
+
     public override ECommand GetCommand(float deltaTime)
     {
         if (!CanProcess())
@@ -29,8 +41,18 @@ public class ToggleHoldIdleState(InputKeyCombination keyCombination) : InputKeyC
     }
 }
 
-public class ToggleHoldClickOrHoldState(InputKeyCombination keyCombination) : InputKeyCombination.KeyCombinationState(keyCombination)
+// Injected into il2cpp (see Plugin.Load) so InputKeyCombination's state machine calls these overrides
+public class ToggleHoldClickOrHoldState : InputKeyCombination.KeyCombinationState
 {
+    public ToggleHoldClickOrHoldState(IntPtr pointer) : base(pointer) { }
+
+    public ToggleHoldClickOrHoldState(InputKeyCombination keyCombination)
+        : base(ClassInjector.DerivedConstructorPointer<ToggleHoldClickOrHoldState>())
+    {
+        ClassInjector.DerivedConstructorBody(this);
+        ClassInjector.InvokeBaseConstructor(this, keyCombination);
+    }
+
     public override void Enter()
     {
         _timer = KeyCombination.DoubleClickTimeout;
@@ -66,8 +88,18 @@ public class ToggleHoldClickOrHoldState(InputKeyCombination keyCombination) : In
     private float _timer;
 }
 
-public class ToggleHoldHoldState(InputKeyCombination keyCombination) : InputKeyCombination.KeyCombinationState(keyCombination)
+// Injected into il2cpp (see Plugin.Load) so InputKeyCombination's state machine calls these overrides
+public class ToggleHoldHoldState : InputKeyCombination.KeyCombinationState
 {
+    public ToggleHoldHoldState(IntPtr pointer) : base(pointer) { }
+
+    public ToggleHoldHoldState(InputKeyCombination keyCombination)
+        : base(ClassInjector.DerivedConstructorPointer<ToggleHoldHoldState>())
+    {
+        ClassInjector.DerivedConstructorBody(this);
+        ClassInjector.InvokeBaseConstructor(this, keyCombination);
+    }
+
     public override ECommand GetCommand(float deltaTime)
     {
         if (GetKeysStatus(out EKeyPress ekeyPress) && ekeyPress == EKeyPress.Hold)
@@ -79,7 +111,7 @@ public class ToggleHoldHoldState(InputKeyCombination keyCombination) : InputKeyC
         UnhandleKeys(null);
         KeyCombination.ChangeState((InputKeyCombination.EKeyState)ToggleHoldState.Idle);
 
-        return KeyCombination is ToggleInputKeyCombination toggleKeyCombination ? toggleKeyCombination._disableCommand : KeyCombination.ecommand_0;
+        return KeyCombination is ToggleInputKeyCombination toggleKeyCombination ? toggleKeyCombination._disableCommand : KeyCombination._currentCommand;
     }
 }
 

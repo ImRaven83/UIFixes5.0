@@ -176,7 +176,7 @@ public static class ConfirmDialogKeysPatches
             {
                 button.transition = Selectable.Transition.None;
                 button.onClick.RemoveAllListeners(); // There's no disposable here so keeping the listener count down
-                button.onClick.AddListener(__instance.CG_Awake);
+                button.onClick.AddListener((System.Action)__instance._Awake_b__11_0);
             }
         }
     }

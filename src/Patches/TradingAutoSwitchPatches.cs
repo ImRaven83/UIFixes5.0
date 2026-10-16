@@ -171,8 +171,8 @@ public static class TradingAutoSwitchPatches
     {
         protected override MethodBase GetTargetMethod()
         {
-            // method_4 is called near the end of TraderScreensGroup.Show(), right before SelectTrader(), which sets the trader and tab
-            return AccessTools.Method(typeof(TraderScreensGroup), nameof(TraderScreensGroup.method_4));
+            // SpawnCards is called near the end of TraderScreensGroup.Show(), right before SelectTrader(), which sets the trader and tab
+            return AccessTools.Method(typeof(TraderScreensGroup), nameof(TraderScreensGroup.SpawnCards));
         }
 
         [PatchPrefix]

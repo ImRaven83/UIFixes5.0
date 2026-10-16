@@ -1,4 +1,5 @@
 using System;
+using SPTushonka.Reflection.Il2Cpp;
 using System.Collections.Generic;
 using System.Linq;
 using Comfort.Common;
@@ -44,7 +45,7 @@ public class InsuranceInteractions : BaseEmptyContextInteractions
             .Where(i => _insurance.ItemTypeAvailableForInsurance(i) && !_insurance.InsuredItems.Contains(i))
             .ToList();
 
-        _insurance.GetInsurePriceAsync(_insurableItems.ToI(System.Action<Il2CppReferenceArray<InsuredItem>>)(l2CppList()), (Action<Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<InsuredItem>>)(_ =>
+        _insurance.GetInsurePriceAsync(_insurableItems.ToIl2CppList(), (Action<Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<InsuredItem>>)(_ =>
         {
             foreach (var insurer in _insurance.Insurers)
             {
@@ -70,7 +71,7 @@ public class InsuranceInteractions : BaseEmptyContextInteractions
     private void Insure(string insurerId)
     {
         _insurance.SelectedInsurerId = insurerId;
-        _insurance.InsureItems(_insurableItems.ToIl2Cpp(System.Action<Comfort.Common.IResult>)(List()), (Action<IResult>)(result => { }));
+        _insurance.InsureItems(_insurableItems.ToIl2CppList(), (Action<IResult>)(result => { }));
     }
 
     public IResult GetButtonInteraction(string interactionId)

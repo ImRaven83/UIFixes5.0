@@ -64,7 +64,7 @@ public class LoadAmmoInRaidPatches
 
             InventoryEquipment equipment = __instance._inventoryController.Inventory.Equipment;
 
-            List<Ammo> ammo = [];
+            var ammo = new Il2CppSystem.Collections.Generic.List<Ammo>();
             equipment.GetAllAssembledItems(ammo);
 
             // Just do the first stack
@@ -75,7 +75,7 @@ public class LoadAmmoInRaidPatches
 
             if (bullets != null)
             {
-                int count = GridView.CG_smethod_0(magazine, bullets);
+                int count = GridView.Method_Internal_Static_Int32_Magazine_Ammo_0(magazine, bullets);
                 __result = __instance._inventoryController.LoadMagazine(bullets, magazine, count, false);
             }
             else

@@ -9,7 +9,7 @@ public class HideInviteUIPatch : ModulePatch
 {
     protected override MethodBase GetTargetMethod()
     {
-        return AccessTools.Method(typeof(MenuTaskBar), nameof(MenuTaskBar.method_1)); // OnGroupStatusChanged
+        return AccessTools.Method(typeof(MenuTaskBar), nameof(MenuTaskBar.GroupStatusChangedHandler)); // OnGroupStatusChanged
     }
 
     [PatchPrefix]

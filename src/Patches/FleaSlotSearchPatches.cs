@@ -9,6 +9,7 @@ using EFT;
 using EFT.HandBook;
 using EFT.UI.Ragfair;
 using HarmonyLib;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using SPTushonka.Reflection.Patching;
 
 namespace UIFixes;
@@ -31,7 +32,7 @@ public static class FleaSlotSearchPatches
         }
 
         [PatchPrefix]
-        public static void Prefix(RagFair __instance, RagfairSearch[] searches, ref string __state)
+        public static void Prefix(RagFair __instance, Il2CppReferenceArray<RagfairSearch> searches, ref string __state)
         {
             if (!Settings.EnableSlotSearch.Value)
             {
@@ -63,7 +64,7 @@ public static class FleaSlotSearchPatches
                     };
                     __instance._handbook.StructuredItems.AddVirtual(__state, dummyNode);
                 }
-                searches[searches.IndexOf(search)] = new(EFilterType.LinkedSearch, __state, search.Add);
+                searches[System.Array.IndexOf(searches.ToArray(), search)] = new(EFilterType.LinkedSearch, __state, search.Add);
             }
         }
 
@@ -101,27 +102,22 @@ public static class FleaSlotSearchPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix(EftClientBackendSession __instance, ref Il2CppSystem.Threading.Tasks.Task<Result<OffersList>> __result, int page, int limit, int sortType, bool direction, int currency, int priceFrom, int priceTo, int quantityFrom, int quantityTo, int conditionFrom, int conditionTo, bool oneHourExpiration, bool removeBartering, int offerOwnerType, bool onlyFunctional, string handbookId, string linkedSearchId, string neededSearchId, Dictionary<string, int> buildItems, int buildCount, bool updateOfferCount)
+        public static bool Prefix(EftClientBackendSession __instance, ref Il2CppSystem.Threading.Tasks.Task<Result<OffersList>> __result, int page, int limit, int sortType, bool direction, int currency, int priceFrom, int priceTo, int quantityFrom, int quantityTo, int conditionFrom, int conditionTo, bool oneHourExpiration, bool removeBartering, int offerOwnerType, bool onlyFunctional, string handbookId, string linkedSearchId, string neededSearchId, Il2CppSystem.Collections.Generic.Dictionary<string, int> buildItems, int buildCount, bool updateOfferCount)
         {
             if (string.IsNullOrEmpty(linkedSearchId) || !linkedSearchId.Contains(":"))
             {
                 return true;
             }
 
-            var completionSource = new TaskCompletionSource<Result<OffersList>>();
-
-            __instance.method_5(new SendRequest
+            var request = new SendRequest
             {
                 Url = __instance._backendUrls.RagFair + "/uifixes/ragfair/find",
                 ParseInBackground = true,
-                Params = new GetOffersRequestParams<int, int, int, int, int, int, int, int, int, int, int, bool, bool, int, bool, bool, string, string, string, Dictionary<string, int>, int, int, int>(page, limit, sortType, direction ? 1 : 0, currency, priceFrom, priceTo, quantityFrom, quantityTo, conditionFrom, conditionTo, oneHourExpiration, removeBartering, offerOwnerType, onlyFunctional, updateOfferCount, handbookId, linkedSearchId, neededSearchId, buildItems, buildCount, 18, 11),
-                Retries = new byte?(1)
-            }, delegate (Result<OffersList> result)
-            {
-                completionSource.SetFromRequestResult<Result<OffersList>>(result);
-            });
+                Params = new __f__AnonymousType59<int, int, int, int, int, int, int, int, int, int, int, bool, bool, int, bool, bool, string, string, string, Il2CppSystem.Collections.Generic.Dictionary<string, int>, int, int, int>(page, limit, sortType, direction ? 1 : 0, currency, priceFrom, priceTo, quantityFrom, quantityTo, conditionFrom, conditionTo, oneHourExpiration, removeBartering, offerOwnerType, onlyFunctional, updateOfferCount, handbookId, linkedSearchId, neededSearchId, buildItems, buildCount, 18, 11),
+                Retries = new Il2CppSystem.Nullable<byte>(1)
+            };
 
-            __result = completionSource.Task.ToIl2Cpp();
+            __result = __instance.Send<OffersList>(request, (System.Action<Result<OffersList>>)(_ => { }));
 
             return false;
         }

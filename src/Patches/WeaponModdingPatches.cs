@@ -869,8 +869,8 @@ public static class WeaponModdingPatches
                 throw new ArgumentException("Item to disassemble is not a weapon");
             }
 
-            List<OperationResult> operations = [];
-            foreach (Mod mod in weapon.Mods.Where(__instance.CG_DisassembleOperationsList).ToArray()) // ToArray copies the list so it's set
+            var operations = new Il2CppSystem.Collections.Generic.List<OperationResult>();
+            foreach (Mod mod in weapon.Mods.Where(m => __instance._DisassembleOperationsList_b__329_0(m)).ToArray()) // ToArray copies the list so it's set
             {
                 ItemContext itemContextAbstractClass = itemContext.CreateChild(mod);
                 OperationResult operation = __instance.QuickFindAppropriatePlace(itemContextAbstractClass, __instance._itemController, !Plugin.InRaid(), false, false);

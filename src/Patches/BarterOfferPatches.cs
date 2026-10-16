@@ -132,7 +132,7 @@ public static class BarterOfferPatches
 
         private static int GetOwnedCount(IExchangeRequirement requirement)
         {
-            List<Item> allItems = ItemCacheHelper.GetAllItemsCache();
+            var allItems = ItemCacheHelper.GetAllItemsCache();
 
             if (requirement is not HandoverRequirement handoverRequirement)
             {

@@ -45,7 +45,7 @@ public static class RememberRepairerPatches
         [PatchPostfix]
         public static void Postfix(RepairerParametersPanel __instance)
         {
-            __instance._conditionSlider.CG_Awake(); // like clicking >>, aka select max value
+            __instance._conditionSlider._Awake_b__28_0(); // like clicking >>, aka select max value
         }
     }
 }

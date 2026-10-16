@@ -195,7 +195,7 @@ public class DrawMultiSelect : MonoBehaviour
             position = Input.mousePosition
         };
 
-        List<RaycastResult> results = [];
+        var results = new Il2CppSystem.Collections.Generic.List<RaycastResult>();
         _preloaderRaycaster.Raycast(eventData, results); // preload objects are on top, so check that first
         _localRaycaster.Raycast(eventData, results);
 
@@ -261,7 +261,7 @@ public class DrawMultiSelect : MonoBehaviour
 
         foreach (Type type in _blockedTypes)
         {
-            if (mouseTarget.GetComponentInParent(type) != null)
+            if (mouseTarget.GetComponentInParent(type.Il2CppType()) != null)
             {
                 return true;
             }
@@ -278,7 +278,7 @@ public class DrawMultiSelect : MonoBehaviour
         float widthMargin = 0.1f * (itemRect.xMax - itemRect.xMin);
         float heightMargin = 0.1f * (itemRect.yMax - itemRect.yMin);
 
-        List<RaycastResult> raycastResults = [];
+        var raycastResults = new Il2CppSystem.Collections.Generic.List<RaycastResult>();
 
         // Lower left
         eventData.position = new Vector2(itemRect.xMin + widthMargin, itemRect.yMin + heightMargin);

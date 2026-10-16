@@ -60,17 +60,17 @@ public static class MailPatches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(ChatScreen), nameof(ChatScreen.method_9));
+            return AccessTools.Method(typeof(ChatScreen), nameof(ChatScreen.RepeatUpdateReadStatus));
         }
 
         [PatchPrefix]
         public static void Prefix(ChatScreen __instance)
         {
             // The target method is hardcoded to 80 seconds. Rather than try to change that, just lie to it about when it last sent
-            DateTime dateTime = __instance._lastResponse.AddSeconds(Settings.MailReadQueueTime.Value).ToManaged();
-            if (DateTimeExtensions.UtcNow > dateTime)
+            var dateTime = __instance._lastResponse.AddSeconds(Settings.MailReadQueueTime.Value);
+            if (DateTimeExtensions.UtcNow.Ticks > dateTime.Ticks)
             {
-                __instance._lastResponse = new DateTime(0).ToIl2Cpp();
+                __instance._lastResponse = new Il2CppSystem.DateTime(0L);
             }
         }
     }
@@ -292,7 +292,7 @@ public static class MailPatches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(UpdatableChatDialogue), nameof(UpdatableChatDialogue.CG_UpdateDialogMessages));
+            return AccessTools.Method(typeof(UpdatableChatDialogue), nameof(UpdatableChatDialogue._UpdateDialogMessages_b__43_0));
         }
 
         [PatchPrefix]

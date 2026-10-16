@@ -36,24 +36,25 @@ public static class AimToggleHoldPatches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.GetDeclaredConstructors(typeof(ToggleInputKeyCombination)).Single();
+            return AccessTools.GetDeclaredConstructors(typeof(ToggleInputKeyCombination)).Single(c => !c.IsIl2CppPointerConstructor());
         }
 
         [PatchPostfix]
-        public static void Postfix(ToggleInputKeyCombination __instance, EGameKey gameKey)
+        public static void Postfix(InputKeyCombination __instance, EGameKey gameKey)
         {
             if (!ToggleHold.IsEnabled(gameKey))
             {
                 return;
             }
 
-            __instance.States =
+            InputKeyCombination.KeyCombinationState[] states =
             [
                 .. __instance.States,
                 new ToggleHoldIdleState(__instance),
                 new ToggleHoldClickOrHoldState(__instance),
                 new ToggleHoldHoldState(__instance)
             ];
+            __instance.States = states;
         }
     }
 
@@ -61,24 +62,25 @@ public static class AimToggleHoldPatches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.GetDeclaredConstructors(typeof(InputKeyCombination)).Single();
+            return AccessTools.GetDeclaredConstructors(typeof(InputKeyCombination)).Single(c => !c.IsIl2CppPointerConstructor());
         }
 
         [PatchPostfix]
-        public static void Postfix(ToggleInputKeyCombination __instance, EGameKey gameKey)
+        public static void Postfix(InputKeyCombination __instance, EGameKey gameKey)
         {
             if (!ToggleHold.IsEnabled(gameKey))
             {
                 return;
             }
 
-            __instance.States =
+            InputKeyCombination.KeyCombinationState[] states =
             [
                 .. __instance.States,
                 new ToggleHoldIdleState(__instance),
                 new ToggleHoldClickOrHoldState(__instance),
                 new ToggleHoldHoldState(__instance)
             ];
+            __instance.States = states;
         }
     }
 
@@ -90,12 +92,12 @@ public static class AimToggleHoldPatches
         }
 
         [PatchPrefix]
-        public static void Prefix(InputKeyCombination __instance, ref List<IGameKey> inputKeys)
+        public static void Prefix(InputKeyCombination __instance, ref Il2CppSystem.Collections.Generic.List<IGameKey> inputKeys)
         {
             // BSG implemented tactical as an entirely new abomination, so I have to disable the "release tactical" 
             if (__instance.GameKey == EGameKey.ReleaseTactical && ToggleHold.IsEnabled(EGameKey.Tactical))
             {
-                inputKeys = [];
+                inputKeys = new Il2CppSystem.Collections.Generic.List<IGameKey>();
 
                 // Force BSG's tactical mode to "press"
                 Singleton<SettingsManager>.Instance.Game.Settings.TacticalInputMode.SetValue(GameSettingsGroup.ETacticalInputMode.Press);

@@ -77,7 +77,7 @@ public static class ReloadInPlacePatches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(ItemUiContext.CG_ReloadWeapon), nameof(ItemUiContext.CG_ReloadWeapon.method_0));
+            return AccessTools.Method(typeof(ItemUiContext.__c__DisplayClass324_1), nameof(ItemUiContext.__c__DisplayClass324_1._ReloadWeapon_b__0));
         }
 
         [PatchPrefix]
@@ -113,7 +113,7 @@ public static class ReloadInPlacePatches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(ItemUiContext.CG_Class2919), nameof(ItemUiContext.CG_Class2919.method_5));
+            return AccessTools.Method(typeof(ItemUiContext.__c), nameof(ItemUiContext.__c._ReloadWeapon_b__324_2));
         }
 
         [PatchPostfix]

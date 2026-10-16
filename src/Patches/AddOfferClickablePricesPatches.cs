@@ -24,7 +24,7 @@ public static class AddOfferClickablePricesPatches
         protected override MethodBase GetTargetMethod()
         {
             // Called when prices are loaded
-            return AccessTools.Method(typeof(ItemMarketPricesPanel), nameof(ItemMarketPricesPanel.CG_UpdatePrices));
+            return AccessTools.Method(typeof(ItemMarketPricesPanel), nameof(ItemMarketPricesPanel._UpdatePrices_b__22_0));
         }
 
         [PatchPostfix]

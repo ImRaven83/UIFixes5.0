@@ -1,3 +1,4 @@
+using SPTushonka.Reflection.Il2Cpp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,9 +56,9 @@ public static class TagPatches
         }
 
         [PatchPostfix]
-        public static async void Postfix(GridItemView __instance, Task __result)
+        public static async void Postfix(GridItemView __instance, Il2CppSystem.Threading.Tasks.Task __result)
         {
-            await __result;
+            await __result.AsManaged();
 
             // Rerun logic with preferred priority. Running again rather than prefix overwrite because this also fixes the existing race condition
             __instance.TagName.gameObject.SetActive(false);

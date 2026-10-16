@@ -20,7 +20,7 @@ public static class PlayerModelViewPatches
         protected override MethodBase GetTargetMethod()
         {
             // this method is called when PlayerModelView is loaded
-            return AccessTools.Method(typeof(InventoryPlayerModelWithStatsWindow), nameof(InventoryPlayerModelWithStatsWindow.CG_ShowPreview));
+            return AccessTools.Method(typeof(InventoryPlayerModelWithStatsWindow), nameof(InventoryPlayerModelWithStatsWindow._ShowPreview_b__64_0));
         }
 
         private const float MAX_ZOOM_IN_Z = 4.69f;

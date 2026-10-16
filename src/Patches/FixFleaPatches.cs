@@ -1,3 +1,4 @@
+using SPTushonka.Reflection.Il2Cpp;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -98,9 +99,9 @@ public static class FixFleaPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(Task __result)
+        public static void Postfix(Il2CppSystem.Threading.Tasks.Task __result)
         {
-            SearchFilterTask = __result;
+            SearchFilterTask = __result.AsManaged();
         }
     }
 

@@ -55,7 +55,7 @@ public static class R
     public class RagfairScreen(EFT.UI.Ragfair.RagfairScreen value) : Wrapper<EFT.UI.Ragfair.RagfairScreen>(value)
     {
         public UIParent UI => Value.UI;
-        public OfferViewList OfferViewList => Value._offerViewList;
+        public OfferViewList OfferViewList => Value._selectedTab;
     }
 
     public class CategoryView(EFT.UI.Ragfair.CategoryView value) : Wrapper<EFT.UI.Ragfair.CategoryView>(value)
@@ -68,12 +68,12 @@ public static class R
         public ItemController ItemController => Value._itemController;
         public InventoryController InventoryController => Value._inventoryController;
         public Inventory Inventory => Value._inventory;
-        public InventoryEquipment InventoryEquipment => Value._inventoryEquipment;
+        public InventoryEquipment InventoryEquipment => Value._equipment;
         public DragItemContext DragItemContext => Value._dragItemContext;
         public ContextInteractions<EItemInfoButton> ItemInfoInteractions
         {
-            get => Value._itemInfoInteractions;
-            set => Value._itemInfoInteractions = value;
+            get => Value._currentContextInteractions;
+            set => Value._currentContextInteractions = value;
         }
     }
 

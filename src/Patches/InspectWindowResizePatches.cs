@@ -120,7 +120,7 @@ internal static class InspectWindowResizePatches
             background.sprite = ButtonBackground.sprite;
 
             Image restoreImage = restoreButton.transform.Find("X").GetComponent<Image>();
-            restoreImage.sprite = EFTHardSettings.Instance.StaticIcons.GetAttributeIcon(EItemAttributeId.EffectiveDist);
+            restoreImage.sprite = EFTHardSettings.Instance.StaticIcons.GetAttributeIcon(EItemAttributeId.EffectiveDist.BoxEnum());
             restoreImage.overrideSprite = null;
             restoreImage.SetNativeSize();
             restoreImage.transform.localScale = new Vector3(restoreImage.transform.localScale.x * 0.8f, restoreImage.transform.localScale.y * 0.8f, restoreImage.transform.localScale.z);
@@ -137,7 +137,7 @@ internal static class InspectWindowResizePatches
                 restoreButton.gameObject.SetActive(false);
             }
 
-            restoreButton.onClick.AddListener(() =>
+            restoreButton.onClick.AddListener((System.Action)(() =>
             {
                 SavedPreferredWidth = -1f;
                 SavedPreferredHeight = -1f;
@@ -146,10 +146,10 @@ internal static class InspectWindowResizePatches
 
                 // I'm really not sure why this is necessary, but something in the layout gets borked trying to just restore the default size
                 // This recreates a lot of the children, but it works
-                inspectPanel.method_1();
+                inspectPanel.Refresh();
 
                 StretchDescription(inspectLayout);
-            });
+            }));
             inspectPanel.AddDisposable((System.Action)(() => restoreButton.onClick.RemoveAllListeners()));
         }
 
@@ -167,7 +167,7 @@ internal static class InspectWindowResizePatches
             background.sprite = ButtonBackground.sprite;
 
             Image leftImage = leftButton.transform.Find("X").GetComponent<Image>();
-            leftImage.sprite = EFTHardSettings.Instance.StaticIcons.GetAttributeIcon(EItemAttributeId.RecoilBack);
+            leftImage.sprite = EFTHardSettings.Instance.StaticIcons.GetAttributeIcon(EItemAttributeId.RecoilBack.BoxEnum());
             leftImage.overrideSprite = null;
             leftImage.SetNativeSize();
 
@@ -189,7 +189,7 @@ internal static class InspectWindowResizePatches
             background.sprite = ButtonBackground.sprite;
 
             Image rightImage = rightButton.transform.Find("X").GetComponent<Image>();
-            rightImage.sprite = EFTHardSettings.Instance.StaticIcons.GetAttributeIcon(EItemAttributeId.RecoilBack);
+            rightImage.sprite = EFTHardSettings.Instance.StaticIcons.GetAttributeIcon(EItemAttributeId.RecoilBack.BoxEnum());
             rightImage.transform.Rotate(0f, 180f, 0f);
             rightImage.overrideSprite = null;
             rightImage.SetNativeSize();

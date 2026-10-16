@@ -1,3 +1,4 @@
+using SPTushonka.Reflection.Il2Cpp;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -62,7 +63,7 @@ public static class InspectWindowStatsPatches
             }
 
             __instance._compactBarAttributeViewers = new ViewList<ItemAttribute, CompactCharacteristicPanel>(
-                deepAttributes,
+                deepAttributes.ToIl2CppList(),
                 __instance._compactCharTemplate,
                 __instance._compactPanel,
                 (System.Action<ItemAttribute, CompactCharacteristicPanel>)((attribute, viewer) => viewer.Show(attribute, __instance._secondaryTooltip, __instance.Examined, 100))); ;
@@ -111,7 +112,7 @@ public static class InspectWindowStatsPatches
             {
                 float maxDurability = armorComponents.Sum(c => c.Repairable.Durability);
 
-                var itemAttributeClass = new ItemAttribute(EItemAttributeId.ArmorPoints)
+                var itemAttributeClass = new ItemAttribute(EItemAttributeId.ArmorPoints.BoxEnum())
                 {
                     Name = EItemAttributeId.ArmorPoints.GetName(),
                     Base = (System.Func<float>)(() => maxDurability),
@@ -137,7 +138,7 @@ public static class InspectWindowStatsPatches
                 return;
             }
 
-            ItemSpecificationPanel.CG_Compare(__instance._compactBarAttributeViewers, deepAttributes); // Updates attributes, name is due to be called from Compare
+            ItemSpecificationPanel.Method_Internal_Static_Void_ViewList_2_ItemAttribute_TPanelType_IReadOnlyCollection_1_ItemAttribute_0(__instance._compactBarAttributeViewers, deepAttributes.ToIl2CppList()); // Updates attributes, name is due to be called from Compare
         }
     }
 
@@ -256,7 +257,7 @@ public static class InspectWindowStatsPatches
                 return;
             }
 
-            float delta = compareAttribute.Base() - attribute.Base();
+            float delta = compareAttribute.Base.Invoke() - attribute.Base.Invoke();
             int rounded = Mathf.RoundToInt(delta);
 
             var matches = Regex.Matches(textMesh.text, @"\(([+-]?\d+)\)");
@@ -385,16 +386,16 @@ public static class InspectWindowStatsPatches
         // Holy shit did they mess up MOA. Half of the calculation is done in the StringValue() method, so calculating delta from Base() loses all that
         // Plus, they round the difference to the nearest integer (!?)
         // Completely redo it
-        if ((EItemAttributeId)attribute.Id == EItemAttributeId.CenterOfImpact)
+        if (attribute.Id.ToEnum<EItemAttributeId>() == EItemAttributeId.CenterOfImpact)
         {
             var compareAttribute = wrappedPanel.CompareItemAttribute;
             if (compareAttribute != null)
             {
-                string currentStringValue = attribute.StringValue();
+                string currentStringValue = attribute.StringValue.Invoke();
                 var moaMatch = Regex.Match(currentStringValue, @"^(\S+)");
                 if (float.TryParse(moaMatch.Groups[1].Value, out float moa))
                 {
-                    string compareStringValue = compareAttribute.StringValue();
+                    string compareStringValue = compareAttribute.StringValue.Invoke();
                     moaMatch = Regex.Match(compareStringValue, @"^(\S+)");
                     if (float.TryParse(moaMatch.Groups[1].Value, out float compareMoa))
                     {
@@ -425,7 +426,7 @@ public static class InspectWindowStatsPatches
                 string color = (attribute.LessIsGood && value < 0) || (!attribute.LessIsGood && value > 0) ? increasingColorHex : decreasingColorHex;
 
                 // Except some that have a space weren't actually formatted with P1 and are 0-100 with a manually added " %"
-                text = NonPercentPercents.Contains((EItemAttributeId)attribute.Id)
+                text = NonPercentPercents.Contains(attribute.Id.ToEnum<EItemAttributeId>())
                     ? Regex.Replace(text, @"%\([+-].*\)", "%<color=" + color + ">(" + sign + value + "%)</color>")
                     : Regex.Replace(text, @"%\([+-].*\)", "%<color=" + color + ">(" + sign + value.ToString("P1") + ")</color>");
             }
@@ -479,7 +480,7 @@ public static class InspectWindowStatsPatches
     private static List<ItemAttribute> GetDeepAttributes(Item item, out bool changed)
     {
         changed = false;
-        var itemAttributes = item.Attributes.Where(a => a.DisplayType() == EItemAttributeDisplayType.Compact).ToList();
+        var itemAttributes = item.Attributes.Where(a => a.DisplayType.Invoke() == EItemAttributeDisplayType.Compact).ToList();
         foreach (var subItem in item.GetAllItems()) // This get all items, recursively
         {
             if (subItem == item)
@@ -487,7 +488,7 @@ public static class InspectWindowStatsPatches
                 continue;
             }
 
-            var subAttributes = subItem.Attributes.Where(a => a.DisplayType() == EItemAttributeDisplayType.Compact).ToList();
+            var subAttributes = subItem.Attributes.Where(a => a.DisplayType.Invoke() == EItemAttributeDisplayType.Compact).ToList();
             itemAttributes = CombineAttributes(itemAttributes, subAttributes).ToList();
             changed = true;
         }
@@ -497,11 +498,11 @@ public static class InspectWindowStatsPatches
 
     private static IEnumerable<ItemAttribute> CombineAttributes(IList<ItemAttribute> first, IList<ItemAttribute> second)
     {
-        foreach (EItemAttributeId id in first.Select(a => a.Id).Union(second.Select(a => a.Id)).Select(v => (EItemAttributeId)v))
+        foreach (EItemAttributeId id in first.Select(a => a.Id.ToEnum<EItemAttributeId>()).Union(second.Select(a => a.Id.ToEnum<EItemAttributeId>())))
         {
             // Need to cast the id since it's of type Enum for some reason
-            var attribute = first.FirstOrDefault(a => (EItemAttributeId)a.Id == id);
-            var other = second.FirstOrDefault(a => (EItemAttributeId)a.Id == id);
+            var attribute = first.FirstOrDefault(a => a.Id.ToEnum<EItemAttributeId>() == id);
+            var other = second.FirstOrDefault(a => a.Id.ToEnum<EItemAttributeId>() == id);
             if (attribute == null)
             {
                 yield return other;
@@ -513,29 +514,29 @@ public static class InspectWindowStatsPatches
             else
             {
                 var combined = attribute.Clone();
-                switch (attribute.Id)
+                switch (attribute.Id.ToEnum<EItemAttributeId>())
                 {
                     case EItemAttributeId.EffectiveDist:
                     case EItemAttributeId.SightingRange:
-                        combined.Base = () => Math.Max(attribute.Base(), other.Base());
-                        combined.StringValue = () => combined.Base().ToString();
+                        combined.Base = (System.Func<float>)(() => Math.Max(attribute.Base.Invoke(), other.Base.Invoke()));
+                        combined.StringValue = (System.Func<string>)(() => combined.Base.Invoke().ToString());
                         break;
                     case EItemAttributeId.Accuracy:
                     case EItemAttributeId.Recoil:
-                        combined.Base = () => attribute.Base() + other.Base();
-                        combined.StringValue = () => combined.Base() + "%";
+                        combined.Base = (System.Func<float>)(() => attribute.Base.Invoke() + other.Base.Invoke());
+                        combined.StringValue = (System.Func<string>)(() => combined.Base.Invoke() + "%");
                         break;
                     case EItemAttributeId.Loudness:
                     case EItemAttributeId.Ergonomics:
                     case EItemAttributeId.Velocity:
-                        combined.Base = () => attribute.Base() + other.Base();
-                        combined.StringValue = () => combined.Base().ToString();
+                        combined.Base = (System.Func<float>)(() => attribute.Base.Invoke() + other.Base.Invoke());
+                        combined.StringValue = (System.Func<string>)(() => combined.Base.Invoke().ToString());
                         break;
                     case EItemAttributeId.DurabilityBurn:
                     case EItemAttributeId.HeatFactor:
                     case EItemAttributeId.CoolFactor:
-                        combined.Base = () => attribute.Base() + other.Base();
-                        combined.StringValue = () => combined.Base().ToString("P1");
+                        combined.Base = (System.Func<float>)(() => attribute.Base.Invoke() + other.Base.Invoke());
+                        combined.StringValue = (System.Func<string>)(() => combined.Base.Invoke().ToString("P1"));
                         break;
                     case EItemAttributeId.RaidModdable:
                         break;

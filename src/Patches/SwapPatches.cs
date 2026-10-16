@@ -1,3 +1,4 @@
+using SPTushonka.Reflection.Il2Cpp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -374,9 +375,9 @@ public static class SwapPatches
         }
 
         [PatchPostfix]
-        public static async void Postfix(Task __result)
+        public static async void Postfix(Il2CppSystem.Threading.Tasks.Task __result)
         {
-            await __result;
+            await __result.AsManaged();
             InAcceptItem = false;
         }
     }

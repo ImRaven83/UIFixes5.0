@@ -1,3 +1,4 @@
+using SPTushonka.Reflection.Il2Cpp;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -167,9 +168,9 @@ public static class TraderAvatarPatches
         }
 
         [PatchPostfix]
-        public static async void Postfix(Quest quest, Task<IResult> __result)
+        public static async void Postfix(Quest quest, Il2CppSystem.Threading.Tasks.Task<IResult> __result)
         {
-            var result = await __result;
+            var result = await __result.AsManaged();
 
             // The status possibly didn't change, but it will still cause the trader avatar to update
             if (result.Succeed)

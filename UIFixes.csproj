@@ -29,6 +29,7 @@
     <Reference Include="Il2CppInterop.Runtime" Private="false" />
     <Reference Include="Il2Cppmscorlib" Private="false" />
     <Reference Include="Il2CppSystem" Private="false" />
+    <Reference Include="Il2CppSystem.Core" Private="false" />
     <Reference Include="AnimationSystem.Types" Private="false" />
     <Reference Include="Assembly-CSharp" Private="false" />
     <Reference Include="Assembly-CSharp-firstpass" Private="false" />

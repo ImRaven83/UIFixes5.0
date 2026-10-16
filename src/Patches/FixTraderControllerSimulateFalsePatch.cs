@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Diz.LanguageExtensions;
 using EFT.InventoryLogic;
 using HarmonyLib;
@@ -45,11 +45,8 @@ public static class FixTraderControllerPatches
                 }
             }
 
-            ItemController.CG_ExecutePossibleAction1 opStruct;
-            opStruct.targetItem = targetItem;
-            opStruct.ItemController = __instance;
-            opStruct.simulate = simulate;
-            opStruct.item = itemContext.Item;
+            // Local functions of ExecutePossibleAction share this closure struct
+            var opStruct = new ItemController.__c__DisplayClass208_0(itemContext.Item, targetItem, __instance, simulate);
 
             Error error = new NoPossibleActionsError(opStruct.item);
             bool mergeAvailable = itemContext.MergeAvailable;
@@ -60,11 +57,11 @@ public static class FixTraderControllerPatches
             {
                 if (partialTransferOnly)
                 {
-                    __result = __instance.CG_ExecutePossibleAction2(ref error, ref opStruct);
+                    __result = __instance.Method_Private_OperationResult_byref_Error_byref___c__DisplayClass208_0_0(ref error, ref opStruct);
                     return false;
                 }
 
-                var operation = __instance.CG_ExecutePossibleAction(ref error, ref opStruct);
+                var operation = __instance.Method_Private_OperationResult_byref_Error_byref___c__DisplayClass208_0_PDM_0(ref error, ref opStruct);
                 if (operation.Succeeded)
                 {
                     __result = operation;
@@ -80,7 +77,7 @@ public static class FixTraderControllerPatches
                     BlockPartialTransfers = true;
                 }
 
-                var operation = __instance.CG_ExecutePossibleAction1(applicable, ref error, ref opStruct);
+                var operation = __instance.Method_Private_OperationResult_IApplicable_byref_Error_byref___c__DisplayClass208_0_PDM_0(applicable, ref error, ref opStruct);
 
                 // Restore default behavior
                 BlockPartialTransfers = false;
@@ -105,7 +102,7 @@ public static class FixTraderControllerPatches
 
             if (mergeAvailable && splitAvailable)
             {
-                var operation = __instance.CG_ExecutePossibleAction2(ref error, ref opStruct);
+                var operation = __instance.Method_Private_OperationResult_byref_Error_byref___c__DisplayClass208_0_0(ref error, ref opStruct);
                 if (operation.Succeeded)
                 {
                     __result = operation;

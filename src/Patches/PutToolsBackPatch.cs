@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using EFT;
@@ -58,7 +58,7 @@ public class PutToolsBackPatch : ModulePatch
 
         List<Item> stashItems = [.. stash.GetNotMergedItems()];
 
-        var tree = __instance._itemFactory.FlatItemsToTree([.. unhandledItems], true, null);
+        var tree = __instance._itemFactory.FlatItemsToTree(unhandledItems.ToIl2CppArray(), true, null);
         foreach (Item item in tree.Items.Values.Where(i => i.CurrentAddress == null))
         {
             var newItem = unhandledItems.First(i => i._id == item.Id);

@@ -1,3 +1,4 @@
+using SPTushonka.Reflection.Il2Cpp;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -60,9 +61,14 @@ public static class InternalMagPatches
         }
 
         [PatchPostfix]
-        public static async Task Postfix(Task __result)
+        public static Il2CppSystem.Threading.Tasks.Task Postfix(Il2CppSystem.Threading.Tasks.Task __result)
         {
-            await __result;
+            return WaitThenReset(__result.AsManaged()).ToIl2Cpp();
+        }
+
+        private static async Task WaitThenReset(Task task)
+        {
+            await task;
             InLoadAmmoByType = false;
         }
     }
@@ -75,7 +81,7 @@ public static class InternalMagPatches
         }
 
         [PatchPostfix]
-        public static void Postfix(Weapon __instance, ref IEnumerable<EItemInfoButton> __result)
+        public static void Postfix(Weapon __instance, ref Il2CppSystem.Collections.Generic.IEnumerable<EItemInfoButton> __result)
         {
             if (__instance.SupportsInternalReload || __instance.ReloadMode == Weapon.EReloadMode.OnlyBarrel)
             {

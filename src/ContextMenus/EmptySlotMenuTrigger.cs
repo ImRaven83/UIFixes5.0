@@ -33,7 +33,7 @@ public class EmptySlotMenuTrigger : MonoBehaviour, IPointerClickHandler, IPointe
         if (Settings.LinkedSearchKeyBind.Value.IsDown())
         {
             using EmptySlotContext context = new(_slot, _parentContext, _itemUiContext);
-            var interactions = _itemUiContext.GetItemContextInteractions(context, null);
+            var interactions = _itemUiContext.GetItemContextInteractions(context);
             interactions.ExecuteInteraction(EItemInfoButton.LinkedSearch);
 
             // Call this explicitly since screen transition prevents it from firing normally

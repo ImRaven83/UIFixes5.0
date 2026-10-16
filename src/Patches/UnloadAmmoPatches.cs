@@ -92,7 +92,7 @@ public static class UnloadAmmoPatches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.GetDeclaredConstructors(typeof(ScavengerInventoryScreen.ScavengerInventoryScreenController)).Single();
+            return AccessTools.GetDeclaredConstructors(typeof(ScavengerInventoryScreen.ScavengerInventoryScreenController)).Single(c => !c.IsIl2CppPointerConstructor());
         }
 
         [PatchPrefix]

@@ -1,3 +1,4 @@
+using SPTushonka.Reflection.Il2Cpp;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -128,7 +129,7 @@ public static class TacticalBindsPatches
                 player.HandsController is Player.FirearmController firearmController &&
                 firearmController.Item == weapon)
             {
-                firearmController.SetLightsState([lightState], false);
+                firearmController.SetLightsState(new LightsState[] { lightState }.ToIl2CppArray(), false);
             }
 
             if (rootItem is Headwear helmet &&
@@ -149,9 +150,9 @@ public static class TacticalBindsPatches
         }
 
         [PatchPostfix]
-        public static async void Postfix(MainMenuShowOperation __instance, Task __result)
+        public static async void Postfix(MainMenuShowOperation __instance, Il2CppSystem.Threading.Tasks.Task __result)
         {
-            await __result;
+            await __result.AsManaged();
 
             for (EBoundItem index = EBoundItem.Item4; index <= EBoundItem.Item10; index++)
             {

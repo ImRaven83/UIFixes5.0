@@ -214,7 +214,7 @@ public static class BarrelOnlyPatches
             {
                 var inventory = _itemUiContext.R().Inventory;
 
-                List<Ammo> ammo = [];
+                var ammo = new Il2CppSystem.Collections.Generic.List<Ammo>();
                 inventory.Stash.GetAllAssembledItems(ammo);
                 inventory.Equipment.GetAllAssembledItems(ammo);
 
@@ -258,7 +258,7 @@ public static class BarrelOnlyPatches
 
             private async Task<bool> TryLoadFromContainer(CompoundItem container, string ammoTemplateId)
             {
-                List<Ammo> ammo = [];
+                var ammo = new Il2CppSystem.Collections.Generic.List<Ammo>();
                 container.GetAllAssembledItems(ammo);
 
                 var matchingAmmo = ammo.Where(a => a.TemplateId == ammoTemplateId && _itemUiContext.IsAvailable(a))

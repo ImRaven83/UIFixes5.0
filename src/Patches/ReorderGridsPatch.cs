@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -119,7 +119,7 @@ public static class ReorderGridsPatches
                 GridMaps.Add(compoundItem.TemplateId, map);
             }
 
-            compoundItem.Grids = [.. sortedPairs.Select(pair => pair.Key)];
+            compoundItem.Grids = sortedPairs.Select(pair => pair.Key).ToIl2CppArray();
             __instance._presetGridViews = orderedGridViews;
 
             compoundItem.SetReordered(true);

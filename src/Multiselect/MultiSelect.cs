@@ -367,7 +367,7 @@ public class MultiSelect
             createdContext = true;
         }
 
-        var contextInteractions = itemUiContext.GetItemContextInteractions(sourceContext, null);
+        var contextInteractions = itemUiContext.GetItemContextInteractions(sourceContext);
         var result = contextInteractions.IsInteractionAvailable(interaction);
 
         if (createdContext)

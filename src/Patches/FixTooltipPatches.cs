@@ -22,7 +22,7 @@ public static class FixTooltipPatches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(QuestItemViewPanel), nameof(QuestItemViewPanel.CG_Awake1)); // OnHoverEnd
+            return AccessTools.Method(typeof(QuestItemViewPanel), nameof(QuestItemViewPanel._Awake_b__16_1)); // OnHoverEnd
         }
 
         [PatchPostfix]

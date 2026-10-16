@@ -152,7 +152,7 @@ public static class ContextMenuShortcutPatches
 
         private static void TryInteraction(ItemUiContext itemUiContext, ItemContext itemContext, EItemInfoButton interaction, EItemInfoButton[] fallbackInteractions = null)
         {
-            Interactions ??= itemUiContext.GetItemContextInteractions(itemContext, null);
+            Interactions ??= itemUiContext.GetItemContextInteractions(itemContext);
             if (!Interactions.ExecuteInteraction(interaction) && fallbackInteractions != null)
             {
                 foreach (var fallbackInteraction in fallbackInteractions)
@@ -218,7 +218,7 @@ public static class ContextMenuShortcutPatches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(TradingRequisitePanel), nameof(TradingRequisitePanel.CG_Awake)); // OnHoverStart
+            return AccessTools.Method(typeof(TradingRequisitePanel), nameof(TradingRequisitePanel._Awake_b__10_0)); // OnHoverStart
         }
 
         [PatchPostfix]
@@ -232,7 +232,7 @@ public static class ContextMenuShortcutPatches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(TradingRequisitePanel), nameof(TradingRequisitePanel.CG_Awake1)); // OnHoverEnd
+            return AccessTools.Method(typeof(TradingRequisitePanel), nameof(TradingRequisitePanel._Awake_b__10_1)); // OnHoverEnd
         }
 
         [PatchPostfix]

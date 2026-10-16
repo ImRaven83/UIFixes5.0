@@ -588,7 +588,7 @@ public static class ContextMenuPatches
             if (__instance._itemController.SearchController is IPlayerSearchController playerSearchController && playerSearchController.SearchOperations.Any())
             {
                 var wrappedInstance = __instance.R();
-                wrappedInstance.ItemInfoInteractions = __instance.GetItemContextInteractions(itemContext, null);
+                wrappedInstance.ItemInfoInteractions = __instance.GetItemContextInteractions(itemContext);
 
                 // Yes, they really special case add-offer here
                 if (wrappedInstance.ItemInfoInteractions.AllInteractions.Contains(EItemInfoButton.AddOffer))
