@@ -1,4 +1,4 @@
-using EFT.InventoryLogic;
+﻿using EFT.InventoryLogic;
 using EFT.UI;
 using EFT.UI.DragAndDrop;
 using EFT.UI.Ragfair;

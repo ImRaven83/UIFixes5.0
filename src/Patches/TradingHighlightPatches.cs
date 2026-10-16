@@ -8,6 +8,8 @@ namespace UIFixes;
 
 public static class TradingHighlightPatches
 {
+    private static readonly System.Collections.Generic.Dictionary<System.IntPtr, System.Action> Handlers = [];
+
     public static void Enable()
     {
         new RequisiteChangePatch().Enable();
@@ -26,7 +28,10 @@ public static class TradingHighlightPatches
         {
             if (__instance._traderAssortment != null)
             {
-                __instance._traderAssortment.RequisiteChanged += __instance.RequisiteChangedHandler;
+                // Keep the exact delegate so it can be removed later; il2cpp wrappers for __instance aren't guaranteed to be the same object
+                System.Action handler = __instance.RequisiteChangedHandler;
+                Handlers[__instance.Pointer] = handler;
+                __instance._traderAssortment.RequisiteChanged += handler;
             }
         }
     }
@@ -41,9 +46,9 @@ public static class TradingHighlightPatches
         [PatchPrefix]
         public static void Prefix(TradingGridView __instance)
         {
-            if (__instance._traderAssortment != null)
+            if (__instance._traderAssortment != null && Handlers.Remove(__instance.Pointer, out var handler))
             {
-                __instance._traderAssortment.RequisiteChanged -= __instance.RequisiteChangedHandler;
+                __instance._traderAssortment.RequisiteChanged -= handler;
             }
         }
     }

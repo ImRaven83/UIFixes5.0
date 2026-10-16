@@ -1,4 +1,4 @@
-using SPTushonka.Reflection.Il2Cpp;
+﻿using SPTushonka.Reflection.Il2Cpp;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;

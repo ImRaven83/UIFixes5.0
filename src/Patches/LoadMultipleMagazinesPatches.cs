@@ -1,4 +1,4 @@
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
+﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using SPTushonka.Reflection.Il2Cpp;
 using System;
 using System.Linq;

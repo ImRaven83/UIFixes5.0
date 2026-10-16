@@ -87,4 +87,24 @@ public static class Il2CppHelpers
         T* data = (T*)(ptr + 4 * IntPtr.Size);
         return data[(i - lower0) * length1 + (j - lower1)];
     }
+
+    // Remove every handler in a natively-built delegate chain whose target is the given il2cpp object
+    public static Il2CppSystem.Action WithoutTarget(this Il2CppSystem.Action action, Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase target)
+    {
+        if (action == null)
+        {
+            return null;
+        }
+
+        Il2CppSystem.Delegate result = action;
+        foreach (var handler in action.GetInvocationList())
+        {
+            if (handler.Target != null && handler.Target.Pointer == target.Pointer)
+            {
+                result = Il2CppSystem.Delegate.Remove(result, handler);
+            }
+        }
+
+        return result?.Cast<Il2CppSystem.Action>();
+    }
 }

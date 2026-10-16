@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using SPTushonka.Reflection.Il2Cpp;
 using System.Collections.Generic;
 using System.Linq;

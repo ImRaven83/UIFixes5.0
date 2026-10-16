@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
 using EFT;
 using EFT.Builds;
@@ -85,11 +85,9 @@ public static class MagPresetsPatches
     // Disable the save button until you give the preset a name
     public class RequirePresetNamePatch : ModulePatch
     {
-        private static FieldInfo ButtonErrorField;
 
         protected override MethodBase GetTargetMethod()
         {
-            ButtonErrorField = AccessTools.Field(typeof(DefaultUiButtonNewStyle), "_tooltip");
 
             return AccessTools.Method(typeof(MagPresetsWindow), nameof(MagPresetsWindow.UpdateButtonsState));
         }
@@ -100,7 +98,7 @@ public static class MagPresetsPatches
             string name = __instance._presetEditor.PresetName;
             if (string.IsNullOrEmpty(name))
             {
-                string tooltip = (string)ButtonErrorField.GetValue(__instance._saveButton);
+                string tooltip = __instance._saveButton._tooltip;
                 string nameRequiredError = "<color=red>" + "MagPreset/SetNameWindowPlaceholder".Localized() + "</color>";
                 int index = tooltip.IndexOf("MagPreset/Tooltip/HasNoChanges".Localized());
                 if (index >= 0)

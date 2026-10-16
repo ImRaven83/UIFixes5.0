@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using Bsg.GameSettings;
 using Comfort.Common;
 using EFT.InputSystem;

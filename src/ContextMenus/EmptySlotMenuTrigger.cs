@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using EFT.InventoryLogic;
 using EFT.UI;
 using Il2CppInterop.Runtime.Injection;

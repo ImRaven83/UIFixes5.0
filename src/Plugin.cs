@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using BepInEx;
 using BepInEx.Logging;
@@ -29,8 +29,15 @@ public class Plugin : BasePlugin
         // Every MonoBehaviour (and other il2cpp-derived type) in this assembly has to be registered before it can be used
         Il2CppInjection.RegisterAll(typeof(Plugin).Assembly, Log);
 
-        // Needed for converting managed tasks back to il2cpp tasks; no-op if SPT already installed it
-        MainThread.Install(this);
+        // Needed for converting managed tasks back to il2cpp tasks and for awaits to resume on the Unity thread; no-op if SPT already installed it
+        try
+        {
+            MainThread.Install(this);
+        }
+        catch (Exception ex)
+        {
+            Log.LogWarning($"Could not install main thread dispatcher: {ex.Message}");
+        }
 
         Settings.Init(Config);
 

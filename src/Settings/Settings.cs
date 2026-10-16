@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP.Configuration;

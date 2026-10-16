@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using Diz.LanguageExtensions;
 using EFT.InventoryLogic;
 using HarmonyLib;

@@ -1,4 +1,4 @@
-using SPTushonka.Reflection.Il2Cpp;
+﻿using SPTushonka.Reflection.Il2Cpp;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -39,8 +39,7 @@ public static class WeaponPresetConfirmPatches
     {
         protected override MethodBase GetTargetMethod()
         {
-            Type type = typeof(EditBuildScreen).GetNestedTypes().Single(x => x.GetMethod("CloseScreenInterruption") != null); // EditBuildScreen.GClass3591
-            return AccessTools.Method(type, "CloseScreenInterruption");
+            return AccessTools.DeclaredMethod(typeof(EditBuildScreen.EditBuildScreenController), nameof(EditBuildScreen.EditBuildScreenController.CloseScreenInterruption));
         }
 
         [PatchPrefix]

@@ -1,4 +1,4 @@
-using SPTushonka.Reflection.Il2Cpp;
+﻿using SPTushonka.Reflection.Il2Cpp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +16,7 @@ using EFT.UI.DragAndDrop;
 using EFT.UI.Insurance;
 using EFT.UI.Ragfair;
 using HarmonyLib;
+using Il2CppInterop.Runtime.Injection;
 using SPTushonka.Reflection.Patching;
 using SPTushonka.Reflection.Utils;
 using UnityEngine;
@@ -865,8 +866,21 @@ public static class MultiSelectPatches
 
         // GridView.HighlightItemViewPosition has a blacklist of errors it won't show, but it shows other types.
         // Wrapping an error can get past that
-        private class DisplayableErrorWrapper(InventoryError error) : InventoryError
+        // Injected into il2cpp (see Plugin.Load) so the game sees the overrides
+        public class DisplayableErrorWrapper : InventoryError
         {
+            private readonly InventoryError error;
+
+            public DisplayableErrorWrapper(IntPtr pointer) : base(pointer) { }
+
+            public DisplayableErrorWrapper(InventoryError error)
+                : base(ClassInjector.DerivedConstructorPointer<DisplayableErrorWrapper>())
+            {
+                ClassInjector.DerivedConstructorBody(this);
+                ClassInjector.InvokeBaseConstructor(this);
+                this.error = error;
+            }
+
             public override string ToString()
             {
                 return error.ToString();

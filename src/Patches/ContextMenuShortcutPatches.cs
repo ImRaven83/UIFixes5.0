@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using Comfort.Common;
 using EFT.Communications;
 using EFT.InventoryLogic;

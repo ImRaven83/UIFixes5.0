@@ -2,6 +2,9 @@
 
 Quality of life improvements and fixes for SPT
 
+> **SPT 5.0 port.** This branch targets SPT 5.0, where the game runs on IL2CPP and client mods load through
+> BepInEx 6 (`BepInEx.Unity.IL2CPP`). See [SPT 5.0 notes](#spt-50-notes) for what changed.
+
 _Tarkov is full of annoyances, but we can fix them! Sometimes._
 
 ✨ Recently added
@@ -174,3 +177,29 @@ public static class MultiSelect
     public static Task Apply(Func<Item, Task> func, ItemUiContext context = null);
 }
 ```
+
+
+## SPT 5.0 notes
+
+SPT 5.0 runs the game under IL2CPP, so the client half of UI Fixes was ported from Mono/BepInEx 5 to BepInEx 6 IL2CPP:
+
+- The plugin is a `BasePlugin` targeting .NET 10, built against the Il2CppInterop assemblies in `BepInEx/interop` and SPT's client library (`SPTushonka.*`).
+- Custom components and game subclasses (context menus, toggle/hold input states, inventory errors, etc.) are registered with `ClassInjector` at load.
+- Harmony transpilers can't edit IL2CPP method bodies; they were rewritten as prefix/postfix patches.
+- ConfigurationManager is now an optional dependency.
+
+Known differences from the SPT 4.x version:
+
+- Fika integration (config sync) was removed; there is no Fika build for SPT 5.0 to target.
+- Removed: the "silence PixelPerfectSpriteScaler log spam" patch and the Fika-derived `PlayerCameraController.LateUpdate` fix, both of which were transpilers with no IL2CPP equivalent.
+- `MultiSelectInterop.cs` now uses the BepInEx 6 chainloader and requires UI Fixes 7.0 or newer.
+
+### Building
+
+The SPT 5.0 assemblies aren't on NuGet. Builds resolve them from your SPT install (`SPTPath` in `Shared.props`, overridable in a `Shared.props.user`)
+or, failing that, from a local `libs/` folder (gitignored):
+
+- `libs/managed` - `BepInEx/interop` from an SPT 5.0 install (Il2CppInterop-generated game assemblies)
+- `libs/core` - `BepInEx/core`
+- `libs/spt` - `SPTushonka.Common.dll`, `SPTushonka.Reflection.dll`
+- `libs/server` - `SPTarkov.Common.dll`, `SPTarkov.DI.dll`, `SPTarkov.Server.Core.dll`, `SPTarkov.Reflection.dll`, `SemanticVersioning.dll`

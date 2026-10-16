@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using EFT.InputSystem;
 using Il2CppInterop.Runtime.Injection;
 

@@ -1,18 +1,29 @@
+using System;
 using EFT.InventoryLogic;
+using Il2CppInterop.Runtime.Injection;
 
 namespace UIFixes;
 
+// Injected into il2cpp (see Plugin.Load) so the game sees the overrides
 public class MultiSelectItemContext : DragItemContext
 {
-    public MultiSelectItemContext(ItemContext itemContext, ItemRotation rotation) : base(itemContext, rotation)
+    public MultiSelectItemContext(IntPtr pointer) : base(pointer) { }
+
+    public MultiSelectItemContext(ItemContext itemContext, ItemRotation rotation)
+        : base(ClassInjector.DerivedConstructorPointer<MultiSelectItemContext>())
     {
+        ClassInjector.DerivedConstructorBody(this);
+        ClassInjector.InvokeBaseConstructor(this, itemContext, rotation);
+
         // Adjust event handlers
         if (Source != null)
         {
             // Listen for underlying context being disposed, it might mean the item is gone (merged, destroyed, etc)
             Source.OnDisposed += OnParentDispose;
-            // This serves no purpose and causes stack overflows
-            Source.OnCloseDependentWindow -= CloseDependentWindows;
+
+            // This serves no purpose and causes stack overflows. The base constructor subscribed natively,
+            // so remove whatever handler targets this object rather than a converted managed delegate.
+            Source.OnCloseDependentWindowField = Source.OnCloseDependentWindowField.WithoutTarget(this);
         }
     }
 

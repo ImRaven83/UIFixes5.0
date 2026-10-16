@@ -174,7 +174,7 @@ public static class TagPatches
                 TagComponent tagComponent = new(item);
                 item.Components.Add(tagComponent);
 
-                var propDictionary = properties.JToken.ToObject<Dictionary<string, UnparsedData>>();
+                var propDictionary = properties.JToken.ToObject<Il2CppSystem.Collections.Generic.Dictionary<string, UnparsedData>>();
                 if (propDictionary.TryGetValue("Tag", out UnparsedData tagProperty))
                 {
                     tagProperty.ParseJsonTo(tagComponent.GetIl2CppType(), tagComponent);

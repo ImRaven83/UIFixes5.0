@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Reflection;
 using EFT.UI.Ragfair;
 using HarmonyLib;

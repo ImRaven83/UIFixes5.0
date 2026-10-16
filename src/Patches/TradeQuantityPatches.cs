@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using EFT.Trading;
 using EFT.UI;
 using HarmonyLib;

@@ -11,6 +11,7 @@ using EFT.InventoryLogic;
 using EFT.UI;
 using EFT.UI.DragAndDrop;
 using HarmonyLib;
+using Il2CppInterop.Runtime.Injection;
 using SPTushonka.Reflection.Patching;
 using UnityEngine;
 
@@ -552,8 +553,18 @@ public static class WeaponModdingPatches
             }
         }
 
-        private class VitalPartInHandsError : InventoryError
+        // Injected into il2cpp (see Plugin.Load) so the game sees the overrides
+        public class VitalPartInHandsError : InventoryError
         {
+            public VitalPartInHandsError(IntPtr pointer) : base(pointer) { }
+
+            public VitalPartInHandsError()
+                : base(ClassInjector.DerivedConstructorPointer<VitalPartInHandsError>())
+            {
+                ClassInjector.DerivedConstructorBody(this);
+                ClassInjector.InvokeBaseConstructor(this);
+            }
+
             public override string GetLocalizedDescription()
             {
                 return ToString().Localized();
@@ -565,8 +576,18 @@ public static class WeaponModdingPatches
             }
         }
 
-        private class ArmorPlatesInRaidError : InventoryError
+        // Injected into il2cpp (see Plugin.Load) so the game sees the overrides
+        public class ArmorPlatesInRaidError : InventoryError
         {
+            public ArmorPlatesInRaidError(IntPtr pointer) : base(pointer) { }
+
+            public ArmorPlatesInRaidError()
+                : base(ClassInjector.DerivedConstructorPointer<ArmorPlatesInRaidError>())
+            {
+                ClassInjector.DerivedConstructorBody(this);
+                ClassInjector.InvokeBaseConstructor(this);
+            }
+
             public override string GetLocalizedDescription()
             {
                 return ToString().Localized();

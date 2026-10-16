@@ -223,8 +223,6 @@ public static class QueueInputPatches
     // the hold-breath state when the key is held after moving.
     public class BreathPatch : ModulePatch
     {
-        private static readonly AccessTools.FieldRef<MovementContext, Player> PlayerField =
-            AccessTools.FieldRefAccess<MovementContext, Player>("_player");
 
         protected override MethodBase GetTargetMethod()
         {
@@ -239,7 +237,7 @@ public static class QueueInputPatches
                 return;
             }
 
-            var player = PlayerField(__instance.MovementContext);
+            var player = __instance.MovementContext._player;
             if (!player.IsYourPlayer || !player.HandsController.IsAiming)
             {
                 return;

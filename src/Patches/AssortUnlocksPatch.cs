@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -6,7 +6,6 @@ using EFT;
 using EFT.UI;
 using EFT.UI.Ragfair;
 using HarmonyLib;
-using Newtonsoft.Json;
 using SPTushonka.Common.Http;
 using SPTushonka.Reflection.Patching;
 
@@ -42,7 +41,8 @@ public class AssortUnlocksPatch : ModulePatch
                 {
                     try
                     {
-                        AssortUnlocks = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                        // The game's Newtonsoft is an il2cpp proxy, so use the managed serializer for managed types
+                        AssortUnlocks = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(json);
                     }
                     catch (Exception ex)
                     {
