@@ -19,8 +19,8 @@ public static class FilterStockPresetsPatches
 {
     public static void Enable()
     {
-        new BuildsCategoriesPanelPatch().Enable();
-        new StockBuildsCheckboxPatch().Enable();
+        new BuildsCategoriesPanelPatch().SafeEnable();
+        new StockBuildsCheckboxPatch().SafeEnable();
     }
 
     public class BuildsCategoriesPanelPatch : ModulePatch
@@ -57,7 +57,7 @@ public static class FilterStockPresetsPatches
             }
 
             Settings.ShowStockPresets.SettingChanged += Reload;
-            __instance.R().UI.AddDisposable(() => Settings.ShowStockPresets.SettingChanged -= Reload);
+            __instance.R().UI.AddDisposable(Il2CppHelpers.ToIl2CppAction(() => Settings.ShowStockPresets.SettingChanged -= Reload));
 
             if (!Settings.ShowStockPresets.Value)
             {

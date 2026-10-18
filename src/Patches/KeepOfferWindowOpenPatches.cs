@@ -12,8 +12,8 @@ public static class KeepOfferWindowOpenPatches
 
     public static void Enable()
     {
-        new PlaceOfferClickPatch().Enable();
-        new ClosePatch().Enable();
+        new PlaceOfferClickPatch().SafeEnable();
+        new ClosePatch().SafeEnable();
     }
 
     public class PlaceOfferClickPatch : ModulePatch

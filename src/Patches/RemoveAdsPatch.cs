@@ -13,8 +13,8 @@ public static class RemoveAdsPatches
 {
     public static void Enable()
     {
-        new StashPanelAdPatch().Enable();
-        new HideoutStashAdPatch().Enable();
+        new StashPanelAdPatch().SafeEnable();
+        new HideoutStashAdPatch().SafeEnable();
     }
 
     public class StashPanelAdPatch : ModulePatch

@@ -13,10 +13,10 @@ public static class WeaponZoomPatches
 {
     public static void Enable()
     {
-        new EditBuildScreenZoomPatch().Enable();
-        new WeaponModdingScreenZoomPatch().Enable();
+        new EditBuildScreenZoomPatch().SafeEnable();
+        new WeaponModdingScreenZoomPatch().SafeEnable();
 
-        new NoInventoryZoomPatch().Enable();
+        new NoInventoryZoomPatch().SafeEnable();
     }
 
     public class EditBuildScreenZoomPatch : ModulePatch

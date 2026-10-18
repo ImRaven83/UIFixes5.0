@@ -16,8 +16,8 @@ public static class GridHighlightPatches
 {
     public static void Enable()
     {
-        new NoFitOutlinePatch().Enable();
-        new HideNoFitOutlinePatch().Enable();
+        new NoFitOutlinePatch().SafeEnable();
+        new HideNoFitOutlinePatch().SafeEnable();
     }
 
     public class NoFitOutlinePatch : ModulePatch

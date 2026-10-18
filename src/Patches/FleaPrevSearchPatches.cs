@@ -31,10 +31,10 @@ public static class FleaPrevSearchPatches
 
     public static void Enable()
     {
-        new RagfairScreenShowPatch().Enable();
-        new OfferViewListCategoryPickedPatch().Enable();
-        new OfferViewListDoneLoadingPatch().Enable();
-        new ChangedViewListTypePatch().Enable();
+        new RagfairScreenShowPatch().SafeEnable();
+        new OfferViewListCategoryPickedPatch().SafeEnable();
+        new OfferViewListDoneLoadingPatch().SafeEnable();
+        new ChangedViewListTypePatch().SafeEnable();
 
         Settings.EnableFleaHistory.Subscribe(enabled =>
         {
@@ -304,7 +304,7 @@ public static class FleaPrevSearchPatches
             }
 
             __state.Show(__instance, session.RagFair);
-            __instance.R().UI.AddDisposable(__state.Close);
+            __instance.R().UI.AddDisposable(Il2CppHelpers.ToIl2CppAction(__state.Close));
 
             // Resize the Add Offer button to use less extra space
             var addOfferLayout = __instance._addOfferButton.GetComponent<LayoutElement>();

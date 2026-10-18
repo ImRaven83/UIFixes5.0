@@ -14,8 +14,8 @@ public static class KeepMessagesOpenPatches
 
     public static void Enable()
     {
-        new SniffChatPanelClosePatch().Enable();
-        new ReopenMessagesPatch().Enable();
+        new SniffChatPanelClosePatch().SafeEnable();
+        new ReopenMessagesPatch().SafeEnable();
     }
 
     public class SniffChatPanelClosePatch : ModulePatch

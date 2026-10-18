@@ -15,7 +15,7 @@ public static class ReorderGridsPatches
 {
     public static void Enable()
     {
-        new ReorderGridsPatch().Enable();
+        new ReorderGridsPatch().SafeEnable();
     }
 
     /* There are 3 cases to handle in TemplatedGridsView.Show

@@ -12,7 +12,7 @@ public static class PlayerModelViewPatches
 {
     public static void Enable()
     {
-        new PlayerModelPreviewPatch().Enable();
+        new PlayerModelPreviewPatch().SafeEnable();
     }
 
     public class PlayerModelPreviewPatch : ModulePatch
@@ -57,11 +57,11 @@ public static class PlayerModelViewPatches
 
             // When clothes change, this screen doesn't get closed but the player view does.
             // Cleaning up the handlers on the model's cleanup prevents them from piling up
-            __instance._playerModelView.R().UI.AddDisposable(() =>
+            __instance._playerModelView.R().UI.AddDisposable(Il2CppHelpers.ToIl2CppAction(() =>
             {
                 __instance._dragTrigger.onDrag -= OnDrag;
                 scrollTrigger.OnOnScroll -= OnOnScroll;
-            });
+            }));
 
             return false;
         }

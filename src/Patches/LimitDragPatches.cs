@@ -14,13 +14,13 @@ public static class LimitDragPatches
 {
     public static void Enable()
     {
-        new OnDragEventPatch(typeof(DragTrigger), nameof(DragTrigger.OnDrag)).Enable();
-        new OnDragEventPatch(typeof(DragTrigger), nameof(DragTrigger.OnBeginDrag)).Enable();
-        new OnDragEventPatch(typeof(DragTrigger), nameof(DragTrigger.OnEndDrag)).Enable();
+        new OnDragEventPatch(typeof(DragTrigger), nameof(DragTrigger.OnDrag)).SafeEnable();
+        new OnDragEventPatch(typeof(DragTrigger), nameof(DragTrigger.OnBeginDrag)).SafeEnable();
+        new OnDragEventPatch(typeof(DragTrigger), nameof(DragTrigger.OnEndDrag)).SafeEnable();
 
         // Delightfully, these have to be fully qualified because they are declared with the interface name
-        new OnDragEventPatch(typeof(UIDragComponent), "UnityEngine.EventSystems.IDragHandler.OnDrag").Enable();
-        new OnDragEventPatch(typeof(UIDragComponent), "UnityEngine.EventSystems.IBeginDragHandler.OnBeginDrag").Enable();
+        new OnDragEventPatch(typeof(UIDragComponent), "UnityEngine.EventSystems.IDragHandler.OnDrag").SafeEnable();
+        new OnDragEventPatch(typeof(UIDragComponent), "UnityEngine.EventSystems.IBeginDragHandler.OnBeginDrag").SafeEnable();
     }
 
     // Prevent drag events with right mouse, or when shift is down (to avoid multiselect conflicts)

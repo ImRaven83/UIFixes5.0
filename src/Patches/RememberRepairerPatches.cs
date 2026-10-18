@@ -10,8 +10,8 @@ public static class RememberRepairerPatches
 {
     public static void Enable()
     {
-        new RememberRepairerPatch().Enable();
-        new DefaultMaxRepairPatch().Enable();
+        new RememberRepairerPatch().SafeEnable();
+        new DefaultMaxRepairPatch().SafeEnable();
     }
 
     public class RememberRepairerPatch : ModulePatch

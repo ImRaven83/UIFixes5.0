@@ -13,8 +13,8 @@ public static class HideoutCameraPatches
 {
     public static void Enable()
     {
-        new HideoutCameraPatch().Enable();
-        new HideoutZoomPatch().Enable();
+        new HideoutCameraPatch().SafeEnable();
+        new HideoutZoomPatch().SafeEnable();
     }
 
     // Prevent the hideout camera from moving due to screen-edge when an area is selected or inventory is open

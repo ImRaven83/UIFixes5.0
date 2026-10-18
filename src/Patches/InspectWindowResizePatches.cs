@@ -27,13 +27,13 @@ internal static class InspectWindowResizePatches
 
     public static void Enable()
     {
-        new SaveInspectWindowSizePatch().Enable();
-        new AddInspectWindowButtonsPatch().Enable();
-        new GrowInspectWindowDescriptionPatch().Enable();
-        new LeftRightKeybindsPatch().Enable();
+        new SaveInspectWindowSizePatch().SafeEnable();
+        new AddInspectWindowButtonsPatch().SafeEnable();
+        new GrowInspectWindowDescriptionPatch().SafeEnable();
+        new LeftRightKeybindsPatch().SafeEnable();
 
-        new StatFontSizePatch().Enable();
-        new DescriptionFontSizePatch().Enable();
+        new StatFontSizePatch().SafeEnable();
+        new DescriptionFontSizePatch().SafeEnable();
     }
 
     public class SaveInspectWindowSizePatch : ModulePatch
@@ -150,7 +150,7 @@ internal static class InspectWindowResizePatches
 
                 StretchDescription(inspectLayout);
             }));
-            inspectPanel.AddDisposable((System.Action)(() => restoreButton.onClick.RemoveAllListeners()));
+            inspectPanel.AddDisposable(Il2CppHelpers.ToIl2CppAction((System.Action)(() => restoreButton.onClick.RemoveAllListeners())));
         }
 
         private static void CreateLeftButton(ItemSpecificationPanel inspectPanel, Button template)
@@ -172,7 +172,7 @@ internal static class InspectWindowResizePatches
             leftImage.SetNativeSize();
 
             leftButton.onClick.AddListener((System.Action)(() => SnapLeft(inspectPanel)));
-            inspectPanel.AddDisposable((System.Action)(() => leftButton.onClick.RemoveAllListeners()));
+            inspectPanel.AddDisposable(Il2CppHelpers.ToIl2CppAction((System.Action)(() => leftButton.onClick.RemoveAllListeners())));
         }
 
         private static void CreateRightButton(ItemSpecificationPanel inspectPanel, Button template)
@@ -195,7 +195,7 @@ internal static class InspectWindowResizePatches
             rightImage.SetNativeSize();
 
             rightButton.onClick.AddListener((System.Action)(() => SnapRight(inspectPanel)));
-            inspectPanel.AddDisposable((System.Action)(() => rightButton.onClick.RemoveAllListeners()));
+            inspectPanel.AddDisposable(Il2CppHelpers.ToIl2CppAction((System.Action)(() => rightButton.onClick.RemoveAllListeners())));
         }
 
         // Informed by StretchArea.OnDrag
@@ -293,11 +293,11 @@ internal static class InspectWindowResizePatches
         [PatchPostfix]
         public static void Postfix(CompactCharacteristicPanel __instance)
         {
-            __instance.R().UI.AddDisposable(Settings.StatFontSize.Bind(fontSize =>
+            __instance.R().UI.AddDisposable(Il2CppHelpers.ToIl2CppAction(Settings.StatFontSize.Bind(fontSize =>
             {
                 __instance.NameText.fontSize = fontSize;
                 __instance.ValueText.fontSize = fontSize;
-            }));
+            })));
         }
     }
 
@@ -311,13 +311,13 @@ internal static class InspectWindowResizePatches
         [PatchPostfix]
         public static void Postfix(ItemInfoWindowLabels __instance)
         {
-            __instance.R().UI.AddDisposable(Settings.InspectDescriptionFontSize.Bind(fontSize =>
+            __instance.R().UI.AddDisposable(Il2CppHelpers.ToIl2CppAction(Settings.InspectDescriptionFontSize.Bind(fontSize =>
             {
                 if (__instance._description != null)
                 {
                     __instance._description.fontSize = fontSize;
                 }
-            }));
+            })));
         }
     }
 }

@@ -23,10 +23,10 @@ public static class FilterOutOfStockPatches
 
     public static void Enable()
     {
-        new CreateButtonPatch().Enable();
-        new ShowButtonPatch().Enable();
+        new CreateButtonPatch().SafeEnable();
+        new ShowButtonPatch().SafeEnable();
 
-        new FilterPanelPatch().Enable();
+        new FilterPanelPatch().SafeEnable();
     }
 
     private static bool ShowOutOfStockItems

@@ -23,34 +23,34 @@ public static class WeaponModdingPatches
 
     public static void Enable()
     {
-        new LastResizePatch().Enable();
-        new MoveBeforeResizePatch().Enable();
-        new MoveBeforeUnfoldPatch().Enable();
-        new MoveOperationRollbackPatch().Enable();
-        new SwapOperationRollbackPatch().Enable();
-        new MoveBeforeNetworkTransactionPatch().Enable();
+        new LastResizePatch().SafeEnable();
+        new MoveBeforeResizePatch().SafeEnable();
+        new MoveBeforeUnfoldPatch().SafeEnable();
+        new MoveOperationRollbackPatch().SafeEnable();
+        new SwapOperationRollbackPatch().SafeEnable();
+        new MoveBeforeNetworkTransactionPatch().SafeEnable();
 
-        new SwapModsPatch().Enable();
+        new SwapModsPatch().SafeEnable();
 
-        new ModEquippedPatch().Enable();
-        new InspectLockedPatch().Enable();
-        new MoveCanExecutePatch().Enable();
-        new ModCanBeMovedPatch().Enable();
-        new CanDetachPatch().Enable();
-        new CanApplyPatch().Enable();
-        new LockedStatePatch().Enable();
-        new ArmorSlotAcceptRaidPatch().Enable();
-        new ModRaidModdablePatch().Enable();
-        new EmptyVitalPartsPatch().Enable();
+        new ModEquippedPatch().SafeEnable();
+        new InspectLockedPatch().SafeEnable();
+        new MoveCanExecutePatch().SafeEnable();
+        new ModCanBeMovedPatch().SafeEnable();
+        new CanDetachPatch().SafeEnable();
+        new CanApplyPatch().SafeEnable();
+        new LockedStatePatch().SafeEnable();
+        new ArmorSlotAcceptRaidPatch().SafeEnable();
+        new ModRaidModdablePatch().SafeEnable();
+        new EmptyVitalPartsPatch().SafeEnable();
 
-        new InAssemblePatch().Enable();
-        new LongerFullIdPatch().Enable();
-        new CheckIfAlreadyBuiltPatch().Enable();
+        new InAssemblePatch().SafeEnable();
+        new LongerFullIdPatch().SafeEnable();
+        new CheckIfAlreadyBuiltPatch().SafeEnable();
 
-        new DisassembleAllPatch().Enable();
+        new DisassembleAllPatch().SafeEnable();
 
-        new FindItemBodyPatch().Enable();
-        new AssembleTooltipPatch().Enable();
+        new FindItemBodyPatch().SafeEnable();
+        new AssembleTooltipPatch().SafeEnable();
     }
 
     public class ResizeData

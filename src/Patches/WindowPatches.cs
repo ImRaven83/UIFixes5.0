@@ -20,22 +20,22 @@ public static class WindowPatches
 {
     public static void Enable()
     {
-        new WindowOpenPatch(nameof(ItemUiContext.Inspect)).Enable();
-        new WindowOpenPatch(nameof(ItemUiContext.OpenItem)).Enable(); // grids
-        new WindowClosePatch().Enable();
+        new WindowOpenPatch(nameof(ItemUiContext.Inspect)).SafeEnable();
+        new WindowOpenPatch(nameof(ItemUiContext.OpenItem)).SafeEnable(); // grids
+        new WindowClosePatch().SafeEnable();
 
-        new InventoryShowPatch().Enable();
-        new InventoryClosePatch().Enable();
+        new InventoryShowPatch().SafeEnable();
+        new InventoryClosePatch().SafeEnable();
 
-        new KeepWindowOnScreenPatch(nameof(ItemUiContext.Inspect)).Enable();
-        new KeepWindowOnScreenPatch(nameof(ItemUiContext.EditTag)).Enable();
-        new KeepWindowOnScreenPatch(nameof(ItemUiContext.OpenInsuranceWindow)).Enable();
-        new KeepWindowOnScreenPatch(nameof(ItemUiContext.OpenRepairWindow)).Enable();
-        new KeepWindowOnScreenPatch(nameof(ItemUiContext.OpenItem)).Enable(); // grids
+        new KeepWindowOnScreenPatch(nameof(ItemUiContext.Inspect)).SafeEnable();
+        new KeepWindowOnScreenPatch(nameof(ItemUiContext.EditTag)).SafeEnable();
+        new KeepWindowOnScreenPatch(nameof(ItemUiContext.OpenInsuranceWindow)).SafeEnable();
+        new KeepWindowOnScreenPatch(nameof(ItemUiContext.OpenRepairWindow)).SafeEnable();
+        new KeepWindowOnScreenPatch(nameof(ItemUiContext.OpenItem)).SafeEnable(); // grids
 
-        new KeepTopOnScreenPatch().Enable();
+        new KeepTopOnScreenPatch().SafeEnable();
 
-        new BorderPrioritizedWindow().Enable();
+        new BorderPrioritizedWindow().SafeEnable();
     }
 
     public class WindowOpenPatch(string methodName) : ModulePatch

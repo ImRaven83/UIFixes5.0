@@ -16,9 +16,9 @@ public static class WeaponPanPatches
 
     public static void Enable()
     {
-        new EditBuildScreenPanPatch().Enable();
-        new WeaponModdingScreenPanPatch().Enable();
-        new WeaponModdingScreenCursorPatch().Enable();
+        new EditBuildScreenPanPatch().SafeEnable();
+        new WeaponModdingScreenPanPatch().SafeEnable();
+        new WeaponModdingScreenCursorPatch().SafeEnable();
     }
 
     private static void PanCamera(PointerEventData eventData, WeaponPreview weaponPreview)
@@ -153,13 +153,16 @@ public static class WeaponPanPatches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(WeaponModdingScreen), nameof(WeaponModdingScreen.ShouldLockCursor));
+            // Declared on the generic base in 5.0, whose body is shared by every ItemObserveScreen; filter by type below
+            return AccessTools.DeclaredMethod(
+                typeof(ItemObserveScreen<WeaponModdingScreen.WeaponModdingScreenController, WeaponModdingScreen>),
+                nameof(ItemObserveScreen<WeaponModdingScreen.WeaponModdingScreenController, WeaponModdingScreen>.ShouldLockCursor));
         }
 
         [PatchPostfix]
-        public static void Postfix(ref ECursorResult __result)
+        public static void Postfix(ItemObserveScreen<WeaponModdingScreen.WeaponModdingScreenController, WeaponModdingScreen> __instance, ref ECursorResult __result)
         {
-            if (IsPanning)
+            if (IsPanning && __instance.TryCast<WeaponModdingScreen>() != null)
             {
                 __result = ECursorResult.ShowCursor;
             }

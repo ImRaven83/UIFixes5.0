@@ -15,8 +15,8 @@ public static class QuestKeysPatches
 
     public static void Enable()
     {
-        new BigButtonPatch().Enable();
-        new DebounceStatusNotifyPatch().Enable();
+        new BigButtonPatch().SafeEnable();
+        new DebounceStatusNotifyPatch().SafeEnable();
     }
 
     // Hook up listener to Accept/Complete button

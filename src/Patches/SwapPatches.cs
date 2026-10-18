@@ -45,32 +45,32 @@ public static class SwapPatches
 
     public static void Enable()
     {
-        new DetectSwapSourceContainerPatch().Enable();
-        new CleanupSwapSourceContainerPatch().Enable();
+        new DetectSwapSourceContainerPatch().SafeEnable();
+        new CleanupSwapSourceContainerPatch().SafeEnable();
 
-        new ToggleForceSwapPatch().Enable();
-        new HighlightSwapSourcePatch().Enable();
+        new ToggleForceSwapPatch().SafeEnable();
+        new HighlightSwapSourcePatch().SafeEnable();
 
         // Grids
-        new GridViewAcceptItemPatch().Enable();
-        new GridViewCanAcceptSwapPatch().Enable();
-        new GridViewForceTrickTargetPatch().Enable();
+        new GridViewAcceptItemPatch().SafeEnable();
+        new GridViewCanAcceptSwapPatch().SafeEnable();
+        new GridViewForceTrickTargetPatch().SafeEnable();
 
         // Slots
-        new SlotCanAcceptSwapPatch().Enable();
-        new DetectGridHighlightPrecheckPatch().Enable();
-        new DetectSlotHighlightPrecheckPatch().Enable();
+        new SlotCanAcceptSwapPatch().SafeEnable();
+        new DetectGridHighlightPrecheckPatch().SafeEnable();
+        new DetectSlotHighlightPrecheckPatch().SafeEnable();
 
-        new WeaponApplyPatch().Enable();
+        new WeaponApplyPatch().SafeEnable();
 
-        new DetectFilterForSwapPatch().Enable();
-        new FixNoGridErrorPatch().Enable();
-        new SwapOperationRaiseEventsPatch().Enable();
-        new RememberSwapGridHoverPatch().Enable();
-        new InspectWindowUpdateStatsOnSwapPatch().Enable();
-        new FixAddModFirearmOperationPatch().Enable();
-        new HideScaryTooltipPatch().Enable();
-        new ScavInventorySplitPatch().Enable();
+        new DetectFilterForSwapPatch().SafeEnable();
+        new FixNoGridErrorPatch().SafeEnable();
+        new SwapOperationRaiseEventsPatch().SafeEnable();
+        new RememberSwapGridHoverPatch().SafeEnable();
+        new InspectWindowUpdateStatsOnSwapPatch().SafeEnable();
+        new FixAddModFirearmOperationPatch().SafeEnable();
+        new HideScaryTooltipPatch().SafeEnable();
+        new ScavInventorySplitPatch().SafeEnable();
     }
 
     private static bool ValidPrerequisites(DragItemContext itemContext, Item targetItem, OperationResult operation, bool prefix)

@@ -19,14 +19,14 @@ public static class WishlistPatches
 
     public static void Enable()
     {
-        new IsInWishlistPatch().Enable();
-        new AreaDatasPatch().Enable();
-        new RequirementsPatch().Enable();
+        new IsInWishlistPatch().SafeEnable();
+        new AreaDatasPatch().SafeEnable();
+        new RequirementsPatch().SafeEnable();
 
         // The following are all to prevent non-FIR items that are auto-wishlisted for FIR hideout requirements
-        new ItemSpecificationWishlistPatch().Enable();
-        new TraderPurchaseWishlistItemPatch().Enable();
-        new GridItemViewWishlistPatch().Enable();
+        new ItemSpecificationWishlistPatch().SafeEnable();
+        new TraderPurchaseWishlistItemPatch().SafeEnable();
+        new GridItemViewWishlistPatch().SafeEnable();
     }
 
     public class IsInWishlistPatch : ModulePatch

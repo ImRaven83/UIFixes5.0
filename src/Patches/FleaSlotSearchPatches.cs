@@ -18,9 +18,9 @@ public static class FleaSlotSearchPatches
 {
     public static void Enable()
     {
-        new HandbookWorkaroundPatch().Enable();
-        new LinkedSlotSearchPatch().Enable();
-        new MyOffersPatch().Enable();
+        new HandbookWorkaroundPatch().SafeEnable();
+        new LinkedSlotSearchPatch().SafeEnable();
+        new MyOffersPatch().SafeEnable();
     }
 
     // Ragfair search strings are round-tripped through the handbook, so keeping the added suffix requires these shenanigans

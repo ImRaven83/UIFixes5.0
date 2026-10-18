@@ -13,8 +13,8 @@ public static class AddOfferRememberAutoselectPatches
 
     public static void Enable()
     {
-        new RememberAutoselectPatch().Enable();
-        new RestoreAutoselectPatch().Enable();
+        new RememberAutoselectPatch().SafeEnable();
+        new RestoreAutoselectPatch().SafeEnable();
 
         Settings.RememberAutoselectSimilar.Subscribe(enabled =>
         {

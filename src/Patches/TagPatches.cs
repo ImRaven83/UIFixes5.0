@@ -21,13 +21,13 @@ public static class TagPatches
 {
     public static void Enable()
     {
-        new OnEnterPatch().Enable();
-        new TagsOverCaptionsPatch().Enable();
+        new OnEnterPatch().SafeEnable();
+        new TagsOverCaptionsPatch().SafeEnable();
 
-        new AddTagNewItemPatch().Enable();
-        new AddTagParsedItemPatch().Enable();
-        new TagAdditionalTypePatch().Enable();
-        new KeepTagsLocalPatch().Enable();
+        new AddTagNewItemPatch().SafeEnable();
+        new AddTagParsedItemPatch().SafeEnable();
+        new TagAdditionalTypePatch().SafeEnable();
+        new KeepTagsLocalPatch().SafeEnable();
     }
 
     // Save the tag when enter is pressed

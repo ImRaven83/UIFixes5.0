@@ -12,10 +12,10 @@ public static class AddOfferClickablePricesPatches
 {
     public static void Enable()
     {
-        new AutopopulatePricesPatch().Enable();
-        new SetRequirementPatch().Enable();
-        new BulkTogglePatch().Enable();
-        new MultipleStacksPatch().Enable();
+        new AutopopulatePricesPatch().SafeEnable();
+        new SetRequirementPatch().SafeEnable();
+        new BulkTogglePatch().SafeEnable();
+        new MultipleStacksPatch().SafeEnable();
     }
 
     // Autopopulates a price when the window opens. 

@@ -21,13 +21,13 @@ public static class TradingAutoSwitchPatches
 
     public static void Enable()
     {
-        new GetBuySellTabsPatch().Enable();
-        new SwitchOnClickPatch().Enable();
-        new RefreshOnSwitchPatch().Enable();
+        new GetBuySellTabsPatch().SafeEnable();
+        new SwitchOnClickPatch().SafeEnable();
+        new RefreshOnSwitchPatch().SafeEnable();
 
-        new RestoreTraderPatch().Enable();
-        new RestoreTabPatch().Enable();
-        new RememberTraderAndTabPatch().Enable();
+        new RestoreTraderPatch().SafeEnable();
+        new RestoreTabPatch().SafeEnable();
+        new RememberTraderAndTabPatch().SafeEnable();
     }
 
     // Get references to the buy/sell tabs
@@ -44,11 +44,11 @@ public static class TradingAutoSwitchPatches
             BuyTab = __instance._buyTab;
             SellTab = __instance._sellTab;
 
-            __instance.R().UI.AddDisposable(() =>
+            __instance.R().UI.AddDisposable(Il2CppHelpers.ToIl2CppAction(() =>
             {
                 BuyTab = null;
                 SellTab = null;
-            });
+            }));
         }
     }
 

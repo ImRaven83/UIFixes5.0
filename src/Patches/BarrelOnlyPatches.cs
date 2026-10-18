@@ -18,12 +18,12 @@ public static class BarrelOnlyPatches
 {
     public static void Enable()
     {
-        new LoadBarrelPatch().Enable();
+        new LoadBarrelPatch().SafeEnable();
 
-        new LoadAmmoIsActivePatch().Enable();
-        new LoadAmmoIsInteractivePatch().Enable();
-        new LoadAmmoSubInteractionsPatch().Enable();
-        new UnloadAmmoPatch().Enable();
+        new LoadAmmoIsActivePatch().SafeEnable();
+        new LoadAmmoIsInteractivePatch().SafeEnable();
+        new LoadAmmoSubInteractionsPatch().SafeEnable();
+        new UnloadAmmoPatch().SafeEnable();
     }
 
     public class LoadBarrelPatch : ModulePatch

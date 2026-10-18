@@ -17,15 +17,15 @@ public static class ContextMenuShortcutPatches
 
     public static void Enable()
     {
-        new ItemUiContextPatch().Enable();
+        new ItemUiContextPatch().SafeEnable();
 
-        new HideoutItemViewRegisterContextPatch().Enable();
+        new HideoutItemViewRegisterContextPatch().SafeEnable();
 
-        new TradingPanelRegisterContextPatch().Enable();
-        new TradingPanelUnregisterContextPatch().Enable();
+        new TradingPanelRegisterContextPatch().SafeEnable();
+        new TradingPanelUnregisterContextPatch().SafeEnable();
 
-        new SelectCurrentContextPatch().Enable();
-        new DeselectCurrentContextPatch().Enable();
+        new SelectCurrentContextPatch().SafeEnable();
+        new DeselectCurrentContextPatch().SafeEnable();
     }
 
     public class ItemUiContextPatch : ModulePatch

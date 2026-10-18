@@ -14,8 +14,8 @@ public static class SyncScrollPositionPatches
 
     public static void Enable()
     {
-        new SyncStashScrollPatch().Enable();
-        new SyncOfferStashScrollPatch().Enable();
+        new SyncStashScrollPatch().SafeEnable();
+        new SyncOfferStashScrollPatch().SafeEnable();
     }
 
     private static void UpdateScrollPosition(Vector2 position)

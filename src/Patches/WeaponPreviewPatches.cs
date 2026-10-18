@@ -9,7 +9,7 @@ public static class WeaponPreviewPatches
 {
     public static void Enable()
     {
-        new WeaponPreviewCameraNearClipPatch().Enable();
+        new WeaponPreviewCameraNearClipPatch().SafeEnable();
     }
 
     public class WeaponPreviewCameraNearClipPatch : ModulePatch

@@ -17,25 +17,25 @@ public static class MailPatches
     public static void Enable()
     {
         // Send read requests to the server
-        new ActuallyReadMessagesPatch().Enable();
-        new ReadMessagesTimerPatch().Enable();
+        new ActuallyReadMessagesPatch().SafeEnable();
+        new ReadMessagesTimerPatch().SafeEnable();
 
         // Show the new message icons for messages with attachments
-        new AttachmentsAreNewPatch().Enable();
-        new MenuAttachmentsAreNewPatch().Enable();
-        new DialogueViewAttachmentsAreNewPatch().Enable();
+        new AttachmentsAreNewPatch().SafeEnable();
+        new MenuAttachmentsAreNewPatch().SafeEnable();
+        new DialogueViewAttachmentsAreNewPatch().SafeEnable();
 
         // Handle transfer items screen
-        new UpdateCountsAfterTransferPatch().Enable();
+        new UpdateCountsAfterTransferPatch().SafeEnable();
 
         // Block the places that clear AttachmentsNew
-        new DialogueViewSelectedPatch().Enable(); // Upon selecting a dialog
-        new MenuTaskBarPatch().Enable(); // Also upon selecting a dialog
-        new SocialNetworkDisplayPatch().Enable(); // Upon receiving a message via socket
+        new DialogueViewSelectedPatch().SafeEnable(); // Upon selecting a dialog
+        new MenuTaskBarPatch().SafeEnable(); // Also upon selecting a dialog
+        new SocialNetworkDisplayPatch().SafeEnable(); // Upon receiving a message via socket
 
         // Best effort to handle expired attachments
-        new InvokeAttachmentsChangedPatch().Enable();
-        new HandleExpiredMessagesPatch().Enable();
+        new InvokeAttachmentsChangedPatch().SafeEnable();
+        new HandleExpiredMessagesPatch().SafeEnable();
     }
 
     public class ActuallyReadMessagesPatch : ModulePatch

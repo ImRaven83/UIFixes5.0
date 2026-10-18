@@ -20,14 +20,14 @@ public static class QuickAccessPanelPatches
 {
     public static void Enable()
     {
-        new FixWeaponBindsDisplayPatch().Enable();
-        new BoundItemViewTextPatch().Enable();
-        new BindPanelTextPatch().Enable();
-        new RotationPatch().Enable();
+        new FixWeaponBindsDisplayPatch().SafeEnable();
+        new BoundItemViewTextPatch().SafeEnable();
+        new BindPanelTextPatch().SafeEnable();
+        new RotationPatch().SafeEnable();
 
-        new FixVisibilityPatch().Enable();
-        new TranslateCommandHackPatch().Enable();
-        new LeaveHideoutPatch().Enable();
+        new FixVisibilityPatch().SafeEnable();
+        new TranslateCommandHackPatch().SafeEnable();
+        new LeaveHideoutPatch().SafeEnable();
     }
 
     // Fix the displayed keybinds being hardcoded to "1", "2", "3"
@@ -143,7 +143,8 @@ public static class QuickAccessPanelPatches
         [PatchPostfix]
         public static void Postfix(QuickSlotItemView __instance)
         {
-            if (__instance.IconScale == null)
+            // il2cpp Nullable<T> is a wrapper object, so check HasValue rather than null
+            if (__instance.IconScale == null || !__instance.IconScale.HasValue)
             {
                 return;
             }

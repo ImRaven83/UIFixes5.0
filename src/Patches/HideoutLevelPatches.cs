@@ -12,10 +12,10 @@ public static class HideoutLevelPatches
 
     public static void Enable()
     {
-        new SelectAreaPatch().Enable();
-        new ChangeLevelPatch().Enable();
-        new PickInitialLevelPatch().Enable();
-        new ClearLevelPatch().Enable();
+        new SelectAreaPatch().SafeEnable();
+        new ChangeLevelPatch().SafeEnable();
+        new PickInitialLevelPatch().SafeEnable();
+        new ClearLevelPatch().SafeEnable();
     }
 
     public class SelectAreaPatch : ModulePatch

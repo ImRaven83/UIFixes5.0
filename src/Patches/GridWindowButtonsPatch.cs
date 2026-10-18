@@ -27,13 +27,13 @@ public class GridWindowButtonsPatch : ModulePatch
             // Left button
             Button leftButton = CreateButton(closeButton, sortBackground.sprite, EItemAttributeId.RecoilBack);
             leftButton.onClick.AddListener((System.Action)(() => SnapLeft(__instance)));
-            wrappedInstance.UI.AddDisposable(() => leftButton.onClick.RemoveAllListeners());
+            wrappedInstance.UI.AddDisposable(Il2CppHelpers.ToIl2CppAction(() => leftButton.onClick.RemoveAllListeners()));
 
             // Right button
             Button rightButton = CreateButton(closeButton, sortBackground.sprite, EItemAttributeId.RecoilBack);
             rightButton.transform.Find("X").Rotate(0f, 180f, 0f);
             rightButton.onClick.AddListener((System.Action)(() => SnapRight(__instance)));
-            wrappedInstance.UI.AddDisposable(() => rightButton.onClick.RemoveAllListeners());
+            wrappedInstance.UI.AddDisposable(Il2CppHelpers.ToIl2CppAction(() => rightButton.onClick.RemoveAllListeners()));
 
             // Put close back on the end
             closeButton.SetAsLastSibling();

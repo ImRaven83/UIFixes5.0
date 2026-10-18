@@ -9,7 +9,7 @@ public static class ServicesPatches
 {
     public static void Enable()
     {
-        new ServicesSelectedPatch().Enable();
+        new ServicesSelectedPatch().SafeEnable();
     }
 
     // As far as I can tell, ServicesListView is fundamentally broken. It is the list view on the left side of the services page.

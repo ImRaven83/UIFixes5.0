@@ -17,13 +17,13 @@ public static class AimToggleHoldPatches
 {
     public static void Enable()
     {
-        new AddTwoKeyStatesPatch(4).Enable();
-        new AddTwoKeyStatesPatch(5).Enable();
-        new AddOneKeyStatesPatch().Enable();
-        new UpdateInputPatch().Enable();
+        new AddTwoKeyStatesPatch(4).SafeEnable();
+        new AddTwoKeyStatesPatch(5).SafeEnable();
+        new AddOneKeyStatesPatch().SafeEnable();
+        new UpdateInputPatch().SafeEnable();
 
-        new ForceTacticalModePatch().Enable();
-        new ToggleInteractionPatch().Enable();
+        new ForceTacticalModePatch().SafeEnable();
+        new ToggleInteractionPatch().SafeEnable();
 
         Settings.ToggleOrHoldAim.SettingChanged += OnSettingChanged;
         Settings.ToggleOrHoldInteract.SettingChanged += OnSettingChanged;

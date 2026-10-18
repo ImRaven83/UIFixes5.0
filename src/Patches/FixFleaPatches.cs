@@ -20,16 +20,16 @@ public static class FixFleaPatches
     public static void Enable()
     {
         // These are anal AF
-        new DoNotToggleOnMouseOverPatch().Enable();
-        new ToggleOnOpenPatch().Enable();
-        new DropdownHeightPatch().Enable();
+        new DoNotToggleOnMouseOverPatch().SafeEnable();
+        new ToggleOnOpenPatch().SafeEnable();
+        new DropdownHeightPatch().SafeEnable();
 
-        new OfferViewTweaksPatch().Enable();
+        new OfferViewTweaksPatch().SafeEnable();
 
-        new SearchFilterPatch().Enable();
-        new SearchPatch().Enable();
-        new SearchKeyPatch().Enable();
-        new SearchKeyHandbookPatch().Enable();
+        new SearchFilterPatch().SafeEnable();
+        new SearchPatch().SafeEnable();
+        new SearchKeyPatch().SafeEnable();
+        new SearchKeyHandbookPatch().SafeEnable();
     }
 
     // The chevrons on categories change direction at the wrong times
@@ -37,15 +37,16 @@ public static class FixFleaPatches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(CategoryView), nameof(CategoryView.PointerEnterHandler));
+            // Declared on the base class in 5.0; Harmony can only patch the declaring method
+            return AccessTools.DeclaredMethod(typeof(NodeBaseView), nameof(NodeBaseView.PointerEnterHandler));
         }
 
         [PatchPostfix]
-        public static void Postfix(CategoryView __instance)
+        public static void Postfix(NodeBaseView __instance)
         {
-            if (!__instance._categoryOpen)
+            if (__instance is CategoryView categoryView && !categoryView._categoryOpen)
             {
-                __instance._toggleImage.sprite = __instance._closeSprite;
+                categoryView._toggleImage.sprite = categoryView._closeSprite;
             }
         }
     }

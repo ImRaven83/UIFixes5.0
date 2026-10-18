@@ -22,17 +22,17 @@ public static class InspectWindowStatsPatches
 {
     public static void Enable()
     {
-        new CalculateModStatsPatch().Enable();
-        new CompareModStatsPatch().Enable();
-        new AddShowHideModStatsButtonPatch().Enable();
-        new FormatCompactValuesPatch().Enable();
-        new FormatFullValuesPatch().Enable();
-        new FixDurabilityBarPatch().Enable();
+        new CalculateModStatsPatch().SafeEnable();
+        new CompareModStatsPatch().SafeEnable();
+        new AddShowHideModStatsButtonPatch().SafeEnable();
+        new FormatCompactValuesPatch().SafeEnable();
+        new FormatFullValuesPatch().SafeEnable();
+        new FixDurabilityBarPatch().SafeEnable();
 
-        new HighlightSlotsPatch().Enable();
-        new HighlightFilledSlotsPatch().Enable();
+        new HighlightSlotsPatch().SafeEnable();
+        new HighlightFilledSlotsPatch().SafeEnable();
 
-        new FixTraderCompatWithPatch().Enable();
+        new FixTraderCompatWithPatch().SafeEnable();
     }
 
     public class CalculateModStatsPatch : ModulePatch
@@ -194,11 +194,11 @@ public static class InspectWindowStatsPatches
             contextInteractions.OnRedrawRequired += CreateButton;
 
             // And unsubscribe when the window goes away
-            buttonsContainer.R().UI.AddDisposable(() =>
+            buttonsContainer.R().UI.AddDisposable(Il2CppHelpers.ToIl2CppAction(() =>
             {
                 contextInteractions.OnRedrawRequired -= CreateButton;
                 Settings.ShowModStats.SettingChanged -= OnSettingChanged;
-            });
+            }));
 
             CreateButton();
         }
@@ -312,7 +312,7 @@ public static class InspectWindowStatsPatches
             }
 
             itemUiContext.RegisterView(itemContext);
-            __instance.R().UI.AddDisposable(() => itemUiContext.UnregisterView(itemContext));
+            __instance.R().UI.AddDisposable(Il2CppHelpers.ToIl2CppAction(() => itemUiContext.UnregisterView(itemContext)));
         }
     }
 

@@ -12,8 +12,8 @@ public static class FixTraderControllerPatches
 
     public static void Enable()
     {
-        new ExecutePossibleActionSimulateFalsePatch().Enable();
-        new BlockPartialTransfersPatch().Enable();
+        new ExecutePossibleActionSimulateFalsePatch().SafeEnable();
+        new BlockPartialTransfersPatch().SafeEnable();
     }
 
     public class ExecutePossibleActionSimulateFalsePatch : ModulePatch

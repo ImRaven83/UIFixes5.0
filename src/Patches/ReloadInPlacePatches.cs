@@ -23,14 +23,14 @@ public static class ReloadInPlacePatches
     public static void Enable()
     {
         // These patch ItemUiContext.ReloadWeapon, which is called from the context menu Reload
-        new ReloadInPlacePatch().Enable();
-        new ReloadInPlaceFindMagPatch().Enable();
-        new ReloadInPlaceFindSpotPatch().Enable();
-        new AlwaysSwapPatch().Enable();
+        new ReloadInPlacePatch().SafeEnable();
+        new ReloadInPlaceFindMagPatch().SafeEnable();
+        new ReloadInPlaceFindSpotPatch().SafeEnable();
+        new AlwaysSwapPatch().SafeEnable();
 
         // This patches the firearmsController code when you hit R in raid with an external magazine class
-        new SwapIfNoSpacePatch().Enable();
-        //new InsertMagDebugPatch().Enable();
+        new SwapIfNoSpacePatch().SafeEnable();
+        //new InsertMagDebugPatch().SafeEnable();
     }
 
     public class ReloadInPlacePatch : ModulePatch

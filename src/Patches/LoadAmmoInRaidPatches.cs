@@ -16,8 +16,8 @@ public class LoadAmmoInRaidPatches
 {
     public static void Enable()
     {
-        new EnableContextMenuPatch().Enable();
-        new SlowLoadingPatch().Enable();
+        new EnableContextMenuPatch().SafeEnable();
+        new SlowLoadingPatch().SafeEnable();
     }
 
     public class EnableContextMenuPatch : ModulePatch

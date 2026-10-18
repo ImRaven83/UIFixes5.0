@@ -17,9 +17,9 @@ public static class VariableScopeFixPatches
     {
         if (!Plugin.FikaPresent() && Settings.VariableScopeFix.Value)
         {
-            new FirearmsUpdateModsPatch().Enable();
-            new FirearmsValidateScopeSmoothZoomPatch().Enable();
-            new OpticRetriceUpdateTransformPatch().Enable();
+            new FirearmsUpdateModsPatch().SafeEnable();
+            new FirearmsValidateScopeSmoothZoomPatch().SafeEnable();
+            new OpticRetriceUpdateTransformPatch().SafeEnable();
         }
     }
 

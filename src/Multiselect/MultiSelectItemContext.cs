@@ -1,10 +1,14 @@
 using System;
+using System.Reflection;
 using EFT.InventoryLogic;
+using HarmonyLib;
+using SPTushonka.Reflection.Patching;
 using Il2CppInterop.Runtime.Injection;
 
 namespace UIFixes;
 
-// Injected into il2cpp (see Plugin.Load) so the game sees the overrides
+// Injected into il2cpp (see Plugin.Load). DragItemContext is sealed in il2cpp, so the game may call ItemContext's
+// virtuals non-virtually; the overrides below are also enforced by MultiSelectItemContextPatches.
 public class MultiSelectItemContext : DragItemContext
 {
     public MultiSelectItemContext(IntPtr pointer) : base(pointer) { }
@@ -41,6 +45,11 @@ public class MultiSelectItemContext : DragItemContext
     public override void Dispose()
     {
         base.Dispose();
+        OnDisposed();
+    }
+
+    internal void OnDisposed()
+    {
         if (Source != null)
         {
             Source.OnDisposed -= OnParentDispose;
@@ -65,5 +74,51 @@ public class MultiSelectItemContext : DragItemContext
         return Source != null
             ? Source.CanQuickMoveTo(targetContainer)
             : base.CanQuickMoveTo(targetContainer);
+    }
+}
+
+public static class MultiSelectItemContextPatches
+{
+    public static void Enable()
+    {
+        new CanQuickMoveToPatch().SafeEnable();
+        new DisposePatch().SafeEnable();
+    }
+
+    public class CanQuickMoveToPatch : ModulePatch
+    {
+        protected override MethodBase GetTargetMethod()
+        {
+            return AccessTools.DeclaredMethod(typeof(ItemContext), nameof(ItemContext.CanQuickMoveTo));
+        }
+
+        [PatchPrefix]
+        public static bool Prefix(ItemContext __instance, ETargetContainer targetContainer, ref bool __result)
+        {
+            if (__instance is not MultiSelectItemContext multiSelectItemContext || multiSelectItemContext.Source == null)
+            {
+                return true;
+            }
+
+            __result = multiSelectItemContext.Source.CanQuickMoveTo(targetContainer);
+            return false;
+        }
+    }
+
+    public class DisposePatch : ModulePatch
+    {
+        protected override MethodBase GetTargetMethod()
+        {
+            return AccessTools.DeclaredMethod(typeof(ItemContext), nameof(ItemContext.Dispose));
+        }
+
+        [PatchPostfix]
+        public static void Postfix(ItemContext __instance)
+        {
+            if (__instance is MultiSelectItemContext multiSelectItemContext)
+            {
+                multiSelectItemContext.OnDisposed();
+            }
+        }
     }
 }

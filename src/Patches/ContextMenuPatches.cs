@@ -29,34 +29,35 @@ public static class ContextMenuPatches
 
     public static void Enable()
     {
-        new ContextMenuNamesPatch().Enable();
-        new PositionSubMenuPatch().Enable();
-        new PositionInsuranceSubMenuPatch().Enable();
+        new ContextMenuNamesPatch().SafeEnable();
+        new PositionSubMenuPatch().SafeEnable();
+        new PositionInsuranceSubMenuPatch().SafeEnable();
 
-        new DeclareSubInteractionsInventoryPatch().Enable();
-        new CreateSubInteractionsInventoryPatch().Enable();
+        new DeclareSubInteractionsInventoryPatch().SafeEnable();
+        new CreateSubInteractionsInventoryPatch().SafeEnable();
 
-        new DeclareSubInteractionsTradingPatch().Enable();
-        new CreateSubInteractionsTradingPatch().Enable();
+        new DeclareSubInteractionsTradingPatch().SafeEnable();
+        new CreateSubInteractionsTradingPatch().SafeEnable();
 
-        new SniffInteractionButtonCreationPatch().Enable();
-        new ChangeInteractionButtonCreationPatch().Enable();
+        new SniffInteractionButtonCreationPatch().SafeEnable();
+        new ChangeInteractionButtonCreationPatch().SafeEnable();
 
-        new EnableInsureInnerItemsPatch().Enable();
+        new EnableInsureInnerItemsPatch().SafeEnable();
 
-        new DisableInsureOnUninsurable().Enable();
-        new DisableLoadPresetOnBulletsPatch().Enable();
+        new DisableInsureOnUninsurable().SafeEnable();
+        new DisableLoadPresetOnBulletsPatch().SafeEnable();
 
-        new EmptyModSlotMenuPatch().Enable();
-        new EmptyModSlotMenuRemovePatch().Enable();
-        new EmptySlotMenuPatch().Enable();
-        new EmptySlotMenuRemovePatch().Enable();
+        new EmptyModSlotMenuPatch().SafeEnable();
+        new EmptyModSlotMenuRemovePatch().SafeEnable();
+        new EmptySlotMenuPatch().SafeEnable();
+        new EmptySlotMenuRemovePatch().SafeEnable();
 
-        new OpenWhileSearchingPatch().Enable();
+        new OpenWhileSearchingPatch().SafeEnable();
 
-        new ModdingSelectableItemContextPatch().Enable();
+        new ModdingSelectableItemContextPatch().SafeEnable();
+        new ModdingCreateSubInteractionsPatch().SafeEnable();
 
-        new ContextMenuFontSizePatch().Enable();
+        new ContextMenuFontSizePatch().SafeEnable();
     }
 
     // Update display strings with multiselect multipliers
@@ -609,6 +610,8 @@ public static class ContextMenuPatches
         }
     }
 
+    // ModdingContextInteractions is sealed in il2cpp, so a subclass would be invisible to the game.
+    // Add the wishlist option by patching the (generic) base implementations instead.
     public class ModdingSelectableItemContextPatch : ModulePatch
     {
         protected override MethodBase GetTargetMethod()
@@ -616,54 +619,48 @@ public static class ContextMenuPatches
             var moddingContextOptions = ModdingContextInteractions._interactions.TryCast<Il2CppSystem.Collections.Generic.List<EItemInfoButton>>();
             moddingContextOptions?.Add(EItemInfoButton.AddToWishlist);
 
-            return AccessTools.Method(typeof(ModdingSelectableItemContext), nameof(ModdingSelectableItemContext.GetItemContextInteractions));
+            return AccessTools.PropertyGetter(
+                typeof(ContextInteractions<EItemInfoButton>),
+                nameof(ContextInteractions<>.SubInteractions));
+        }
+
+        [PatchPostfix]
+        public static void Postfix(ContextInteractions<EItemInfoButton> __instance, ref Il2CppSystem.Collections.Generic.IEnumerable<EItemInfoButton> __result)
+        {
+            if (__instance is ModdingContextInteractions)
+            {
+                __result = __result.Append(EItemInfoButton.AddToWishlist).ToIl2CppList();
+            }
+        }
+    }
+
+    public class ModdingCreateSubInteractionsPatch : ModulePatch
+    {
+        protected override MethodBase GetTargetMethod()
+        {
+            return AccessTools.DeclaredMethod(
+                typeof(ContextInteractions<EItemInfoButton>),
+                nameof(ContextInteractions<>.CreateSubInteractions));
         }
 
         [PatchPrefix]
-        public static bool Prefix(ModdingSelectableItemContext __instance, Il2CppSystem.Action closeAction, ref ContextInteractions<EItemInfoButton> __result)
+        public static bool Prefix(ContextInteractions<EItemInfoButton> __instance, EItemInfoButton parentInteraction, ISubInteractionsWrapper subInteractionsWrapper)
         {
-            __result = new ExtraModdingItemInteractions(__instance, ItemUiContext.Instance, closeAction);
+            if (__instance is not ModdingContextInteractions moddingInteractions || parentInteraction != EItemInfoButton.AddToWishlist)
+            {
+                return true;
+            }
+
+            subInteractionsWrapper.SetSubInteractions(new WishlistContextInteractions(moddingInteractions.ItemContext, moddingInteractions.ItemUiContext));
+            PositionContextMenuFlyout(subInteractionsWrapper);
             return false;
         }
 
-        // Injected into il2cpp (see Plugin.Load) so the game's context menu code sees these overrides
-        public class ExtraModdingItemInteractions : ModdingContextInteractions
+        [PatchPostfix]
+        public static void Postfix(ContextInteractions<EItemInfoButton> __instance, EItemInfoButton parentInteraction, ISubInteractionsWrapper subInteractionsWrapper)
         {
-            public ExtraModdingItemInteractions(IntPtr pointer) : base(pointer) { }
-
-            public ExtraModdingItemInteractions(ModdingSelectableItemContext itemContext, ItemUiContext itemUiContext, Il2CppSystem.Action closeAction)
-                : base(ClassInjector.DerivedConstructorPointer<ExtraModdingItemInteractions>())
+            if (__instance is ModdingContextInteractions && parentInteraction != EItemInfoButton.AddToWishlist)
             {
-                ClassInjector.DerivedConstructorBody(this);
-                ClassInjector.InvokeBaseConstructor(this, itemContext, itemUiContext, closeAction);
-            }
-
-            public override Il2CppSystem.Collections.Generic.IEnumerable<EItemInfoButton> SubInteractions
-            {
-                get
-                {
-                    var result = new Il2CppSystem.Collections.Generic.List<EItemInfoButton>();
-                    foreach (var interaction in base.SubInteractions)
-                    {
-                        result.Add(interaction);
-                    }
-
-                    result.Add(EItemInfoButton.AddToWishlist);
-                    return result;
-                }
-            }
-
-            public override void CreateSubInteractions(EItemInfoButton parentInteraction, ISubInteractionsWrapper subInteractionsWrapper)
-            {
-                if (parentInteraction == EItemInfoButton.AddToWishlist)
-                {
-                    subInteractionsWrapper.SetSubInteractions(new WishlistContextInteractions(ItemContext, ItemUiContext));
-                }
-                else
-                {
-                    base.CreateSubInteractions(parentInteraction, subInteractionsWrapper);
-                }
-
                 PositionContextMenuFlyout(subInteractionsWrapper);
             }
         }
@@ -679,7 +676,7 @@ public static class ContextMenuPatches
         [PatchPostfix]
         public static void Postfix(ContextMenuButton __instance)
         {
-            __instance.R().UI.AddDisposable(Settings.ContextMenuFontSize.Bind(fontSize => __instance._text.fontSize = fontSize));
+            __instance.R().UI.AddDisposable(Il2CppHelpers.ToIl2CppAction(Settings.ContextMenuFontSize.Bind(fontSize => __instance._text.fontSize = fontSize)));
         }
     }
 

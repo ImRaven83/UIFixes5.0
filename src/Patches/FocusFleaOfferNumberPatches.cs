@@ -12,8 +12,8 @@ public static class FocusFleaOfferNumberPatches
 {
     public static void Enable()
     {
-        new MoneyPatch().Enable();
-        new BarterPatch().Enable();
+        new MoneyPatch().SafeEnable();
+        new BarterPatch().SafeEnable();
     }
 
     public class MoneyPatch : ModulePatch

@@ -23,14 +23,14 @@ public static class HideoutSearchPatches
 
     public static void Enable()
     {
-        new LazyLoadPatch().Enable();
-        new RestoreHideoutSearchPatch().Enable();
-        new SaveHideoutSearchPatch().Enable();
-        new CloseHideoutSearchPatch().Enable();
-        new FastHideoutSearchPatch().Enable();
-        new FixHideoutSearchAgainPatch().Enable();
-        new CancelScrollOnMouseWheelPatch().Enable();
-        new BlockHideoutEnterPatch().Enable();
+        new LazyLoadPatch().SafeEnable();
+        new RestoreHideoutSearchPatch().SafeEnable();
+        new SaveHideoutSearchPatch().SafeEnable();
+        new CloseHideoutSearchPatch().SafeEnable();
+        new FastHideoutSearchPatch().SafeEnable();
+        new FixHideoutSearchAgainPatch().SafeEnable();
+        new CancelScrollOnMouseWheelPatch().SafeEnable();
+        new BlockHideoutEnterPatch().SafeEnable();
     }
 
     // Deactivate ProduceViews as they lazy load if they don't match the search

@@ -12,8 +12,8 @@ public static class TradingHighlightPatches
 
     public static void Enable()
     {
-        new RequisiteChangePatch().Enable();
-        new ClosePatch().Enable();
+        new RequisiteChangePatch().SafeEnable();
+        new ClosePatch().SafeEnable();
     }
 
     public class RequisiteChangePatch : ModulePatch

@@ -17,15 +17,15 @@ public static class RevolverPatches
 {
     public static void Enable()
     {
-        new CylinderMagApplyPatch().Enable();
-        new CylinderMagApplyWithoutRestrictionsPatch().Enable();
+        new CylinderMagApplyPatch().SafeEnable();
+        new CylinderMagApplyWithoutRestrictionsPatch().SafeEnable();
 
-        new LoadCylinderPatch().Enable();
-        new UnloadCylinderPatch().Enable();
+        new LoadCylinderPatch().SafeEnable();
+        new UnloadCylinderPatch().SafeEnable();
 
-        new IsInteractivePatch().Enable();
-        new LoadAmmoSubInteractionsPatch().Enable();
-        new DisablePresetPatch().Enable();
+        new IsInteractivePatch().SafeEnable();
+        new LoadAmmoSubInteractionsPatch().SafeEnable();
+        new DisablePresetPatch().SafeEnable();
     }
 
     public class CylinderMagApplyPatch : ModulePatch

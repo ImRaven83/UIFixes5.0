@@ -19,7 +19,7 @@ public class NetworkTransactionWatcher : IDisposable
 
     public static void Enable()
     {
-        new NetworkTransactionPatch().Enable();
+        new NetworkTransactionPatch().SafeEnable();
     }
 
     public static NetworkTransactionWatcher WatchNext()

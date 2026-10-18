@@ -14,9 +14,9 @@ public static class MagPresetsPatches
 {
     public static void Enable()
     {
-        new LoadMagPresetsPatch().Enable();
-        new RemoveDefaultPresetNamePatch().Enable();
-        new RequirePresetNamePatch().Enable();
+        new LoadMagPresetsPatch().SafeEnable();
+        new RemoveDefaultPresetNamePatch().SafeEnable();
+        new RequirePresetNamePatch().SafeEnable();
     }
 
     public class LoadMagPresetsPatch : ModulePatch

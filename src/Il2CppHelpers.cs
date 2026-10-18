@@ -107,4 +107,24 @@ public static class Il2CppHelpers
 
         return result?.Cast<Il2CppSystem.Action>();
     }
+
+    // ModulePatch.Enable throws on failure; log it and keep going so one broken patch doesn't stop the others
+    public static void SafeEnable(this SPTushonka.Reflection.Patching.ModulePatch patch)
+    {
+        try
+        {
+            patch.Enable();
+        }
+        catch (Exception ex)
+        {
+            Plugin.Instance.Logger.LogError($"UIFixes: {patch.GetType().Name} could not be enabled: {ex.InnerException?.Message ?? ex.Message}");
+        }
+    }
+
+    // Passing a lambda to CompositeDisposable.AddDisposable binds to the generic AddDisposable<T> with a managed T, which il2cpp can't
+    // instantiate. Route it through the Il2CppSystem.Action overload instead.
+    public static Il2CppSystem.Action ToIl2CppAction(System.Action action)
+    {
+        return action;
+    }
 }

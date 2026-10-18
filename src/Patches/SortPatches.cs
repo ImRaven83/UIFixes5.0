@@ -14,7 +14,7 @@ public static class SortPatches
 {
     public static void Enable()
     {
-        new StackFirstPatch().Enable();
+        new StackFirstPatch().SafeEnable();
     }
 
     public class StackFirstPatch : ModulePatch

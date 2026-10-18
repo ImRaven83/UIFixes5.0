@@ -20,17 +20,17 @@ public static class ScrollPatches
 {
     public static void Enable()
     {
-        new EnhanceStashScrollingPatch().Enable();
-        new EnchanceTraderStashScrollingPatch().Enable();
-        new EnhanceFleaScrollingPatch().Enable();
-        new EnhanceMailScrollingPatch().Enable();
+        new EnhanceStashScrollingPatch().SafeEnable();
+        new EnchanceTraderStashScrollingPatch().SafeEnable();
+        new EnhanceFleaScrollingPatch().SafeEnable();
+        new EnhanceMailScrollingPatch().SafeEnable();
 
-        new MouseScrollingSpeedPatch().Enable();
-        new LightScrollerSpeedPatch().Enable();
+        new MouseScrollingSpeedPatch().SafeEnable();
+        new LightScrollerSpeedPatch().SafeEnable();
 
-        new EnhanceHideoutScrollingPatch().Enable();
-        new EnhanceTaskListScrollingPatch().Enable();
-        new OpenLastTaskPatch().Enable();
+        new EnhanceHideoutScrollingPatch().SafeEnable();
+        new EnhanceTaskListScrollingPatch().SafeEnable();
+        new OpenLastTaskPatch().SafeEnable();
     }
 
     private static bool HandleInput(ScrollRect scrollRect)
@@ -388,7 +388,7 @@ public static class ScrollPatches
 
             Toggle toggle = __instance.GetComponent<Toggle>();
             toggle.onValueChanged.AddListener((System.Action<bool>)(OnTaskSelected));
-            __instance.R().UI.AddDisposable(() => toggle.onValueChanged.RemoveListener((System.Action<bool>)(OnTaskSelected)));
+            __instance.R().UI.AddDisposable(Il2CppHelpers.ToIl2CppAction(() => toggle.onValueChanged.RemoveListener((System.Action<bool>)(OnTaskSelected))));
 
             if (quest.Id == LastQuestId)
             {

@@ -16,8 +16,8 @@ public static class OpenSortingTablePatches
 {
     public static void Enable()
     {
-        new AutoOpenPatch().Enable();
-        new DefaultBindPatch().Enable();
+        new AutoOpenPatch().SafeEnable();
+        new DefaultBindPatch().SafeEnable();
     }
 
     // If the sorting table isn't open, open it automatically when something is shift-clicked

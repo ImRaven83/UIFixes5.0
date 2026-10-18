@@ -48,64 +48,65 @@ public static class MultiSelectPatches
     public static void Enable()
     {
         // Initialization
-        new InitializeCommonUIPatch().Enable();
-        new InitializeMenuUIPatch().Enable();
+        new InitializeCommonUIPatch().SafeEnable();
+        MultiSelectItemContextPatches.Enable();
+        new InitializeMenuUIPatch().SafeEnable();
 
         // Selection
-        new SelectOnMouseDownPatch().Enable();
-        new DeselectOnTradingItemViewClickPatch().Enable();
-        new HandleItemViewInitPatch().Enable();
-        new HandleItemViewKillPatch().Enable();
-        new BeginDragPatch().Enable();
-        new EndDragPatch().Enable();
-        new DeselectOnLockPatch().Enable();
-        new SelectAllPatch().Enable();
+        new SelectOnMouseDownPatch().SafeEnable();
+        new DeselectOnTradingItemViewClickPatch().SafeEnable();
+        new HandleItemViewInitPatch().SafeEnable();
+        new HandleItemViewKillPatch().SafeEnable();
+        new BeginDragPatch().SafeEnable();
+        new EndDragPatch().SafeEnable();
+        new DeselectOnLockPatch().SafeEnable();
+        new SelectAllPatch().SafeEnable();
 
         // Workarounds
-        new DisableSplitPatch().Enable();
-        new DisableSplitTargetPatch().Enable();
-        new DisableMagnifyPatch().Enable();
-        new MoveOperationDontForgetAboutPinsPatch().Enable();
-        new RememberPinOperationsPatch().Enable();
+        new DisableSplitPatch().SafeEnable();
+        new DisableSplitTargetPatch().SafeEnable();
+        new DisableMagnifyPatch().SafeEnable();
+        new MoveOperationDontForgetAboutPinsPatch().SafeEnable();
+        new RememberPinOperationsPatch().SafeEnable();
 
         // Actions
-        new ItemViewClickPatch().Enable();
-        new ContextActionsPatch().Enable();
-        new MoreContextActionsPatch().Enable();
-        new ContextActionsInteractivePatch().Enable();
-        new AddOfferPatch().Enable();
-        new StopProcessesPatch().Enable();
+        new ItemViewClickPatch().SafeEnable();
+        new ContextActionsPatch().SafeEnable();
+        new MoreContextActionsPatch().SafeEnable();
+        new ContextActionsInteractivePatch().SafeEnable();
+        new AddOfferPatch().SafeEnable();
+        new StopProcessesPatch().SafeEnable();
 
         // GridView
-        new GridViewCanAcceptPatch().Enable();
-        new GridViewAcceptItemPatch().Enable();
-        new GridViewPickTargetPatch().Enable();
-        new GridViewDisableHighlightPatch().Enable();
-        new GridViewClearTooltipPatch().Enable();
+        new GridViewCanAcceptPatch().SafeEnable();
+        new GridViewAcceptItemPatch().SafeEnable();
+        new GridViewPickTargetPatch().SafeEnable();
+        new GridViewDisableHighlightPatch().SafeEnable();
+        new GridViewClearTooltipPatch().SafeEnable();
 
         // SlotView
-        new SlotViewCanAcceptPatch().Enable();
-        new SlotViewAcceptItemPatch().Enable();
+        new SlotViewCanAcceptPatch().SafeEnable();
+        new SlotViewAcceptItemPatch().SafeEnable();
 
         // Bullets are special
-        new LoadMagazinePatch().Enable();
-        new LoadWeaponWithAmmoPatch().Enable();
-        new LoadMultiBarrelWeaponPatch().Enable();
+        new LoadMagazinePatch().SafeEnable();
+        new LoadWeaponWithAmmoPatch().SafeEnable();
+        new LoadMultiBarrelWeaponPatch().SafeEnable();
 
         // TradingTableGridView
-        new TradingTableCanAcceptPatch().Enable();
-        new TradingTableAcceptItemPatch().Enable();
-        new TradingTableGetHighlightColorPatch().Enable();
+        new TradingTableCanAcceptPatch().SafeEnable();
+        new TradingTableAcceptItemPatch().SafeEnable();
+        new TradingTableGetHighlightColorPatch().SafeEnable();
 
         // Various location finding
-        new FindSpotKeepRotationPatch().Enable();
-        new FindPlaceToPutPatch().Enable();
-        new AdjustQuickFindFlagsPatch().Enable();
-        new ReorderContainersPatch().Enable();
-        new AllowFindSameSpotPatch().Enable();
+        new FindSpotKeepRotationPatch().SafeEnable();
+        new FindPlaceToPutPatch().SafeEnable();
+        new AdjustQuickFindFlagsPatch().SafeEnable();
+        new ReorderContainersPatch().SafeEnable();
+        new AllowFindSameSpotPatch().SafeEnable();
 
         // Cylinders
-        new ReloadCylinderPatch().Enable();
+        new ReloadCylinderPatch().SafeEnable();
     }
 
     public class InitializeCommonUIPatch : ModulePatch

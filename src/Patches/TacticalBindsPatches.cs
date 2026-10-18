@@ -17,13 +17,13 @@ public static class TacticalBindsPatches
 {
     public static void Enable()
     {
-        new BindableTacticalPatch().Enable();
-        new ReachableTacticalPatch().Enable();
-        new UseTacticalPatch().Enable();
+        new BindableTacticalPatch().SafeEnable();
+        new ReachableTacticalPatch().SafeEnable();
+        new UseTacticalPatch().SafeEnable();
 
-        new BindTacticalPatch().Enable();
-        new UnbindTacticalPatch().Enable();
-        new InitQuickBindsPatch().Enable();
+        new BindTacticalPatch().SafeEnable();
+        new UnbindTacticalPatch().SafeEnable();
+        new InitQuickBindsPatch().SafeEnable();
     }
 
     public class BindableTacticalPatch : ModulePatch

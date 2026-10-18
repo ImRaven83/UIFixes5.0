@@ -17,8 +17,8 @@ public static class RebindConsumablesPatches
 
     public static void Enable()
     {
-        new RebindFoodMedsPatch().Enable();
-        new RebindGrenadesPatch().Enable();
+        new RebindFoodMedsPatch().SafeEnable();
+        new RebindGrenadesPatch().SafeEnable();
     }
 
     public class RebindFoodMedsPatch : ModulePatch

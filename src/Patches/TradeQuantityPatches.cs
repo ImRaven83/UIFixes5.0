@@ -12,8 +12,8 @@ public static class TradeQuantityPatches
 {
     public static void Enable()
     {
-        new FocusTradeQuantityPatch().Enable();
-        new SelectAllPatch().Enable();
+        new FocusTradeQuantityPatch().SafeEnable();
+        new SelectAllPatch().SafeEnable();
     }
 
     public class FocusTradeQuantityPatch : ModulePatch

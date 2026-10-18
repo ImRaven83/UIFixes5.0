@@ -15,8 +15,8 @@ public static class GPCoinPatches
 {
     public static void Enable()
     {
-        new MoneyPanelPatch().Enable();
-        new MoneyPanelTMPTextPatch().Enable();
+        new MoneyPanelPatch().SafeEnable();
+        new MoneyPanelTMPTextPatch().SafeEnable();
     }
 
     public class MoneyPanelPatch : ModulePatch

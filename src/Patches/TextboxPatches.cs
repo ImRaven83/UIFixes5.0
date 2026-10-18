@@ -10,7 +10,7 @@ public static class TextboxPatches
 {
     public static void Enable()
     {
-        new SuppressAlphanumericCommandsPatch().Enable();
+        new SuppressAlphanumericCommandsPatch().SafeEnable();
     }
 
     public class SuppressAlphanumericCommandsPatch : ModulePatch

@@ -19,11 +19,11 @@ public static class StashSearchPatches
 
     public static void Enable()
     {
-        new FocusStashSearchPatch().Enable();
-        new OpenSearchPatch().Enable();
+        new FocusStashSearchPatch().SafeEnable();
+        new OpenSearchPatch().SafeEnable();
 
-        new AddSearchStashPatch().Enable();
-        new PositionSearchStashPatch().Enable();
+        new AddSearchStashPatch().SafeEnable();
+        new PositionSearchStashPatch().SafeEnable();
     }
 
     public class FocusStashSearchPatch : ModulePatch

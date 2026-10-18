@@ -12,9 +12,9 @@ public static class FixTooltipPatches
 {
     public static void Enable()
     {
-        new QuestTooltipPatch().Enable();
-        new ArmorTooltipPatch().Enable();
-        new SoftArmorTooltipPatch().Enable();
+        new QuestTooltipPatch().SafeEnable();
+        new ArmorTooltipPatch().SafeEnable();
+        new SoftArmorTooltipPatch().SafeEnable();
     }
 
     // Show parent tooltip when mouse leaves quest checkmark

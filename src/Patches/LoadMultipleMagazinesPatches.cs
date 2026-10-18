@@ -20,11 +20,11 @@ public static class LoadMultipleMagazinesPatches
 
     public static void Enable()
     {
-        new FindCompatibleAmmoPatch().Enable();
-        new CheckItemFilterPatch().Enable();
-        new LoadAmmoPatch().Enable();
-        new FilterMagPresetsPatch().Enable();
-        new LoadPresetPatch().Enable();
+        new FindCompatibleAmmoPatch().SafeEnable();
+        new CheckItemFilterPatch().SafeEnable();
+        new LoadAmmoPatch().SafeEnable();
+        new FilterMagPresetsPatch().SafeEnable();
+        new LoadPresetPatch().SafeEnable();
     }
 
     public class FindCompatibleAmmoPatch : ModulePatch
@@ -77,13 +77,14 @@ public static class LoadMultipleMagazinesPatches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(LoadMagContextInteractions), nameof(LoadMagContextInteractions.LoadAmmo));
+            // Declared on the base class in 5.0; Harmony can only patch the declaring method
+            return AccessTools.DeclaredMethod(typeof(LoadAmmoContextInteractions), nameof(LoadAmmoContextInteractions.LoadAmmo));
         }
 
         [PatchPrefix]
-        public static bool Prefix(LoadMagContextInteractions __instance, string ammoTemplateId, ref Il2CppSystem.Threading.Tasks.Task __result)
+        public static bool Prefix(LoadAmmoContextInteractions __instance, string ammoTemplateId, ref Il2CppSystem.Threading.Tasks.Task __result)
         {
-            if (!MultiSelect.Active)
+            if (!MultiSelect.Active || __instance is not LoadMagContextInteractions)
             {
                 return true;
             }

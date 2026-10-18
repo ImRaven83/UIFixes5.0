@@ -23,15 +23,15 @@ public static class WeaponPresetConfirmPatches
     {
         // Two patches are required for the edit preset screen - one to grab the value of moveForward from CloseScreenInterruption(), and one to use it.
         // This is because BSG didn't think to pass the argument
-        new DetectWeaponPresetCloseTypePatch().Enable();
-        new ConfirmDiscardWeaponPresetChangesPatch().Enable();
+        new DetectWeaponPresetCloseTypePatch().SafeEnable();
+        new ConfirmDiscardWeaponPresetChangesPatch().SafeEnable();
 
         // The save button should just save, not prompt to rename
-        new SavePresetPatch().Enable();
-        new InstantSavePresetPatch().Enable();
+        new SavePresetPatch().SafeEnable();
+        new InstantSavePresetPatch().SafeEnable();
 
         // Also BSG just immediately sets the dirty flag on load, because they don't understand what anything is or how it should work
-        new NoUnsavedChangesPatch().Enable();
+        new NoUnsavedChangesPatch().SafeEnable();
     }
 
     // This patch just caches whether this navigation is a forward navigation, which determines if the preset is actually closing

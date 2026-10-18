@@ -10,8 +10,8 @@ public static class StackFirItemsPatches
 {
     public static void Enable()
     {
-        new ContainerStackPatch().Enable();
-        new TopUpStackPatch().Enable();
+        new ContainerStackPatch().SafeEnable();
+        new TopUpStackPatch().SafeEnable();
     }
 
     public class ContainerStackPatch : ModulePatch

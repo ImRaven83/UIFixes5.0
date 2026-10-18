@@ -16,10 +16,10 @@ public static class UnloadAmmoPatches
 {
     public static void Enable()
     {
-        new TradingPlayerPatch().Enable();
-        new TransferPlayerPatch().Enable();
-        new UnloadScavTransferPatch().Enable();
-        new NoScavStashPatch().Enable();
+        new TradingPlayerPatch().SafeEnable();
+        new TransferPlayerPatch().SafeEnable();
+        new UnloadScavTransferPatch().SafeEnable();
+        new NoScavStashPatch().SafeEnable();
     }
 
     // Adds the unload action to items in the player trading window

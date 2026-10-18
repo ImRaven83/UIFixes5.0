@@ -11,8 +11,8 @@ public static class QuickMovePreviewPatches
 {
     public static void Enable()
     {
-        new InitPreviewPatch().Enable();
-        new KillPreviewPatch().Enable();
+        new InitPreviewPatch().SafeEnable();
+        new KillPreviewPatch().SafeEnable();
     }
 
     public class InitPreviewPatch : ModulePatch

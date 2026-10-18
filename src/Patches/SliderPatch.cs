@@ -11,8 +11,8 @@ public static class SliderPatches
 {
     public static void Enable()
     {
-        new IntSliderPatch().Enable();
-        new StepSliderPatch().Enable();
+        new IntSliderPatch().SafeEnable();
+        new StepSliderPatch().SafeEnable();
     }
 
     // Change slider values with mouse-wheel

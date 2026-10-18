@@ -12,7 +12,7 @@ public static class CursorPatches
 {
     public static void Enable()
     {
-        new UnlockCursorPatch().Enable();
+        new UnlockCursorPatch().SafeEnable();
     }
 
     public class UnlockCursorPatch : ModulePatch

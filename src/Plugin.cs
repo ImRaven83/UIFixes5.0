@@ -43,96 +43,109 @@ public class Plugin : BasePlugin
 
         R.Init();
 
-        NetworkTransactionWatcher.Enable();
-        ConfirmDialogKeysPatches.Enable();
-        MailPatches.Enable();
-        FixTooltipPatches.Enable();
-        QuickAccessPanelPatches.Enable();
-        FocusFleaOfferNumberPatches.Enable();
-        HideoutSearchPatches.Enable();
-        HideoutLevelPatches.Enable();
-        InspectWindowResizePatches.Enable();
-        InspectWindowStatsPatches.Enable();
-        new RemoveDoorActionsPatch().Enable();
-        ScrollPatches.Enable();
-        StackFirItemsPatches.Enable();
-        SwapPatches.Enable();
-        SyncScrollPositionPatches.Enable();
-        new TransferConfirmPatch().Enable();
-        PlayerModelViewPatches.Enable();
-        WeaponPresetConfirmPatches.Enable();
-        WeaponZoomPatches.Enable();
-        WeaponPanPatches.Enable();
-        WeaponPreviewPatches.Enable();
-        new MoveTaskbarPatch().Enable();
-        FixFleaPatches.Enable();
-        FleaPrevSearchPatches.Enable();
-        KeepOfferWindowOpenPatches.Enable();
-        AddOfferClickablePricesPatches.Enable();
-        new AssortUnlocksPatch().Enable(); // TODO: Implement server side
-        new AutofillQuestItemsPatch().Enable();
-        ContextMenuPatches.Enable();
-        TradingAutoSwitchPatches.Enable();
-        AddOfferRememberAutoselectPatches.Enable();
-        KeepMessagesOpenPatches.Enable();
-        TradeQuantityPatches.Enable();
-        RememberRepairerPatches.Enable();
-        new GridWindowButtonsPatch().Enable();
-        MagPresetsPatches.Enable();
-        WindowPatches.Enable();
-        ContextMenuShortcutPatches.Enable();
-        OpenSortingTablePatches.Enable();
-        LoadAmmoInRaidPatches.Enable();
-        MultiSelectPatches.Enable();
-        LoadMultipleMagazinesPatches.Enable();
-        UnloadAmmoPatches.Enable();
-        FixTraderControllerPatches.Enable();
-        new PutToolsBackPatch().Enable();
-        RebindConsumablesPatches.Enable();
-        AimToggleHoldPatches.Enable();
-        ReorderGridsPatches.Enable();
-        GPCoinPatches.Enable();
-        FleaSlotSearchPatches.Enable();
-        FilterOutOfStockPatches.Enable();
-        SortPatches.Enable();
-        ReloadInPlacePatches.Enable();
-        BarterOfferPatches.Enable();
-        CursorPatches.Enable();
-        LimitDragPatches.Enable();
-        HideoutCameraPatches.Enable();
-        WeaponModdingPatches.Enable();
-        TagPatches.Enable();
-        TacticalBindsPatches.Enable();
-        new OperationQueuePatch().Enable();
-        SliderPatches.Enable();
-        DropdownPatches.Enable();
-        new FixPlayerInspectPatch().Enable();
-        QuestKeysPatches.Enable();
-        new ModifyUnsearchedContainerPatch().Enable();
-        RemoveAdsPatches.Enable();
-        BTRPaymentPatches.Enable();
-        TradingHighlightPatches.Enable();
-        TraderAvatarPatches.Enable();
-        FilterStockPresetsPatches.Enable();
-        WishlistPatches.Enable();
-        StashSearchPatches.Enable();
-        InternalMagPatches.Enable();
-        BarrelOnlyPatches.Enable();
-        RevolverPatches.Enable();
-        TextboxPatches.Enable();
-        VariableScopeFixPatches.Enable();
-        new TransferMergePatch().Enable();
-        GridHighlightPatches.Enable();
-        QueueInputPatches.Enable();
-        new CompassGogglesPatch().Enable();
-        new FixGridPrepareItemsPatch().Enable();
-        new FixTraderFiltersPatch().Enable();
-        QuickMovePreviewPatches.Enable();
-        new RotateKeybindPatch().Enable();
-        new HideInviteUIPatch().Enable();
-        ServicesPatches.Enable();
+        SafeEnable(NetworkTransactionWatcher.Enable);
+        SafeEnable(ConfirmDialogKeysPatches.Enable);
+        SafeEnable(MailPatches.Enable);
+        SafeEnable(FixTooltipPatches.Enable);
+        SafeEnable(QuickAccessPanelPatches.Enable);
+        SafeEnable(FocusFleaOfferNumberPatches.Enable);
+        SafeEnable(HideoutSearchPatches.Enable);
+        SafeEnable(HideoutLevelPatches.Enable);
+        SafeEnable(InspectWindowResizePatches.Enable);
+        SafeEnable(InspectWindowStatsPatches.Enable);
+        new RemoveDoorActionsPatch().SafeEnable();
+        SafeEnable(ScrollPatches.Enable);
+        SafeEnable(StackFirItemsPatches.Enable);
+        SafeEnable(SwapPatches.Enable);
+        SafeEnable(SyncScrollPositionPatches.Enable);
+        new TransferConfirmPatch().SafeEnable();
+        SafeEnable(PlayerModelViewPatches.Enable);
+        SafeEnable(WeaponPresetConfirmPatches.Enable);
+        SafeEnable(WeaponZoomPatches.Enable);
+        SafeEnable(WeaponPanPatches.Enable);
+        SafeEnable(WeaponPreviewPatches.Enable);
+        new MoveTaskbarPatch().SafeEnable();
+        SafeEnable(FixFleaPatches.Enable);
+        SafeEnable(FleaPrevSearchPatches.Enable);
+        SafeEnable(KeepOfferWindowOpenPatches.Enable);
+        SafeEnable(AddOfferClickablePricesPatches.Enable);
+        new AssortUnlocksPatch().SafeEnable(); // TODO: Implement server side
+        new AutofillQuestItemsPatch().SafeEnable();
+        SafeEnable(ContextMenuPatches.Enable);
+        SafeEnable(TradingAutoSwitchPatches.Enable);
+        SafeEnable(AddOfferRememberAutoselectPatches.Enable);
+        SafeEnable(KeepMessagesOpenPatches.Enable);
+        SafeEnable(TradeQuantityPatches.Enable);
+        SafeEnable(RememberRepairerPatches.Enable);
+        new GridWindowButtonsPatch().SafeEnable();
+        SafeEnable(MagPresetsPatches.Enable);
+        SafeEnable(WindowPatches.Enable);
+        SafeEnable(ContextMenuShortcutPatches.Enable);
+        SafeEnable(OpenSortingTablePatches.Enable);
+        SafeEnable(LoadAmmoInRaidPatches.Enable);
+        SafeEnable(MultiSelectPatches.Enable);
+        SafeEnable(LoadMultipleMagazinesPatches.Enable);
+        SafeEnable(UnloadAmmoPatches.Enable);
+        SafeEnable(FixTraderControllerPatches.Enable);
+        new PutToolsBackPatch().SafeEnable();
+        SafeEnable(RebindConsumablesPatches.Enable);
+        SafeEnable(AimToggleHoldPatches.Enable);
+        SafeEnable(ReorderGridsPatches.Enable);
+        SafeEnable(GPCoinPatches.Enable);
+        SafeEnable(FleaSlotSearchPatches.Enable);
+        SafeEnable(FilterOutOfStockPatches.Enable);
+        SafeEnable(SortPatches.Enable);
+        SafeEnable(ReloadInPlacePatches.Enable);
+        SafeEnable(BarterOfferPatches.Enable);
+        SafeEnable(CursorPatches.Enable);
+        SafeEnable(LimitDragPatches.Enable);
+        SafeEnable(HideoutCameraPatches.Enable);
+        SafeEnable(WeaponModdingPatches.Enable);
+        SafeEnable(TagPatches.Enable);
+        SafeEnable(TacticalBindsPatches.Enable);
+        new OperationQueuePatch().SafeEnable();
+        SafeEnable(SliderPatches.Enable);
+        SafeEnable(DropdownPatches.Enable);
+        new FixPlayerInspectPatch().SafeEnable();
+        SafeEnable(QuestKeysPatches.Enable);
+        new ModifyUnsearchedContainerPatch().SafeEnable();
+        SafeEnable(RemoveAdsPatches.Enable);
+        SafeEnable(BTRPaymentPatches.Enable);
+        SafeEnable(TradingHighlightPatches.Enable);
+        SafeEnable(TraderAvatarPatches.Enable);
+        SafeEnable(FilterStockPresetsPatches.Enable);
+        SafeEnable(WishlistPatches.Enable);
+        SafeEnable(StashSearchPatches.Enable);
+        SafeEnable(InternalMagPatches.Enable);
+        SafeEnable(BarrelOnlyPatches.Enable);
+        SafeEnable(RevolverPatches.Enable);
+        SafeEnable(TextboxPatches.Enable);
+        SafeEnable(VariableScopeFixPatches.Enable);
+        new TransferMergePatch().SafeEnable();
+        SafeEnable(GridHighlightPatches.Enable);
+        SafeEnable(QueueInputPatches.Enable);
+        new CompassGogglesPatch().SafeEnable();
+        new FixGridPrepareItemsPatch().SafeEnable();
+        new FixTraderFiltersPatch().SafeEnable();
+        SafeEnable(QuickMovePreviewPatches.Enable);
+        new RotateKeybindPatch().SafeEnable();
+        new HideInviteUIPatch().SafeEnable();
+        SafeEnable(ServicesPatches.Enable);
 
         IL2CPPChainloader.Instance.Finished += CheckForOldInterop;
+    }
+
+    // One feature failing to patch (e.g. after a game update) shouldn't take the rest of the mod down with it
+    private void SafeEnable(Action enable)
+    {
+        try
+        {
+            enable();
+        }
+        catch (Exception ex)
+        {
+            Log.LogError($"Failed to enable {enable.Method.DeclaringType?.Name}: {ex}");
+        }
     }
 
     public static bool InRaid()

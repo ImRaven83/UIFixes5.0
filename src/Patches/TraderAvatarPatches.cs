@@ -21,10 +21,10 @@ public static class TraderAvatarPatches
 {
     public static void Enable()
     {
-        new CreateIconsPatch().Enable();
-        new ShowIconsPatch().Enable();
-        new QuestListItemPatch().Enable();
-        new HandoverPatch().Enable();
+        new CreateIconsPatch().SafeEnable();
+        new ShowIconsPatch().SafeEnable();
+        new QuestListItemPatch().SafeEnable();
+        new HandoverPatch().SafeEnable();
     }
 
     public class CreateIconsPatch : ModulePatch

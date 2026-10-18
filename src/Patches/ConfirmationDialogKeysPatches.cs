@@ -12,15 +12,15 @@ public static class ConfirmDialogKeysPatches
 {
     public static void Enable()
     {
-        new DialogWindowPatch().Enable();
-        new ItemUiContextWindowPatch().Enable();
-        new ErrorScreenPatch().Enable();
-        new AddOfferPatch().Enable();
+        new DialogWindowPatch().SafeEnable();
+        new ItemUiContextWindowPatch().SafeEnable();
+        new ErrorScreenPatch().SafeEnable();
+        new AddOfferPatch().SafeEnable();
 
-        new ClickOutPatch().Enable();
-        new ClickOutSplitDialogPatch().Enable();
-        new ClickOutItemsListPatch().Enable();
-        new ClickOutErrorScreenPatch().Enable();
+        new ClickOutPatch().SafeEnable();
+        new ClickOutSplitDialogPatch().SafeEnable();
+        new ClickOutItemsListPatch().SafeEnable();
+        new ClickOutErrorScreenPatch().SafeEnable();
     }
 
     // Close dialogs with enter/space
@@ -148,7 +148,7 @@ public static class ConfirmDialogKeysPatches
             {
                 button.transition = Selectable.Transition.None;
                 button.onClick.AddListener((System.Action)(__instance.Close));
-                __instance.R().UI.AddDisposable(button.onClick.RemoveAllListeners);
+                __instance.R().UI.AddDisposable(Il2CppHelpers.ToIl2CppAction(button.onClick.RemoveAllListeners));
             }
         }
     }
@@ -203,7 +203,7 @@ public static class ConfirmDialogKeysPatches
             {
                 button.transition = Selectable.Transition.None;
                 button.onClick.AddListener((System.Action)(__instance.Close));
-                __instance.R().UI.AddDisposable(button.onClick.RemoveAllListeners);
+                __instance.R().UI.AddDisposable(Il2CppHelpers.ToIl2CppAction(button.onClick.RemoveAllListeners));
             }
         }
     }
@@ -231,7 +231,7 @@ public static class ConfirmDialogKeysPatches
             {
                 button.transition = Selectable.Transition.None;
                 button.onClick.AddListener((System.Action)(__instance.CloseSilent));
-                __instance.R().UI.AddDisposable(button.onClick.RemoveAllListeners);
+                __instance.R().UI.AddDisposable(Il2CppHelpers.ToIl2CppAction(button.onClick.RemoveAllListeners));
             }
         }
     }

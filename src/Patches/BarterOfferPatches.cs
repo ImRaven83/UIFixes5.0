@@ -18,18 +18,18 @@ public static class BarterOfferPatches
 {
     public static void Enable()
     {
-        new IconsPatch().Enable();
-        new ItemViewScalePatch().Enable();
-        new ItemUpdateInfoPatch().Enable();
-        new HideItemViewStatsPatch().Enable();
-        new OverrideGridItemViewTooltipPatch().Enable();
+        new IconsPatch().SafeEnable();
+        new ItemViewScalePatch().SafeEnable();
+        new ItemUpdateInfoPatch().SafeEnable();
+        new HideItemViewStatsPatch().SafeEnable();
+        new OverrideGridItemViewTooltipPatch().SafeEnable();
 
-        new NoPointerEnterPatch().Enable();
-        new NoPointerExitPatch().Enable();
-        new NoPointerClickPatch().Enable();
+        new NoPointerEnterPatch().SafeEnable();
+        new NoPointerExitPatch().SafeEnable();
+        new NoPointerClickPatch().SafeEnable();
 
-        new RagfairScreenShowPatch().Enable();
-        new OnPurchaseClickedUpdatePatch().Enable();
+        new RagfairScreenShowPatch().SafeEnable();
+        new OnPurchaseClickedUpdatePatch().SafeEnable();
     }
 
     public class IconsPatch : ModulePatch

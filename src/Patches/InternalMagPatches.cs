@@ -18,13 +18,13 @@ public static class InternalMagPatches
 
     public static void Enable()
     {
-        new InternalReloadApplyItemPatch().Enable();
-        new IsLoadAmmoByTypePatch().Enable();
+        new InternalReloadApplyItemPatch().SafeEnable();
+        new IsLoadAmmoByTypePatch().SafeEnable();
 
-        new AddLoadAmmoPatch().Enable();
-        new LoadAmmoIsActivePatch().Enable();
+        new AddLoadAmmoPatch().SafeEnable();
+        new LoadAmmoIsActivePatch().SafeEnable();
 
-        new UnloadChamberTooPatch().Enable();
+        new UnloadChamberTooPatch().SafeEnable();
     }
 
     public class InternalReloadApplyItemPatch : ModulePatch

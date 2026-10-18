@@ -12,7 +12,7 @@ public static class BTRPaymentPatches
 {
     public static void Enable()
     {
-        new PaymentSlotsPatch().Enable();
+        new PaymentSlotsPatch().SafeEnable();
     }
 
     // BSG devs are knuckleheads and copy pasted code. GrenadeThrowingSlots and PaymentSlots use the same cache.

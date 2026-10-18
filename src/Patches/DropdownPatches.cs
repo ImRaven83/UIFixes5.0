@@ -20,19 +20,19 @@ public static class DropdownPatches
 
     public static void Enable()
     {
-        new ModdingScreenListenOpenPatch().Enable();
-        new ModdingScreenListenClosePatch().Enable();
+        new ModdingScreenListenOpenPatch().SafeEnable();
+        new ModdingScreenListenClosePatch().SafeEnable();
 
-        new SlotViewClickOpenPatch().Enable();
-        new ItemSelectionCellClickOpenPatch().Enable();
+        new SlotViewClickOpenPatch().SafeEnable();
+        new ItemSelectionCellClickOpenPatch().SafeEnable();
 
-        new EmptySlotRemovePointerDownPatch().Enable();
-        new EmptySlotInteractablePatch().Enable();
-        new EmptySlotClickPatch().Enable();
+        new EmptySlotRemovePointerDownPatch().SafeEnable();
+        new EmptySlotInteractablePatch().SafeEnable();
+        new EmptySlotClickPatch().SafeEnable();
 
-        new BackgroundClickClosePatch().Enable();
+        new BackgroundClickClosePatch().SafeEnable();
 
-        new FixBlockedItemSwapPatch().Enable();
+        new FixBlockedItemSwapPatch().SafeEnable();
     }
 
     public class ModdingScreenListenOpenPatch : ModulePatch

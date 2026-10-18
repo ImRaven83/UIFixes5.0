@@ -11,15 +11,15 @@ public static class QueueInputPatches
 {
     public static void Enable()
     {
-        new AimPatch().Enable();
-        new ReloadPatch().Enable();
+        new AimPatch().SafeEnable();
+        new ReloadPatch().SafeEnable();
 
-        new SprintPatch().Enable();
-        new PreSprintPatch().Enable();
+        new SprintPatch().SafeEnable();
+        new PreSprintPatch().SafeEnable();
 
-        new BreathPatch().Enable();
+        new BreathPatch().SafeEnable();
 
-        new MapKeyBindingsPatch().Enable();
+        new MapKeyBindingsPatch().SafeEnable();
     }
 
     public class AimPatch : ModulePatch
