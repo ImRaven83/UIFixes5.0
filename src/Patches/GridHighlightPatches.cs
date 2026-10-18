@@ -130,6 +130,12 @@ public static class GridHighlightPatches
         [PatchPostfix]
         public static void Postfix(GridView __instance)
         {
+            // This body is shared with MainTimerPanel.HideRaidTime
+            if (!__instance.IsIl2CppInstanceOf<GridView>())
+            {
+                return;
+            }
+
             var border = __instance.transform.Find("NoFitBorder");
             if (border == null)
             {

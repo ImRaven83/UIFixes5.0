@@ -54,8 +54,8 @@ public static class ContextMenuPatches
 
         new OpenWhileSearchingPatch().SafeEnable();
 
-        new ModdingSelectableItemContextPatch().SafeEnable();
-        new ModdingCreateSubInteractionsPatch().SafeEnable();
+        // ModdingContextInteractions is sealed in il2cpp and inherits SubInteractions/CreateSubInteractions from the fully shared
+        // generic ContextInteractions<T> body, which can't be safely patched. The modding screen wishlist option is not available.
 
         new ContextMenuFontSizePatch().SafeEnable();
     }
@@ -607,62 +607,6 @@ public static class ContextMenuPatches
             }
 
             return true;
-        }
-    }
-
-    // ModdingContextInteractions is sealed in il2cpp, so a subclass would be invisible to the game.
-    // Add the wishlist option by patching the (generic) base implementations instead.
-    public class ModdingSelectableItemContextPatch : ModulePatch
-    {
-        protected override MethodBase GetTargetMethod()
-        {
-            var moddingContextOptions = ModdingContextInteractions._interactions.TryCast<Il2CppSystem.Collections.Generic.List<EItemInfoButton>>();
-            moddingContextOptions?.Add(EItemInfoButton.AddToWishlist);
-
-            return AccessTools.PropertyGetter(
-                typeof(ContextInteractions<EItemInfoButton>),
-                nameof(ContextInteractions<>.SubInteractions));
-        }
-
-        [PatchPostfix]
-        public static void Postfix(ContextInteractions<EItemInfoButton> __instance, ref Il2CppSystem.Collections.Generic.IEnumerable<EItemInfoButton> __result)
-        {
-            if (__instance is ModdingContextInteractions)
-            {
-                __result = __result.Append(EItemInfoButton.AddToWishlist).ToIl2CppList();
-            }
-        }
-    }
-
-    public class ModdingCreateSubInteractionsPatch : ModulePatch
-    {
-        protected override MethodBase GetTargetMethod()
-        {
-            return AccessTools.DeclaredMethod(
-                typeof(ContextInteractions<EItemInfoButton>),
-                nameof(ContextInteractions<>.CreateSubInteractions));
-        }
-
-        [PatchPrefix]
-        public static bool Prefix(ContextInteractions<EItemInfoButton> __instance, EItemInfoButton parentInteraction, ISubInteractionsWrapper subInteractionsWrapper)
-        {
-            if (__instance is not ModdingContextInteractions moddingInteractions || parentInteraction != EItemInfoButton.AddToWishlist)
-            {
-                return true;
-            }
-
-            subInteractionsWrapper.SetSubInteractions(new WishlistContextInteractions(moddingInteractions.ItemContext, moddingInteractions.ItemUiContext));
-            PositionContextMenuFlyout(subInteractionsWrapper);
-            return false;
-        }
-
-        [PatchPostfix]
-        public static void Postfix(ContextInteractions<EItemInfoButton> __instance, EItemInfoButton parentInteraction, ISubInteractionsWrapper subInteractionsWrapper)
-        {
-            if (__instance is ModdingContextInteractions && parentInteraction != EItemInfoButton.AddToWishlist)
-            {
-                PositionContextMenuFlyout(subInteractionsWrapper);
-            }
         }
     }
 

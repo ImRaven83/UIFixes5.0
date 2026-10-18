@@ -81,9 +81,10 @@ public static class ReloadInPlacePatches
         }
 
         [PatchPrefix]
-        public static void Prefix(Grid grid, ref OperationResult<RemoveResult> __state)
+        public static void Prefix(ItemUiContext.__c__DisplayClass324_1 __instance, Grid grid, ref OperationResult<RemoveResult> __state)
         {
-            if (!Settings.SwapMags.Value)
+            // This body is shared with other lambdas
+            if (!Settings.SwapMags.Value || FoundMagazine == null || !__instance.IsIl2CppInstanceOf<ItemUiContext.__c__DisplayClass324_1>())
             {
                 return;
             }
@@ -97,7 +98,7 @@ public static class ReloadInPlacePatches
         [PatchPostfix]
         public static void Postfix(OperationResult<RemoveResult> __state)
         {
-            if (!Settings.SwapMags.Value || __state.Value == null)
+            if (!Settings.SwapMags.Value || __state == null || __state.Value == null)
             {
                 return;
             }
@@ -117,9 +118,10 @@ public static class ReloadInPlacePatches
         }
 
         [PatchPostfix]
-        public static void Postfix(GridItemAddress g, ref int __result)
+        public static void Postfix(ItemUiContext.__c __instance, GridItemAddress g, ref int __result)
         {
-            if (!Settings.AlwaysSwapMags.Value)
+            // This body is shared with other lambdas
+            if (!Settings.AlwaysSwapMags.Value || FoundAddress == null || !__instance.IsIl2CppInstanceOf<ItemUiContext.__c>())
             {
                 return;
             }

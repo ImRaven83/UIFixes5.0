@@ -187,6 +187,12 @@ public static class BarterOfferPatches
         [PatchPostfix]
         public static void Postfix(RagfairOfferItemView __instance)
         {
+            // This body is shared with AssembleBuildItemView.UpdateInfo
+            if (!__instance.IsIl2CppInstanceOf<RagfairOfferItemView>())
+            {
+                return;
+            }
+
             if (__instance.GetShowCaption())
             {
                 __instance.Caption.gameObject.SetActive(true);
@@ -288,9 +294,10 @@ public static class BarterOfferPatches
         }
 
         [PatchPrefix]
-        public static bool Prefix()
+        public static bool Prefix(OfferItemPriceBarter __instance)
         {
-            return !Settings.ShowBarterIcons.Value;
+            // This body is shared with a PrestigeObtainAnimationState lambda
+            return !Settings.ShowBarterIcons.Value || !__instance.IsIl2CppInstanceOf<OfferItemPriceBarter>();
         }
     }
 

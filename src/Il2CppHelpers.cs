@@ -59,6 +59,20 @@ public static class Il2CppHelpers
         return parameters.Length == 1 && parameters[0].ParameterType == typeof(IntPtr);
     }
 
+    // When il2cpp folds identical method bodies, a detour also runs for unrelated methods and the interop wrapper
+    // will claim to be the patched type regardless. This checks the object's real il2cpp class.
+    public static bool IsIl2CppInstanceOf<T>(this Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase obj)
+        where T : Il2CppInterop.Runtime.InteropTypes.Il2CppObjectBase
+    {
+        if (obj == null || obj.Pointer == IntPtr.Zero)
+        {
+            return false;
+        }
+
+        IntPtr klass = Il2CppInterop.Runtime.IL2CPP.il2cpp_object_get_class(obj.Pointer);
+        return Il2CppInterop.Runtime.IL2CPP.il2cpp_class_is_assignable_from(Il2CppInterop.Runtime.Il2CppClassPointerStore<T>.NativeClassPtr, klass);
+    }
+
     // Managed counterpart of the game's TasksExtensions.HandleExceptions, which only accepts il2cpp tasks
     public static void HandleExceptions(this System.Threading.Tasks.Task task)
     {

@@ -94,6 +94,12 @@ public static class ConfirmDialogKeysPatches
         [PatchPostfix]
         public static void Postfix(ErrorScreen __instance)
         {
+            // This body is shared with UnknownErrorScreen.Update
+            if (!__instance.IsIl2CppInstanceOf<ErrorScreen>())
+            {
+                return;
+            }
+
             if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Space))
             {
                 __instance.CloseSilent();

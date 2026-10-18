@@ -252,9 +252,10 @@ public static class ContextMenuShortcutPatches
         }
 
         [PatchPostfix]
-        public static void Postfix()
+        public static void Postfix(ItemUiContext __instance, ItemContext itemContext)
         {
-            if (!Settings.ItemContextBlocksTextInputs.Value)
+            // This body is shared with BotOwner.set_ExternalItemsController
+            if (!Settings.ItemContextBlocksTextInputs.Value || itemContext == null || !__instance.IsIl2CppInstanceOf<ItemUiContext>())
             {
                 return;
             }
