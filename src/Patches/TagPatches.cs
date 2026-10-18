@@ -174,10 +174,11 @@ public static class TagPatches
                 TagComponent tagComponent = new(item);
                 item.Components.Add(tagComponent);
 
-                var propDictionary = properties.JToken.ToObject<Il2CppSystem.Collections.Generic.Dictionary<string, UnparsedData>>();
-                if (propDictionary.TryGetValue("Tag", out UnparsedData tagProperty))
+                // Converting the whole object to Dictionary<string, UnparsedData> fails on primitive values in il2cpp, so read only the tag
+                var tagToken = properties?.JToken?.SelectToken("Tag");
+                if (tagToken != null)
                 {
-                    tagProperty.ParseJsonTo(tagComponent.GetIl2CppType(), tagComponent);
+                    new UnparsedData { JToken = tagToken }.ParseJsonTo(tagComponent.GetIl2CppType(), tagComponent);
                 }
             }
         }

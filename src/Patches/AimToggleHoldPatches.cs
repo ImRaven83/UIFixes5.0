@@ -17,9 +17,6 @@ public static class AimToggleHoldPatches
 {
     public static void Enable()
     {
-        new AddTwoKeyStatesPatch(4).SafeEnable();
-        new AddTwoKeyStatesPatch(5).SafeEnable();
-        new AddOneKeyStatesPatch().SafeEnable();
         new UpdateInputPatch().SafeEnable();
 
         new ForceTacticalModePatch().SafeEnable();
@@ -33,60 +30,6 @@ public static class AimToggleHoldPatches
         Settings.ToggleOrHoldGoggles.SettingChanged += OnSettingChanged;
     }
 
-    // 5.0 has two ToggleInputKeyCombination constructors (with and without a pressing command); patch each
-    public class AddTwoKeyStatesPatch(int parameterCount) : ModulePatch
-    {
-        protected override MethodBase GetTargetMethod()
-        {
-            return AccessTools.GetDeclaredConstructors(typeof(ToggleInputKeyCombination))
-                .Single(c => !c.IsStatic && !c.IsIl2CppPointerConstructor() && c.GetParameters().Length == parameterCount);
-        }
-
-        [PatchPostfix]
-        public static void Postfix(InputKeyCombination __instance, EGameKey gameKey)
-        {
-            if (!ToggleHold.IsEnabled(gameKey))
-            {
-                return;
-            }
-
-            InputKeyCombination.KeyCombinationState[] states =
-            [
-                .. __instance.States,
-                new ToggleHoldIdleState(__instance),
-                new ToggleHoldClickOrHoldState(__instance),
-                new ToggleHoldHoldState(__instance)
-            ];
-            __instance.States = states;
-        }
-    }
-
-    public class AddOneKeyStatesPatch : ModulePatch
-    {
-        protected override MethodBase GetTargetMethod()
-        {
-            return AccessTools.GetDeclaredConstructors(typeof(InputKeyCombination)).Single(c => !c.IsStatic && !c.IsIl2CppPointerConstructor());
-        }
-
-        [PatchPostfix]
-        public static void Postfix(InputKeyCombination __instance, EGameKey gameKey)
-        {
-            if (!ToggleHold.IsEnabled(gameKey))
-            {
-                return;
-            }
-
-            InputKeyCombination.KeyCombinationState[] states =
-            [
-                .. __instance.States,
-                new ToggleHoldIdleState(__instance),
-                new ToggleHoldClickOrHoldState(__instance),
-                new ToggleHoldHoldState(__instance)
-            ];
-            __instance.States = states;
-        }
-    }
-
     public class UpdateInputPatch : ModulePatch
     {
         protected override MethodBase GetTargetMethod()
@@ -97,6 +40,13 @@ public static class AimToggleHoldPatches
         [PatchPrefix]
         public static void Prefix(InputKeyCombination __instance, ref Il2CppSystem.Collections.Generic.List<IGameKey> inputKeys)
         {
+            // The extra states were added in the constructors on mono, but detouring ToggleInputKeyCombination's constructors
+            // makes them throw in il2cpp. UpdateInput runs whenever bindings are applied, so add them here instead.
+            if (ToggleHold.IsEnabled(__instance.GameKey))
+            {
+                AddStates(__instance);
+            }
+
             // BSG implemented tactical as an entirely new abomination, so I have to disable the "release tactical" 
             if (__instance.GameKey == EGameKey.ReleaseTactical && ToggleHold.IsEnabled(EGameKey.Tactical))
             {
@@ -115,6 +65,25 @@ public static class AimToggleHoldPatches
                 __instance.ChangeState((InputKeyCombination.EKeyState)ToggleHoldState.Idle);
             }
         }
+    }
+
+    private static void AddStates(InputKeyCombination keyCombination)
+    {
+        var states = keyCombination.States;
+        // The custom states must land at their enum indexes, right after the game's own
+        if (states == null || states.Length != (int)ToggleHoldState.Idle)
+        {
+            return;
+        }
+
+        InputKeyCombination.KeyCombinationState[] newStates =
+        [
+            .. states,
+            new ToggleHoldIdleState(keyCombination),
+            new ToggleHoldClickOrHoldState(keyCombination),
+            new ToggleHoldHoldState(keyCombination)
+        ];
+        keyCombination.States = newStates;
     }
 
     // If using toggle/hold tactical, need to force the "tactical device mode" to be press.
