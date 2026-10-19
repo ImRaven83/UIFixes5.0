@@ -184,6 +184,9 @@ internal partial class Settings
     public static ConfigEntry<bool> PerItemContainerPositions { get; set; }
     public static ConfigEntry<bool> HighlightPrioritizedWindowBorder { get; set; }
 
+    // Debug
+    public static ConfigEntry<bool> TracePatchCalls { get; set; }
+
     public static List<ConfigEntryBase> AllConfigs = [];
 
     public static IEnumerable<ConfigEntryBase> SyncedConfigs()
@@ -1463,6 +1466,16 @@ internal partial class Settings
                 "Outline the prioritized window with yellow",
                 null,
                 new ConfigurationManagerAttributes { })));
+
+        // Debug
+        configEntries.Add(TracePatchCalls = config.Bind(
+            Section.Debug,
+            "Trace Patch Calls",
+            true,
+            new ConfigDescription(
+                "Write the first calls of every UI Fixes patch to BepInEx/UIFixes-trace.log, to find which patch a crash happened in. Takes effect on restart.",
+                null,
+                new ConfigurationManagerAttributes { IsAdvanced = true })));
 
         RecalcOrder(configEntries);
 

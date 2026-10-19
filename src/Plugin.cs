@@ -132,6 +132,8 @@ public class Plugin : BasePlugin
         new HideInviteUIPatch().SafeEnable();
         SafeEnable(ServicesPatches.Enable);
 
+        SafeEnable(PatchTracer.Install);
+
         IL2CPPChainloader.Instance.Finished += CheckForOldInterop;
     }
 

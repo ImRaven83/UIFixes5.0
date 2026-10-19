@@ -23,5 +23,6 @@ internal partial class Settings
         public const string Hideout = "Q. Hideout";
         public const string Weapons = "R. Weapons";
         public const string Windows = "S. Inventory Windows";
+        public const string Debug = "T. Debug";
     }
 }
