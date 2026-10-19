@@ -67,6 +67,7 @@ public static class MultiSelectPatches
         new DisableSplitTargetPatch().SafeEnable();
         new DisableMagnifyPatch().SafeEnable();
         new MoveOperationDontForgetAboutPinsPatch().SafeEnable();
+        new MoveOrphanedItemPatch().SafeEnable();
         new RememberPinOperationsPatch().SafeEnable();
 
         // Actions
@@ -670,6 +671,30 @@ public static class MultiSelectPatches
     // ItemManipulator.Move doesn't properly rollback pin changes in the case of errors. The pin changes get remembered by the MoveResult,
     // but if there is an error before that object is created, the list of pin operations is dropped on the ground
     private static readonly Stack<IRollable> MovePinOperations = [];
+
+    // The game's Move throws for an item with no parent (e.g. bots handling "Technical" items) and relies on callers catching it.
+    // With Move detoured, the exception can't cross the il2cpp->managed boundary: it gets logged and a null result is returned,
+    // which then breaks the caller. Fail the move normally instead.
+    public class MoveOrphanedItemPatch : ModulePatch
+    {
+        protected override MethodBase GetTargetMethod()
+        {
+            return AccessTools.Method(typeof(ItemManipulator), nameof(ItemManipulator.Move));
+        }
+
+        [PatchPrefix]
+        [HarmonyPriority(Priority.First)]
+        public static bool Prefix(Item item, ref OperationResult<MoveResult> __result)
+        {
+            if (item != null && item.CurrentAddress != null)
+            {
+                return true;
+            }
+
+            __result = new OperationResult<MoveResult>(new ItemTransferError());
+            return false;
+        }
+    }
 
     public class MoveOperationDontForgetAboutPinsPatch : ModulePatch
     {

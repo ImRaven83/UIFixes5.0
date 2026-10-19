@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <Version>7.0.6</Version>
+    <Version>7.0.7</Version>
     <SPTPath>$(MSBuildThisFileDirectory)..\..\..\..\SPT\5.0</SPTPath>
     <LibsPath>$(MSBuildThisFileDirectory)libs</LibsPath>
     <AssemblySearchPaths>
