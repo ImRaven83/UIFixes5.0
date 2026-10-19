@@ -235,20 +235,20 @@ public static class ContextMenuPatches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.PropertyGetter(
-                typeof(ContextInteractions<EItemInfoButton>),
-                nameof(ContextInteractions<>.SubInteractions));
+            // Must be the declared override: the generic ContextInteractions<T> getter is one native body shared by hundreds
+            // of methods, and detouring it crashes the game
+            return AccessTools.DeclaredPropertyGetter(typeof(TradingPlayerContextInteractions), nameof(TradingPlayerContextInteractions.SubInteractions));
         }
 
         [PatchPostfix]
-        public static void Postfix(
-            ContextInteractions<EItemInfoButton> __instance,
-            ref Il2CppSystem.Collections.Generic.IEnumerable<EItemInfoButton> __result)
+        public static void Postfix(TradingPlayerContextInteractions __instance, ref Il2CppSystem.Collections.Generic.IEnumerable<EItemInfoButton> __result)
         {
-            if (__instance is TradingPlayerContextInteractions)
+            if (!__instance.IsIl2CppInstanceOf<TradingPlayerContextInteractions>())
             {
-                __result = __result.Append(EItemInfoButton.Repair).Append(EItemInfoButton.Insure).ToIl2CppList();
+                return;
             }
+
+            __result = __result.Append(EItemInfoButton.Repair).Append(EItemInfoButton.Insure).ToIl2CppList();
         }
     }
 

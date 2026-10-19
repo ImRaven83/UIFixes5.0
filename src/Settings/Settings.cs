@@ -1470,8 +1470,8 @@ internal partial class Settings
         // Debug
         configEntries.Add(TracePatchCalls = config.Bind(
             Section.Debug,
-            "Trace Patch Calls",
-            true,
+            "Crash Trace",
+            false,
             new ConfigDescription(
                 "Write the first calls of every UI Fixes patch to BepInEx/UIFixes-trace.log, to find which patch a crash happened in. Takes effect on restart.",
                 null,
